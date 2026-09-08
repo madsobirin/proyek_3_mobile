@@ -1,17 +1,54 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart'; // 👈 Tambahkan import ini
+import 'package:http/http.dart' as http;
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import '../../models/artikel_model.dart';
 
-class ArtikelDetailPage extends StatelessWidget {
+class ArtikelDetailPage extends StatefulWidget {
   final ArtikelModel artikel;
 
   const ArtikelDetailPage({super.key, required this.artikel});
 
+  @override
+  State<ArtikelDetailPage> createState() => _ArtikelDetailPageState();
+}
+
+class _ArtikelDetailPageState extends State<ArtikelDetailPage> {
   static const _green = Color(0xFF1AB673);
   static const _textDark = Color(
     0xFF1F2937,
   ); // Sesuaikan dengan warna teks admin (#1f2937)
+
+  late ArtikelModel artikel;
+
+  @override
+  void initState() {
+    super.initState();
+    artikel = widget.artikel; 
+    _tambahDibaca();
+  }
+
+  Future<void> _tambahDibaca() async {
+    final url = Uri.parse(
+      'https://fitlife.my.id/api/artikels/${artikel.slug}',
+    );
+
+    try {
+    final response = await http.get(url);
+
+    if (response.statusCode == 200 && mounted) {
+      final data = jsonDecode(response.body);
+      setState(() {
+        artikel = ArtikelModel.fromJson(data);
+      });
+    } else {
+      debugPrint('Gagal menambah dibaca: ${response.statusCode}');
+    }
+  } catch (e) {
+    debugPrint('Error tambah dibaca: $e');
+  }
+  }
 
   String _formatDate(DateTime? date) {
     if (date == null) return '';
@@ -47,7 +84,7 @@ class ArtikelDetailPage extends StatelessWidget {
             leading: Padding(
               padding: const EdgeInsets.all(8),
               child: GestureDetector(
-                onTap: () => Navigator.pop(context),
+                onTap: () => Navigator.pop(context, artikel),
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.35),
