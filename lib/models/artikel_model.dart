@@ -64,4 +64,32 @@ class ArtikelModel {
       'updated_at': updatedAt?.toIso8601String(),
     };
   }
+  
+  ArtikelModel copyWith({
+    int? id,
+    String? judul,
+    String? slug,
+    String? kategori,
+    String? penulis,
+    String? isi,
+    String? gambar,
+    bool? isFeatured,
+    int? dibaca,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return ArtikelModel(
+      id: id ?? this.id,
+      judul: judul ?? this.judul,
+      slug: slug ?? this.slug,
+      kategori: kategori ?? this.kategori,
+      penulis: penulis ?? this.penulis,
+      isi: isi ?? this.isi,
+      gambar: gambar ?? this.gambar,
+      isFeatured: isFeatured ?? this.isFeatured,
+      dibaca: dibaca ?? this.dibaca,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 }
