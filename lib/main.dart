@@ -1,7 +1,6 @@
 // import 'dart:convert';
 import 'package:fitlife/pages/dashboard/home.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'pages/auth/login.dart';
 import 'pages/auth/register.dart';
 import 'pages/dashboard/profile_page.dart';
@@ -49,18 +48,10 @@ class _AuthCheckScreenState extends State<AuthCheckScreen> {
   }
 
   Future<void> _checkLogin() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? userData = prefs.getString('user');
-
     if (!mounted) return;
 
-    if (userData != null && userData.isNotEmpty) {
-      // User is logged in, go to home
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
-      // Not logged in, go to splash/onboarding
-      Navigator.pushReplacementNamed(context, '/splash');
-    }
+    // Always go to home, login state is handled within the Home tab
+    Navigator.pushReplacementNamed(context, '/home');
   }
 
   @override
