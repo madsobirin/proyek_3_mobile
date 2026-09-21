@@ -5,6 +5,8 @@ import '../dashboard/artikel_page.dart';
 import 'package:fitlife/pages/dashboard/profile_page.dart';
 import 'package:fitlife/pages/dashboard/guest_profile_page.dart';
 import 'package:fitlife/pages/dashboard/menu_page.dart';
+import 'package:fitlife/pages/scan/scan_barcode_screen.dart';
+import 'package:fitlife/pages/lokasi/lokasi_olahraga_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
@@ -211,6 +213,20 @@ class _HomeState extends State<Home> {
                   title: "Artikel\nKesehatan",
                   color: Colors.blue,
                   onTap: () => _onItemTapped(3),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildSquareFeatureCard(
+                  icon: Icons.qr_code_scanner_rounded,
+                  title: "Scan\nMakanan",
+                  color: const Color(0xFF00CC52),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ScanBarcodeScreen(),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -483,13 +499,12 @@ class _HomeState extends State<Home> {
         child: IndexedStack(
           index: _selectedIndex,
           children: [
-            _buildHomeContent(),
-            BmiPage(onBack: _goBack),
-            // const Center(child: Text("Halaman Menu")),
-            MenuPage(onBack: _goBack),
-            ArtikelPage(onBack: _goBack),
-            // const ProfilePages(),
-            _isLoggedIn ? const ProfilePage() : const GuestProfilePage(),
+            _buildHomeContent(),          // 0
+            BmiPage(onBack: _goBack),     // 1
+            MenuPage(onBack: _goBack),    // 2
+            ArtikelPage(onBack: _goBack), // 3
+            LocationOlahragaPage(onBack: _goBack), // 4
+            _isLoggedIn ? const ProfilePage() : const GuestProfilePage(), // 5
           ],
         ),
       ),
@@ -499,72 +514,132 @@ class _HomeState extends State<Home> {
 
   Widget _buildBottomNav() {
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Color(0x12000000),
             blurRadius: 20,
-            offset: const Offset(0, 10),
+            offset: Offset(0, -4),
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(5, (index) {
-          final isActive = _selectedIndex == index;
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              _buildNavItem(index: 0, icon: Icons.home_rounded, label: "Home"),
+              _buildNavItem(index: 1, icon: Icons.calculate_rounded, label: "BMI"),
+              _buildNavItem(index: 2, icon: Icons.restaurant_menu_rounded, label: "Menu"),
+              _buildScanNavItem(),
+              _buildNavItem(index: 3, icon: Icons.article_rounded, label: "Artikel"),
+              _buildNavItem(index: 4, icon: Icons.place_rounded, label: "Lokasi"),
+              _buildNavItem(index: 5, icon: Icons.person_rounded, label: "Profil"),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-          final icons = [
-            Icons.home,
-            Icons.calculate,
-            Icons.restaurant_menu,
-            Icons.article,
-            Icons.person,
-          ];
-
-          final labels = ["Home", "BMI", "Menu", "Artikel", "Profil"];
-
-          return GestureDetector(
-            onTap: () => _onItemTapped(index),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              padding: EdgeInsets.symmetric(
-                horizontal: isActive ? 16 : 8,
-                vertical: 8,
-              ),
+  Widget _buildScanNavItem() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ScanBarcodeScreen()),
+        );
+      },
+      child: Transform.translate(
+        offset: const Offset(0, -10),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 58,
+              height: 58,
               decoration: BoxDecoration(
-                color: isActive
-                    ? const Color(0xFF00FF66).withOpacity(0.15)
-                    : null,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    icons[index],
-                    size: isActive ? 26 : 22,
-                    color: isActive ? const Color(0xFF00FF66) : Colors.grey,
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF00FF66), Color(0xFF00CC52)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF00FF66).withValues(alpha: 0.45),
+                    blurRadius: 16,
+                    spreadRadius: 1,
+                    offset: const Offset(0, 4),
                   ),
-                  if (isActive) ...[
-                    const SizedBox(width: 6),
-                    Text(
-                      labels[index],
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF00FF66),
-                      ),
-                    ),
-                  ],
                 ],
+                border: Border.all(color: Colors.white, width: 3),
+              ),
+              child: const Icon(
+                Icons.qr_code_scanner_rounded,
+                color: Color(0xFF111827),
+                size: 26,
               ),
             ),
-          );
-        }),
+            const SizedBox(height: 4),
+            Text(
+              'Scan',
+              style: GoogleFonts.poppins(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF00CC52),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem({
+    required int index,
+    required IconData icon,
+    required String label,
+  }) {
+    final isActive = _selectedIndex == index;
+    return GestureDetector(
+      onTap: () => _onItemTapped(index),
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        decoration: BoxDecoration(
+          color: isActive
+              ? const Color(0xFF00FF66).withValues(alpha: 0.12)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 22,
+              color: isActive ? const Color(0xFF00CC52) : const Color(0xFF9CA3AF),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              label,
+              style: GoogleFonts.poppins(
+                fontSize: 10,
+                fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                color: isActive ? const Color(0xFF00CC52) : const Color(0xFF9CA3AF),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+

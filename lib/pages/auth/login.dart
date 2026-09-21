@@ -1,4 +1,5 @@
 import 'package:fitlife/services/auth_services.dart';
+import 'package:fitlife/services/scan_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -76,13 +77,35 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = false);
 
     if (result['success'] == true) {
-      Navigator.pushReplacementNamed(context, '/home');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Login Berhasil! 🎉")));
+      await _handlePostLoginSuccess();
     } else {
       _showErrorSnackBar(result['message'] ?? 'Login gagal.');
     }
+  }
+
+  Future<void> _handlePostLoginSuccess() async {
+    final pending = ScanService.pendingScanResult;
+    if (pending != null) {
+      ScanService.pendingScanResult = null;
+      try {
+        await ScanService().saveScanResult(pending);
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "${pending.namaMakanan} otomatis disimpan ke riwayat akun Anda!",
+            ),
+            backgroundColor: const Color(0xFF15803D),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } catch (_) {}
+    }
+    if (!mounted) return;
+    Navigator.pushReplacementNamed(context, '/home');
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text("Login Berhasil! 🎉")));
   }
 
   void _showErrorSnackBar(String message) {
@@ -484,10 +507,7 @@ class _LoginScreenState extends State<LoginScreen> {
         final result = await _authServices.loginWithGoogle();
         if (!mounted) return;
         if (result['success'] == true) {
-          Navigator.pushReplacementNamed(context, '/home');
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Login Google Berhasil! 🎉")),
-          );
+          await _handlePostLoginSuccess();
         } else {
           _showErrorSnackBar(result['message'] ?? 'Login Google gagal.');
         }
