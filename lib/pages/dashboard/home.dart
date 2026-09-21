@@ -3,7 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import '../dashboard/bmi_page.dart';
 import '../dashboard/artikel_page.dart';
 import 'package:fitlife/pages/dashboard/profile_page.dart';
+import 'package:fitlife/pages/dashboard/guest_profile_page.dart';
 import 'package:fitlife/pages/dashboard/menu_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -15,6 +17,23 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
   final List<int> _history = [];
+  bool _isLoggedIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userData = prefs.getString('user');
+    if (mounted) {
+      setState(() {
+        _isLoggedIn = userData != null && userData.isNotEmpty;
+      });
+    }
+  }
 
   void _onItemTapped(int index) {
     if (index != _selectedIndex) {
@@ -470,7 +489,7 @@ class _HomeState extends State<Home> {
             MenuPage(onBack: _goBack),
             ArtikelPage(onBack: _goBack),
             // const ProfilePages(),
-            const ProfilePage(),
+            _isLoggedIn ? const ProfilePage() : const GuestProfilePage(),
           ],
         ),
       ),

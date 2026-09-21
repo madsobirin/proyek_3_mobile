@@ -396,7 +396,7 @@ class _ProfilePageState extends State<ProfilePage>
     if (!mounted) return;
     Navigator.pushReplacementNamed(
       context,
-      '/login',
+      '/home',
       arguments: {'message': 'Berhasil keluar dari akun'},
     );
   }
