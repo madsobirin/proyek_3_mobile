@@ -5,6 +5,7 @@ import 'pages/auth/login.dart';
 import 'pages/auth/register.dart';
 import 'pages/dashboard/profile_page.dart';
 import 'pages/splash/onboarding.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,10 +49,19 @@ class _AuthCheckScreenState extends State<AuthCheckScreen> {
   }
 
   Future<void> _checkLogin() async {
+    // Tunggu frame pertama selesai di-build sebelum melakukan navigasi
+    await Future.delayed(Duration.zero);
     if (!mounted) return;
 
-    // Always go to home, login state is handled within the Home tab
-    Navigator.pushReplacementNamed(context, '/home');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool hasSeenOnboarding = prefs.getBool('hasSeenOnboarding') ?? false;
+
+    if (!hasSeenOnboarding) {
+      Navigator.pushReplacementNamed(context, '/splash');
+    } else {
+      // Always go to home, login state is handled within the Home tab
+      Navigator.pushReplacementNamed(context, '/home');
+    }
   }
 
   @override

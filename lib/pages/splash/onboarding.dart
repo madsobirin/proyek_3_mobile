@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -52,14 +53,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ),
   ];
 
-  void _nextPage() {
+  void _nextPage() async {
     if (_currentPage < _pages.length - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
       );
     } else {
-      Navigator.pushReplacementNamed(context, '/login');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('hasSeenOnboarding', true);
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/home');
     }
   }
 
@@ -72,8 +76,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
-  void _skip() {
-    Navigator.pushReplacementNamed(context, '/login');
+  void _skip() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('hasSeenOnboarding', true);
+    if (!mounted) return;
+    Navigator.pushReplacementNamed(context, '/home');
   }
 
   @override
