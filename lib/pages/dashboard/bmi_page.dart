@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:math';
 
 import '../../services/menu_service.dart';
+import '../../services/api_service.dart';
 import '../../models/menu_model.dart';
 import 'menu_detail.dart';
 
@@ -16,11 +17,13 @@ class BmiPage extends StatefulWidget {
 
 class _BmiPageState extends State<BmiPage> {
   final MenuService _menuService = MenuService();
+  final ApiService _apiService = ApiService();
   bool _isLoadingMenus = false;
 
   String gender = "Pria";
   double height = 170;
   double weight = 65;
+  double age = 25;
   double? bmiResult;
   String kategori = "";
   String statusApi = "";
@@ -119,6 +122,19 @@ class _BmiPageState extends State<BmiPage> {
 
     // Fetch recommended menus
     _fetchRecommendedMenus();
+
+    // Kirim data ke backend
+    try {
+      await _apiService.post('/perhitungan', {
+        "tinggi_badan": height.toInt(),
+        "berat_badan": weight.toInt(),
+        "gender": gender.toLowerCase(),
+        "usia": age.toInt(),
+        "aktivitas": "sedang" // Default untuk saat ini
+      });
+    } catch (e) {
+      debugPrint('Gagal menyimpan data BMI ke backend: $e');
+    }
   }
 
   Future<void> _fetchRecommendedMenus() async {
@@ -151,13 +167,7 @@ class _BmiPageState extends State<BmiPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 18, offset: const Offset(0, 8))],
       ),
       child: child,
     );
@@ -172,28 +182,17 @@ class _BmiPageState extends State<BmiPage> {
           duration: const Duration(milliseconds: 250),
           padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
-            color: isSelected
-                ? _green.withOpacity(0.12)
-                : Colors.grey.withOpacity(0.06),
+            color: isSelected ? _green.withOpacity(0.12) : Colors.grey.withOpacity(0.06),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: isSelected ? _green : Colors.grey[200]!,
-              width: isSelected ? 1.5 : 1,
-            ),
+            border: Border.all(color: isSelected ? _green : Colors.grey[200]!, width: isSelected ? 1.5 : 1),
           ),
           child: Column(
             children: [
-              Text(
-                label == 'Pria' ? '♂' : '♀',
-                style: const TextStyle(fontSize: 24),
-              ),
+              Text(label == 'Pria' ? '♂' : '♀', style: const TextStyle(fontSize: 24)),
               const SizedBox(height: 4),
               Text(
                 label,
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600,
-                  color: isSelected ? _green : Colors.black54,
-                ),
+                style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: isSelected ? _green : Colors.black54),
               ),
             ],
           ),
@@ -219,25 +218,12 @@ class _BmiPageState extends State<BmiPage> {
                 onTap: widget.onBack,
                 child: Container(
                   padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.arrow_back_ios_new,
-                    size: 18,
-                    color: Colors.black87,
-                  ),
+                  decoration: BoxDecoration(color: Colors.grey.withOpacity(0.1), shape: BoxShape.circle),
+                  child: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.black87),
                 ),
               ),
               const SizedBox(width: 12),
-              Text(
-                "Kalkulator BMI",
-                style: GoogleFonts.poppins(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              Text("Kalkulator BMI", style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold)),
             ],
           ),
 
@@ -248,18 +234,9 @@ class _BmiPageState extends State<BmiPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Jenis Kelamin",
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-                ),
+                Text("Jenis Kelamin", style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 10),
-                Row(
-                  children: [
-                    _genderSelector("Pria"),
-                    const SizedBox(width: 10),
-                    _genderSelector("Wanita"),
-                  ],
-                ),
+                Row(children: [_genderSelector("Pria"), const SizedBox(width: 10), _genderSelector("Wanita")]),
                 const SizedBox(height: 24),
 
                 // Height slider
@@ -268,10 +245,7 @@ class _BmiPageState extends State<BmiPage> {
                   children: [
                     Text(
                       "Tinggi Badan",
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[600],
-                      ),
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w500, color: Colors.grey[600]),
                     ),
                     RichText(
                       text: TextSpan(
@@ -305,20 +279,8 @@ class _BmiPageState extends State<BmiPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "100 cm",
-                      style: GoogleFonts.poppins(
-                        fontSize: 10,
-                        color: Colors.grey[400],
-                      ),
-                    ),
-                    Text(
-                      "220 cm",
-                      style: GoogleFonts.poppins(
-                        fontSize: 10,
-                        color: Colors.grey[400],
-                      ),
-                    ),
+                    Text("100 cm", style: GoogleFonts.poppins(fontSize: 10, color: Colors.grey[400])),
+                    Text("220 cm", style: GoogleFonts.poppins(fontSize: 10, color: Colors.grey[400])),
                   ],
                 ),
 
@@ -330,10 +292,7 @@ class _BmiPageState extends State<BmiPage> {
                   children: [
                     Text(
                       "Berat Badan",
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[600],
-                      ),
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w500, color: Colors.grey[600]),
                     ),
                     RichText(
                       text: TextSpan(
@@ -367,20 +326,53 @@ class _BmiPageState extends State<BmiPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    Text("30 kg", style: GoogleFonts.poppins(fontSize: 10, color: Colors.grey[400])),
+                    Text("200 kg", style: GoogleFonts.poppins(fontSize: 10, color: Colors.grey[400])),
+                  ],
+                ),
+
+                // Usia
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
                     Text(
-                      "30 kg",
-                      style: GoogleFonts.poppins(
-                        fontSize: 10,
-                        color: Colors.grey[400],
+                      "Usia",
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w500, color: Colors.grey[600]),
+                    ),
+                    RichText(
+                      text: TextSpan(
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                        children: [
+                          TextSpan(
+                            text: "${age.toInt()} ",
+                            style: TextStyle(color: _green, fontSize: 22),
+                          ),
+                          TextSpan(
+                            text: "Tahun",
+                            style: GoogleFonts.poppins(
+                              fontSize: 11,
+                              color: Colors.grey[500],
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    Text(
-                      "200 kg",
-                      style: GoogleFonts.poppins(
-                        fontSize: 10,
-                        color: Colors.grey[400],
-                      ),
-                    ),
+                  ],
+                ),
+                Slider(
+                  value: age,
+                  min: 18,
+                  max: 100,
+                  activeColor: _green,
+                  inactiveColor: Colors.grey[200],
+                  onChanged: (value) => setState(() => age = value.roundToDouble()),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("18 Tahun", style: GoogleFonts.poppins(fontSize: 10, color: Colors.grey[400])),
+                    Text("100 Tahun", style: GoogleFonts.poppins(fontSize: 10, color: Colors.grey[400])),
                   ],
                 ),
 
@@ -393,27 +385,17 @@ class _BmiPageState extends State<BmiPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _green,
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                       elevation: 0,
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
-                          Icons.bar_chart,
-                          color: Colors.white,
-                          size: 20,
-                        ),
+                        const Icon(Icons.bar_chart, color: Colors.white, size: 20),
                         const SizedBox(width: 8),
                         Text(
                           "Hitung BMI Saya",
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15),
                         ),
                       ],
                     ),
@@ -432,24 +414,14 @@ class _BmiPageState extends State<BmiPage> {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: _green.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.info_outline,
-                      color: _green,
-                      size: 22,
-                    ),
+                    decoration: BoxDecoration(color: _green.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                    child: const Icon(Icons.info_outline, color: _green, size: 22),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Text(
                       "BMI membantu mengetahui apakah berat badan Anda sudah ideal.",
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        color: Colors.grey[600],
-                      ),
+                      style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[600]),
                     ),
                   ),
                 ],
@@ -467,19 +439,12 @@ class _BmiPageState extends State<BmiPage> {
                     decoration: BoxDecoration(
                       color: kategoriColor().withOpacity(0.1),
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: kategoriColor().withOpacity(0.3),
-                        width: 2,
-                      ),
+                      border: Border.all(color: kategoriColor().withOpacity(0.3), width: 2),
                     ),
                     child: Center(
                       child: Text(
                         bmiResult!.toStringAsFixed(1),
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: kategoriColor(),
-                        ),
+                        style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: kategoriColor()),
                       ),
                     ),
                   ),
@@ -488,24 +453,15 @@ class _BmiPageState extends State<BmiPage> {
 
                   // Status badge
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 6,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     decoration: BoxDecoration(
                       color: kategoriColor().withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: kategoriColor().withOpacity(0.3),
-                      ),
+                      border: Border.all(color: kategoriColor().withOpacity(0.3)),
                     ),
                     child: Text(
                       kategori,
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w700,
-                        color: kategoriColor(),
-                        fontSize: 24,
-                      ),
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w700, color: kategoriColor(), fontSize: 24),
                     ),
                   ),
                 ],
@@ -527,20 +483,10 @@ class _BmiPageState extends State<BmiPage> {
                           color: Colors.amber.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(
-                          Icons.lightbulb_outline,
-                          color: Colors.amber,
-                          size: 18,
-                        ),
+                        child: const Icon(Icons.lightbulb_outline, color: Colors.amber, size: 18),
                       ),
                       const SizedBox(width: 10),
-                      Text(
-                        "Tips Cepat Sehat",
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 15,
-                        ),
-                      ),
+                      Text("Tips Cepat Sehat", style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 15)),
                     ],
                   ),
                   const SizedBox(height: 14),
@@ -554,20 +500,13 @@ class _BmiPageState extends State<BmiPage> {
                             margin: const EdgeInsets.only(top: 7),
                             width: 6,
                             height: 6,
-                            decoration: BoxDecoration(
-                              color: _green,
-                              shape: BoxShape.circle,
-                            ),
+                            decoration: BoxDecoration(color: _green, shape: BoxShape.circle),
                           ),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
                               tip,
-                              style: GoogleFonts.poppins(
-                                fontSize: 13,
-                                color: Colors.grey[700],
-                                height: 1.5,
-                              ),
+                              style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[700], height: 1.5),
                             ),
                           ),
                         ],
@@ -582,13 +521,7 @@ class _BmiPageState extends State<BmiPage> {
           const SizedBox(height: 20),
 
           // ── BMI Category Cards ──
-          Text(
-            "Kategori BMI",
-            style: GoogleFonts.poppins(
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          Text("Kategori BMI", style: GoogleFonts.poppins(fontSize: 17, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
 
           GridView.builder(
@@ -604,8 +537,7 @@ class _BmiPageState extends State<BmiPage> {
             itemBuilder: (context, index) {
               final cat = _bmiCategories[index];
               final color = cat['color'] as Color;
-              final isActive =
-                  bmiResult != null && statusApi == (cat['status'] as String);
+              final isActive = bmiResult != null && statusApi == (cat['status'] as String);
 
               return Container(
                 padding: const EdgeInsets.all(14),
@@ -613,19 +545,11 @@ class _BmiPageState extends State<BmiPage> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(
-                    color: isActive
-                        ? color.withOpacity(0.5)
-                        : Colors.grey[200]!,
+                    color: isActive ? color.withOpacity(0.5) : Colors.grey[200]!,
                     width: isActive ? 2 : 1,
                   ),
                   boxShadow: isActive
-                      ? [
-                          BoxShadow(
-                            color: color.withOpacity(0.1),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ]
+                      ? [BoxShadow(color: color.withOpacity(0.1), blurRadius: 12, offset: const Offset(0, 4))]
                       : null,
                 ),
                 child: Column(
@@ -633,42 +557,21 @@ class _BmiPageState extends State<BmiPage> {
                   children: [
                     Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: color.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        cat['icon'] as IconData,
-                        color: color,
-                        size: 20,
-                      ),
+                      decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                      child: Icon(cat['icon'] as IconData, color: color, size: 20),
                     ),
                     const SizedBox(height: 10),
-                    Text(
-                      cat['label'] as String,
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13,
-                      ),
-                    ),
+                    Text(cat['label'] as String, style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 13)),
                     const SizedBox(height: 2),
                     Text(
                       cat['range'] as String,
-                      style: GoogleFonts.poppins(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: color,
-                      ),
+                      style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w600, color: color),
                     ),
                     const SizedBox(height: 4),
                     Expanded(
                       child: Text(
                         cat['desc'] as String,
-                        style: GoogleFonts.poppins(
-                          fontSize: 10,
-                          color: Colors.grey[500],
-                          height: 1.4,
-                        ),
+                        style: GoogleFonts.poppins(fontSize: 10, color: Colors.grey[500], height: 1.4),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -689,10 +592,7 @@ class _BmiPageState extends State<BmiPage> {
                 Expanded(
                   child: Text(
                     "Menu Diet: $statusApi",
-                    style: GoogleFonts.poppins(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: GoogleFonts.poppins(fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -718,10 +618,7 @@ class _BmiPageState extends State<BmiPage> {
                     padding: const EdgeInsets.all(12),
                     child: Text(
                       "Belum ada menu untuk kategori ini.",
-                      style: GoogleFonts.poppins(
-                        color: Colors.grey[500],
-                        fontSize: 13,
-                      ),
+                      style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 13),
                     ),
                   ),
                 ),
@@ -751,25 +648,14 @@ class _BmiPageState extends State<BmiPage> {
   Widget _recommendedMenuCard(MenuModel menu) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => MenuDetailPage(menu: menu.toJson()),
-          ),
-        );
+        Navigator.push(context, MaterialPageRoute(builder: (_) => MenuDetailPage(menu: menu.toJson())));
       },
       child: Container(
         width: 170,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 15,
-              offset: const Offset(0, 5),
-            ),
-          ],
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 15, offset: const Offset(0, 5))],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -778,33 +664,18 @@ class _BmiPageState extends State<BmiPage> {
             Container(
               height: 110,
               decoration: BoxDecoration(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(18),
-                ),
-                image: DecorationImage(
-                  image: NetworkImage(menu.gambar),
-                  fit: BoxFit.cover,
-                ),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+                image: DecorationImage(image: NetworkImage(menu.gambar), fit: BoxFit.cover),
               ),
               child: Align(
                 alignment: Alignment.topRight,
                 child: Container(
                   margin: const EdgeInsets.all(8),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: _green,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(color: _green, borderRadius: BorderRadius.circular(8)),
                   child: Text(
                     'PREMIUM',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 8,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 8, fontWeight: FontWeight.w700),
                   ),
                 ),
               ),
@@ -819,41 +690,18 @@ class _BmiPageState extends State<BmiPage> {
                     menu.namaMenu,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
-                    ),
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13),
                   ),
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      Icon(
-                        Icons.local_fire_department,
-                        size: 12,
-                        color: Colors.orange[400],
-                      ),
+                      Icon(Icons.local_fire_department, size: 12, color: Colors.orange[400]),
                       const SizedBox(width: 3),
-                      Text(
-                        '${menu.kalori} kal',
-                        style: GoogleFonts.poppins(
-                          fontSize: 11,
-                          color: Colors.grey[500],
-                        ),
-                      ),
+                      Text('${menu.kalori} kal', style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[500])),
                       const SizedBox(width: 10),
-                      Icon(
-                        Icons.access_time,
-                        size: 12,
-                        color: Colors.blue[300],
-                      ),
+                      Icon(Icons.access_time, size: 12, color: Colors.blue[300]),
                       const SizedBox(width: 3),
-                      Text(
-                        '${menu.waktuMemasak}m',
-                        style: GoogleFonts.poppins(
-                          fontSize: 11,
-                          color: Colors.grey[500],
-                        ),
-                      ),
+                      Text('${menu.waktuMemasak}m', style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[500])),
                     ],
                   ),
                 ],
