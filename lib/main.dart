@@ -5,6 +5,9 @@ import 'pages/auth/login.dart';
 import 'pages/auth/register.dart';
 import 'pages/dashboard/profile_page.dart';
 import 'pages/splash/onboarding.dart';
+import 'pages/scan/scan_barcode_screen.dart';
+import 'pages/scan/scan_history_screen.dart';
+import 'pages/lokasi/lokasi_olahraga_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -28,6 +31,9 @@ class FitLifeApp extends StatelessWidget {
         '/register': (context) => const RegisterScreen(),
         '/home': (context) => Home(),
         '/profile': (context) => const ProfilePage(),
+        '/scan': (context) => const ScanBarcodeScreen(),
+        '/scan-history': (context) => const ScanHistoryScreen(),
+        '/lokasi': (context) => LocationOlahragaPage(onBack: () => Navigator.pop(context)),
       },
     );
   }
