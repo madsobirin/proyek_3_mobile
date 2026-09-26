@@ -212,31 +212,12 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
           ),
 
           // Dark Mask with Center Cutout
-          ColorFiltered(
-            colorFilter: ColorFilter.mode(
-              Colors.black.withOpacity(0.65),
-              BlendMode.srcOut,
-            ),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
-                    backgroundBlendMode: BlendMode.dstOut,
-                  ),
-                ),
-                Center(
-                  child: Container(
-                    width: scanWindowSize,
-                    height: scanWindowSize,
-                    decoration: BoxDecoration(
-                      color: Colors.white, // Mask hole
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                  ),
-                ),
-              ],
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _ScannerOverlayPainter(
+                scanWindowSize: scanWindowSize,
+                borderRadius: 28.0,
+              ),
             ),
           ),
 
@@ -278,7 +259,9 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF00FF66).withOpacity(0.8),
+                                  color: const Color(
+                                    0xFF00FF66,
+                                  ).withOpacity(0.8),
                                   blurRadius: 10,
                                   spreadRadius: 2,
                                 ),
@@ -330,7 +313,10 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
             child: Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(20),
@@ -339,7 +325,11 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.qr_code_2_rounded, color: Color(0xFF00FF66), size: 18),
+                      const Icon(
+                        Icons.qr_code_2_rounded,
+                        color: Color(0xFF00FF66),
+                        size: 18,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'Arahkan kamera ke barcode kemasan',
@@ -371,7 +361,10 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
 
                   // Title Badge
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black54,
                       borderRadius: BorderRadius.circular(20),
@@ -414,7 +407,9 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
               children: [
                 // Torch Button
                 _buildActionButton(
-                  icon: _isTorchOn ? Icons.flash_on_rounded : Icons.flash_off_rounded,
+                  icon: _isTorchOn
+                      ? Icons.flash_on_rounded
+                      : Icons.flash_off_rounded,
                   isActive: _isTorchOn,
                   label: 'Lampu',
                   onTap: () async {
@@ -438,7 +433,10 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
     );
   }
 
-  Widget _buildCircleButton({required IconData icon, required VoidCallback onTap}) {
+  Widget _buildCircleButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -599,6 +597,46 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
   }
 }
 
+class _ScannerOverlayPainter extends CustomPainter {
+  final double scanWindowSize;
+  final double borderRadius;
+
+  static const Color _overlayColor = Color(
+    0xA6000000,
+  ); // Colors.black.withOpacity(0.65)
+
+  const _ScannerOverlayPainter({
+    required this.scanWindowSize,
+    this.borderRadius = 28.0,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final rect = Rect.fromCenter(
+      center: center,
+      width: scanWindowSize,
+      height: scanWindowSize,
+    );
+
+    final path = Path()
+      ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..addRRect(RRect.fromRectAndRadius(rect, Radius.circular(borderRadius)))
+      ..fillType = PathFillType.evenOdd;
+
+    final paint = Paint()
+      ..color = _overlayColor
+      ..style = PaintingStyle.fill;
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _ScannerOverlayPainter oldDelegate) =>
+      oldDelegate.scanWindowSize != scanWindowSize ||
+      oldDelegate.borderRadius != borderRadius;
+}
+
 class _ScannerBorderPainter extends CustomPainter {
   final Color color;
 
@@ -619,7 +657,10 @@ class _ScannerBorderPainter extends CustomPainter {
     final topLeft = Path()
       ..moveTo(0, cornerLength)
       ..lineTo(0, radius)
-      ..arcToPoint(const Offset(radius, 0), radius: const Radius.circular(radius))
+      ..arcToPoint(
+        const Offset(radius, 0),
+        radius: const Radius.circular(radius),
+      )
       ..lineTo(cornerLength, 0);
     canvas.drawPath(topLeft, paint);
 
@@ -627,7 +668,10 @@ class _ScannerBorderPainter extends CustomPainter {
     final topRight = Path()
       ..moveTo(size.width - cornerLength, 0)
       ..lineTo(size.width - radius, 0)
-      ..arcToPoint(Offset(size.width, radius), radius: const Radius.circular(radius))
+      ..arcToPoint(
+        Offset(size.width, radius),
+        radius: const Radius.circular(radius),
+      )
       ..lineTo(size.width, cornerLength);
     canvas.drawPath(topRight, paint);
 
@@ -635,7 +679,10 @@ class _ScannerBorderPainter extends CustomPainter {
     final bottomLeft = Path()
       ..moveTo(0, size.height - cornerLength)
       ..lineTo(0, size.height - radius)
-      ..arcToPoint(Offset(radius, size.height), radius: const Radius.circular(radius))
+      ..arcToPoint(
+        Offset(radius, size.height),
+        radius: const Radius.circular(radius),
+      )
       ..lineTo(cornerLength, size.height);
     canvas.drawPath(bottomLeft, paint);
 
@@ -643,7 +690,10 @@ class _ScannerBorderPainter extends CustomPainter {
     final bottomRight = Path()
       ..moveTo(size.width - cornerLength, size.height)
       ..lineTo(size.width - radius, size.height)
-      ..arcToPoint(Offset(size.width, size.height - radius), radius: const Radius.circular(radius))
+      ..arcToPoint(
+        Offset(size.width, size.height - radius),
+        radius: const Radius.circular(radius),
+      )
       ..lineTo(size.width, size.height - cornerLength);
     canvas.drawPath(bottomRight, paint);
   }
