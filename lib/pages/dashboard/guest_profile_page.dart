@@ -18,19 +18,34 @@ class GuestProfilePage extends StatelessWidget {
               Container(
                 width: 120,
                 height: 120,
-                decoration: BoxDecoration(shape: BoxShape.circle, color: const Color(0xFF00FF66).withOpacity(0.1)),
-                child: const Icon(Icons.person_outline_rounded, size: 60, color: Color(0xFF00FF66)),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF00FF66).withOpacity(0.1),
+                ),
+                child: const Icon(
+                  Icons.person_outline_rounded,
+                  size: 60,
+                  color: Color(0xFF00FF66),
+                ),
               ),
               const SizedBox(height: 32),
               Text(
                 'Belum Login',
-                style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold, color: const Color(0xFF111827)),
+                style: GoogleFonts.poppins(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF111827),
+                ),
               ),
               const SizedBox(height: 12),
               Text(
                 'Masuk atau daftar untuk mengakses fitur lengkap FitLife dan pantau progres kesehatanmu.',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(fontSize: 14, height: 1.5, color: const Color(0xFF6B7280)),
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  height: 1.5,
+                  color: const Color(0xFF6B7280),
+                ),
               ),
               const SizedBox(height: 48),
               SizedBox(
@@ -42,11 +57,17 @@ class GuestProfilePage extends StatelessWidget {
                     backgroundColor: const Color(0xFF00FF66),
                     foregroundColor: Colors.black,
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                   child: Text(
                     'Log In',
-                    style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black),
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               ),
@@ -58,11 +79,17 @@ class GuestProfilePage extends StatelessWidget {
                   onPressed: () => Navigator.pushNamed(context, '/register'),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Color(0xFF00FF66), width: 2),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                   child: Text(
                     'Sign Up',
-                    style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: const Color(0xFF00FF66)),
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF00FF66),
+                    ),
                   ),
                 ),
               ),

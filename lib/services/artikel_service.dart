@@ -43,7 +43,9 @@ class ArtikelService {
           return ArtikelModel.fromJson(body[0]);
         }
         // Dengan pagination → response = { data: [...] }
-        if (body is Map && body['data'] is List && (body['data'] as List).isNotEmpty) {
+        if (body is Map &&
+            body['data'] is List &&
+            (body['data'] as List).isNotEmpty) {
           return ArtikelModel.fromJson(body['data'][0]);
         }
         throw Exception('Artikel tidak ditemukan');

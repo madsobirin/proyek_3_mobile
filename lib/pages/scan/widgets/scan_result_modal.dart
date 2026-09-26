@@ -23,10 +23,8 @@ class ScanResultModal extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => ScanResultModal(
-        result: result,
-        onDismissed: onDismissed,
-      ),
+      builder: (ctx) =>
+          ScanResultModal(result: result, onDismissed: onDismissed),
     ).then((_) => onDismissed());
   }
 
@@ -66,7 +64,11 @@ class _ScanResultModalState extends State<ScanResultModal> {
         SnackBar(
           content: Row(
             children: [
-              const Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
+              const Icon(
+                Icons.check_circle_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -81,7 +83,9 @@ class _ScanResultModalState extends State<ScanResultModal> {
           ),
           backgroundColor: const Color(0xFF15803D),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
           margin: const EdgeInsets.all(16),
           duration: const Duration(seconds: 3),
         ),
@@ -93,7 +97,11 @@ class _ScanResultModalState extends State<ScanResultModal> {
         SnackBar(
           content: Row(
             children: [
-              const Icon(Icons.error_outline_rounded, color: Colors.white, size: 20),
+              const Icon(
+                Icons.error_outline_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -105,7 +113,9 @@ class _ScanResultModalState extends State<ScanResultModal> {
           ),
           backgroundColor: Colors.redAccent,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
           margin: const EdgeInsets.all(16),
         ),
       );
@@ -197,9 +207,7 @@ class _ScanResultModalState extends State<ScanResultModal> {
                     ),
                     child: Text(
                       'Masuk',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: GoogleFonts.inter(fontWeight: FontWeight.w700),
                     ),
                   ),
                 ),
@@ -265,7 +273,8 @@ class _ScanResultModalState extends State<ScanResultModal> {
                             width: 90,
                             height: 90,
                             color: const Color(0xFFF3F4F6),
-                            child: item.imageUrl != null &&
+                            child:
+                                item.imageUrl != null &&
                                     item.imageUrl!.isNotEmpty
                                 ? Image.network(
                                     item.imageUrl!,
@@ -298,7 +307,9 @@ class _ScanResultModalState extends State<ScanResultModal> {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF00FF66).withOpacity(0.12),
+                                  color: const Color(
+                                    0xFF00FF66,
+                                  ).withOpacity(0.12),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
@@ -502,9 +513,7 @@ class _ScanResultModalState extends State<ScanResultModal> {
               padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
               decoration: const BoxDecoration(
                 color: Colors.white,
-                border: Border(
-                  top: BorderSide(color: Color(0xFFF3F4F6)),
-                ),
+                border: Border(top: BorderSide(color: Color(0xFFF3F4F6))),
               ),
               child: Row(
                 children: [
@@ -555,7 +564,10 @@ class _ScanResultModalState extends State<ScanResultModal> {
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.bookmark_add_rounded, size: 18),
+                                const Icon(
+                                  Icons.bookmark_add_rounded,
+                                  size: 18,
+                                ),
                                 const SizedBox(width: 8),
                                 Text(
                                   'Simpan ke Riwayat',

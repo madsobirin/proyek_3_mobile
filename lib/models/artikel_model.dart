@@ -64,7 +64,7 @@ class ArtikelModel {
       'updated_at': updatedAt?.toIso8601String(),
     };
   }
-  
+
   ArtikelModel copyWith({
     int? id,
     String? judul,
