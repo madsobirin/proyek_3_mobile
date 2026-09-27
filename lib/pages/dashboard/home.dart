@@ -69,11 +69,21 @@ class _HomeState extends State<Home> {
         const SizedBox(height: 24),
         _buildFeatureSection(isSmall),
         const SizedBox(height: 24),
-        _buildSectionHeader("Menu Sehat Terbaru", "Lihat Semua", () => _onItemTapped(2), isSmall),
+        _buildSectionHeader(
+          "Menu Sehat Terbaru",
+          "Lihat Semua",
+          () => _onItemTapped(2),
+          isSmall,
+        ),
         const SizedBox(height: 16),
         _buildLatestMenu(isSmall),
         const SizedBox(height: 24),
-        _buildSectionHeader("Artikel Terbaru", "Lihat Semua", () => _onItemTapped(3), isSmall),
+        _buildSectionHeader(
+          "Artikel Terbaru",
+          "Lihat Semua",
+          () => _onItemTapped(3),
+          isSmall,
+        ),
         const SizedBox(height: 16),
         _buildLatestArtikel(isSmall),
       ],
@@ -95,9 +105,7 @@ class _HomeState extends State<Home> {
           end: Alignment.bottomRight,
           colors: [Color(0xFFE6FFF3), Color(0xFFCFFFEA)],
         ),
-        borderRadius: const BorderRadius.vertical(
-          bottom: Radius.circular(45),
-        ),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(45)),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF00FF66).withOpacity(0.15),
@@ -154,7 +162,11 @@ class _HomeState extends State<Home> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.monitor_weight_rounded, size: isSmall ? 18 : 20, color: Colors.white),
+                Icon(
+                  Icons.monitor_weight_rounded,
+                  size: isSmall ? 18 : 20,
+                  color: Colors.white,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   "Hitung BMI Sekarang",
@@ -284,7 +296,12 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _buildSectionHeader(String title, String actionText, VoidCallback onActionTap, bool isSmall) {
+  Widget _buildSectionHeader(
+    String title,
+    String actionText,
+    VoidCallback onActionTap,
+    bool isSmall,
+  ) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: isSmall ? 16 : 24),
       child: Row(
@@ -324,7 +341,11 @@ class _HomeState extends State<Home> {
         itemCount: 3,
         separatorBuilder: (context, index) => const SizedBox(width: 16),
         itemBuilder: (context, index) {
-          final titles = ["Salad Buah Segar", "Oatmeal Berries", "Ayam Panggang"];
+          final titles = [
+            "Salad Buah Segar",
+            "Oatmeal Berries",
+            "Ayam Panggang",
+          ];
           final cals = ["250 kcal", "320 kcal", "450 kcal"];
           final images = [
             "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=400&auto=format&fit=crop",
@@ -351,7 +372,9 @@ class _HomeState extends State<Home> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
                     child: Image.network(
                       images[index],
                       height: 90,
@@ -377,7 +400,11 @@ class _HomeState extends State<Home> {
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            const Icon(Icons.local_fire_department_rounded, size: 12, color: Colors.orange),
+                            const Icon(
+                              Icons.local_fire_department_rounded,
+                              size: 12,
+                              color: Colors.orange,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               cals[index],
@@ -404,7 +431,7 @@ class _HomeState extends State<Home> {
     final titles = [
       "Cara Mulai Diet Sehat untuk Pemula Tanpa Menyiksa",
       "Pentingnya Hidrasi Tubuh Saat Berolahraga",
-      "5 Mitos Tentang Diet yang Harus Kamu Ketahui"
+      "5 Mitos Tentang Diet yang Harus Kamu Ketahui",
     ];
     final categories = ["Diet & Nutrisi", "Kesehatan", "Gaya Hidup"];
     final images = [
@@ -452,7 +479,10 @@ class _HomeState extends State<Home> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFF00FF66).withOpacity(0.15),
                           borderRadius: BorderRadius.circular(8),
@@ -499,9 +529,9 @@ class _HomeState extends State<Home> {
         child: IndexedStack(
           index: _selectedIndex,
           children: [
-            _buildHomeContent(),          // 0
-            BmiPage(onBack: _goBack),     // 1
-            MenuPage(onBack: _goBack),    // 2
+            _buildHomeContent(), // 0
+            BmiPage(onBack: _goBack), // 1
+            MenuPage(onBack: _goBack), // 2
             ArtikelPage(onBack: _goBack), // 3
             LocationOlahragaPage(onBack: _goBack), // 4
             _isLoggedIn ? const ProfilePage() : const GuestProfilePage(), // 5
@@ -534,12 +564,32 @@ class _HomeState extends State<Home> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               _buildNavItem(index: 0, icon: Icons.home_rounded, label: "Home"),
-              _buildNavItem(index: 1, icon: Icons.calculate_rounded, label: "BMI"),
-              _buildNavItem(index: 2, icon: Icons.restaurant_menu_rounded, label: "Menu"),
+              _buildNavItem(
+                index: 1,
+                icon: Icons.calculate_rounded,
+                label: "BMI",
+              ),
+              _buildNavItem(
+                index: 2,
+                icon: Icons.restaurant_menu_rounded,
+                label: "Menu",
+              ),
               _buildScanNavItem(),
-              _buildNavItem(index: 3, icon: Icons.article_rounded, label: "Artikel"),
-              _buildNavItem(index: 4, icon: Icons.place_rounded, label: "Lokasi"),
-              _buildNavItem(index: 5, icon: Icons.person_rounded, label: "Profil"),
+              _buildNavItem(
+                index: 3,
+                icon: Icons.article_rounded,
+                label: "Artikel",
+              ),
+              _buildNavItem(
+                index: 4,
+                icon: Icons.place_rounded,
+                label: "Lokasi",
+              ),
+              _buildNavItem(
+                index: 5,
+                icon: Icons.person_rounded,
+                label: "Profil",
+              ),
             ],
           ),
         ),
@@ -625,7 +675,9 @@ class _HomeState extends State<Home> {
             Icon(
               icon,
               size: 22,
-              color: isActive ? const Color(0xFF00CC52) : const Color(0xFF9CA3AF),
+              color: isActive
+                  ? const Color(0xFF00CC52)
+                  : const Color(0xFF9CA3AF),
             ),
             const SizedBox(height: 3),
             Text(
@@ -633,7 +685,9 @@ class _HomeState extends State<Home> {
               style: GoogleFonts.poppins(
                 fontSize: 10,
                 fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                color: isActive ? const Color(0xFF00CC52) : const Color(0xFF9CA3AF),
+                color: isActive
+                    ? const Color(0xFF00CC52)
+                    : const Color(0xFF9CA3AF),
               ),
             ),
           ],
@@ -642,4 +696,3 @@ class _HomeState extends State<Home> {
     );
   }
 }
-

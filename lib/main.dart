@@ -33,7 +33,8 @@ class FitLifeApp extends StatelessWidget {
         '/profile': (context) => const ProfilePage(),
         '/scan': (context) => const ScanBarcodeScreen(),
         '/scan-history': (context) => const ScanHistoryScreen(),
-        '/lokasi': (context) => LocationOlahragaPage(onBack: () => Navigator.pop(context)),
+        '/lokasi': (context) =>
+            LocationOlahragaPage(onBack: () => Navigator.pop(context)),
       },
     );
   }

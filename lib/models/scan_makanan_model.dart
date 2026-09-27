@@ -35,7 +35,8 @@ class ScanMakananResult {
     return ScanMakananResult(
       id: json['id']?.toString(),
       barcode: json['barcode']?.toString() ?? '',
-      namaMakanan: json['nama_makanan']?.toString() ??
+      namaMakanan:
+          json['nama_makanan']?.toString() ??
           json['namaMakanan']?.toString() ??
           'Produk Tanpa Nama',
       brand: json['brand']?.toString(),
@@ -48,8 +49,8 @@ class ScanMakananResult {
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'].toString())
           : (json['createdAt'] != null
-              ? DateTime.tryParse(json['createdAt'].toString())
-              : null),
+                ? DateTime.tryParse(json['createdAt'].toString())
+                : null),
     );
   }
 

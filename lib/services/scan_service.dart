@@ -15,10 +15,9 @@ class ScanService {
   /// Mencari informasi nutrisi produk dari barcode via API backend
   /// (Dapat diakses tanpa login)
   Future<ScanMakananResult> lookupBarcode(String barcode) async {
-    final response = await _apiService.post(
-      '/scan-makanan/lookup',
-      {'barcode': barcode},
-    );
+    final response = await _apiService.post('/scan-makanan/lookup', {
+      'barcode': barcode,
+    });
 
     final statusCode = response.statusCode;
     dynamic data;
@@ -84,7 +83,8 @@ class ScanService {
     }
 
     throw Exception(
-      data?['message'] ?? 'Gagal menyimpan riwayat makanan (${response.statusCode}).',
+      data?['message'] ??
+          'Gagal menyimpan riwayat makanan (${response.statusCode}).',
     );
   }
 
@@ -99,8 +99,10 @@ class ScanService {
           : (body['data'] is List ? body['data'] : []);
 
       return list
-          .map((item) =>
-              ScanMakananResult.fromJson(Map<String, dynamic>.from(item)))
+          .map(
+            (item) =>
+                ScanMakananResult.fromJson(Map<String, dynamic>.from(item)),
+          )
           .toList();
     } else if (response.statusCode == 401) {
       throw Exception('Silakan login untuk melihat riwayat scan makanan.');

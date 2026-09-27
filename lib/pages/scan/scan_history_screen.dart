@@ -60,7 +60,10 @@ class _ScanHistoryScreenState extends State<ScanHistoryScreen> {
         ),
         content: Text(
           'Apakah Anda yakin ingin menghapus "${item.namaMakanan}" dari riwayat scan makanan?',
-          style: GoogleFonts.inter(fontSize: 14, color: const Color(0xFF4B5563)),
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            color: const Color(0xFF4B5563),
+          ),
         ),
         actions: [
           TextButton(

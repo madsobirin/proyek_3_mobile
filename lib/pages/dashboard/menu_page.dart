@@ -55,7 +55,8 @@ class _MenuPageState extends State<MenuPage> {
 
   List<MenuModel> get _filteredMenus {
     var list = _allMenus.where((m) {
-      final matchSearch = _search.isEmpty ||
+      final matchSearch =
+          _search.isEmpty ||
           m.namaMenu.toLowerCase().contains(_search.toLowerCase()) ||
           m.deskripsi.toLowerCase().contains(_search.toLowerCase());
       final matchFilter =
@@ -72,8 +73,11 @@ class _MenuPageState extends State<MenuPage> {
         break;
       case 'terbaru':
       default:
-        list.sort((a, b) =>
-            (b.createdAt ?? DateTime(2000)).compareTo(a.createdAt ?? DateTime(2000)));
+        list.sort(
+          (a, b) => (b.createdAt ?? DateTime(2000)).compareTo(
+            a.createdAt ?? DateTime(2000),
+          ),
+        );
         break;
     }
     return list;
@@ -152,9 +156,7 @@ class _MenuPageState extends State<MenuPage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: _green),
-      );
+      return const Center(child: CircularProgressIndicator(color: _green));
     }
 
     final filtered = _filteredMenus;
@@ -181,8 +183,11 @@ class _MenuPageState extends State<MenuPage> {
                         color: Colors.grey.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.arrow_back_ios_new,
-                          size: 18, color: Colors.black87),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new,
+                        size: 18,
+                        color: Colors.black87,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -205,11 +210,11 @@ class _MenuPageState extends State<MenuPage> {
                             : Colors.grey.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      child: Icon(Icons.sort,
-                          size: 20,
-                          color: _sortBy != 'terbaru'
-                              ? _green
-                              : Colors.black54),
+                      child: Icon(
+                        Icons.sort,
+                        size: 20,
+                        color: _sortBy != 'terbaru' ? _green : Colors.black54,
+                      ),
                     ),
                   ),
                 ],
@@ -226,20 +231,30 @@ class _MenuPageState extends State<MenuPage> {
                 decoration: InputDecoration(
                   hintText: 'Cari resep atau bahan makanan...',
                   hintStyle: GoogleFonts.poppins(
-                      color: Colors.grey[400], fontSize: 14),
-                  prefixIcon:
-                      Icon(Icons.search, color: Colors.grey[400], size: 22),
+                    color: Colors.grey[400],
+                    fontSize: 14,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: Colors.grey[400],
+                    size: 22,
+                  ),
                   suffixIcon: _search.isNotEmpty
                       ? GestureDetector(
                           onTap: () => setState(() => _search = ''),
-                          child: Icon(Icons.close,
-                              color: Colors.grey[400], size: 20),
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.grey[400],
+                            size: 20,
+                          ),
                         )
                       : null,
                   filled: true,
                   fillColor: Colors.grey[50],
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 14,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                     borderSide: BorderSide(color: Colors.grey[200]!),
@@ -268,10 +283,12 @@ class _MenuPageState extends State<MenuPage> {
                   children: [
                     _filterChip('Semua', ''),
                     const SizedBox(width: 8),
-                    ..._statusFilters.map((s) => Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: _filterChip(s, s),
-                        )),
+                    ..._statusFilters.map(
+                      (s) => Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: _filterChip(s, s),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -321,8 +338,11 @@ class _MenuPageState extends State<MenuPage> {
                 padding: const EdgeInsets.only(top: 60),
                 child: Column(
                   children: [
-                    Icon(Icons.restaurant_menu,
-                        size: 48, color: Colors.grey[300]),
+                    Icon(
+                      Icons.restaurant_menu,
+                      size: 48,
+                      color: Colors.grey[300],
+                    ),
                     const SizedBox(height: 12),
                     Text(
                       'Menu tidak ditemukan',
@@ -365,8 +385,7 @@ class _MenuPageState extends State<MenuPage> {
 
   Widget _filterChip(String label, String value) {
     final isActive = _activeFilter == value;
-    final statusColor =
-        value.isNotEmpty ? _getStatusColor(value) : _green;
+    final statusColor = value.isNotEmpty ? _getStatusColor(value) : _green;
 
     return GestureDetector(
       onTap: () => setState(() => _activeFilter = value),
@@ -457,8 +476,10 @@ class _MenuPageState extends State<MenuPage> {
                   top: 8,
                   left: 8,
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: statusColor.withOpacity(0.9),
                       borderRadius: BorderRadius.circular(8),
@@ -479,7 +500,10 @@ class _MenuPageState extends State<MenuPage> {
             // Content
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 14,
+                  horizontal: 4,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -505,8 +529,11 @@ class _MenuPageState extends State<MenuPage> {
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        Icon(Icons.local_fire_department,
-                            size: 14, color: Colors.orange[400]),
+                        Icon(
+                          Icons.local_fire_department,
+                          size: 14,
+                          color: Colors.orange[400],
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           '${menu.kalori} kal',
@@ -517,8 +544,11 @@ class _MenuPageState extends State<MenuPage> {
                           ),
                         ),
                         const SizedBox(width: 14),
-                        Icon(Icons.access_time,
-                            size: 14, color: Colors.blue[300]),
+                        Icon(
+                          Icons.access_time,
+                          size: 14,
+                          color: Colors.blue[300],
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           '${menu.waktuMemasak} mnt',
@@ -529,8 +559,11 @@ class _MenuPageState extends State<MenuPage> {
                           ),
                         ),
                         const Spacer(),
-                        Icon(Icons.chevron_right,
-                            size: 20, color: Colors.grey[400]),
+                        Icon(
+                          Icons.chevron_right,
+                          size: 20,
+                          color: Colors.grey[400],
+                        ),
                       ],
                     ),
                   ],

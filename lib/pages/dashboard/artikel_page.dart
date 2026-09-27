@@ -49,7 +49,8 @@ class _ArtikelPageState extends State<ArtikelPage> {
 
   List<ArtikelModel> get _filteredArtikels {
     return _allArtikels.where((a) {
-      final matchSearch = _search.isEmpty ||
+      final matchSearch =
+          _search.isEmpty ||
           a.judul.toLowerCase().contains(_search.toLowerCase()) ||
           a.kategori.toLowerCase().contains(_search.toLowerCase());
       final matchKategori =
@@ -70,8 +71,18 @@ class _ArtikelPageState extends State<ArtikelPage> {
   String _formatDate(DateTime? date) {
     if (date == null) return '';
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-      'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agu',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
@@ -79,9 +90,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: _green),
-      );
+      return const Center(child: CircularProgressIndicator(color: _green));
     }
 
     final filtered = _filteredArtikels;
@@ -111,8 +120,11 @@ class _ArtikelPageState extends State<ArtikelPage> {
                         color: Colors.grey.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.arrow_back_ios_new,
-                          size: 18, color: Colors.black87),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new,
+                        size: 18,
+                        color: Colors.black87,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -137,20 +149,30 @@ class _ArtikelPageState extends State<ArtikelPage> {
                 decoration: InputDecoration(
                   hintText: 'Cari artikel atau kategori...',
                   hintStyle: GoogleFonts.poppins(
-                      color: Colors.grey[400], fontSize: 14),
-                  prefixIcon:
-                      Icon(Icons.search, color: Colors.grey[400], size: 22),
+                    color: Colors.grey[400],
+                    fontSize: 14,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: Colors.grey[400],
+                    size: 22,
+                  ),
                   suffixIcon: _search.isNotEmpty
                       ? GestureDetector(
                           onTap: () => setState(() => _search = ''),
-                          child: Icon(Icons.close,
-                              color: Colors.grey[400], size: 20),
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.grey[400],
+                            size: 20,
+                          ),
                         )
                       : null,
                   filled: true,
                   fillColor: Colors.grey[50],
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 14,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                     borderSide: BorderSide(color: Colors.grey[200]!),
@@ -176,8 +198,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          ArtikelDetailPage(artikel: featured),
+                      builder: (_) => ArtikelDetailPage(artikel: featured),
                     ),
                   );
                 },
@@ -211,7 +232,9 @@ class _ArtikelPageState extends State<ArtikelPage> {
                         children: [
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: _green,
                               borderRadius: BorderRadius.circular(12),
@@ -239,8 +262,11 @@ class _ArtikelPageState extends State<ArtikelPage> {
                           const SizedBox(height: 6),
                           Row(
                             children: [
-                              Icon(Icons.access_time,
-                                  size: 12, color: Colors.white70),
+                              Icon(
+                                Icons.access_time,
+                                size: 12,
+                                color: Colors.white70,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 _formatDate(featured.createdAt),
@@ -250,8 +276,11 @@ class _ArtikelPageState extends State<ArtikelPage> {
                                 ),
                               ),
                               const SizedBox(width: 14),
-                              Icon(Icons.visibility,
-                                  size: 12, color: Colors.white70),
+                              Icon(
+                                Icons.visibility,
+                                size: 12,
+                                color: Colors.white70,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 '${featured.dibaca} views',
@@ -282,10 +311,12 @@ class _ArtikelPageState extends State<ArtikelPage> {
                     children: [
                       _kategoriChip('Semua', ''),
                       const SizedBox(width: 8),
-                      ..._kategoris.map((k) => Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: _kategoriChip(k, k),
-                          )),
+                      ..._kategoris.map(
+                        (k) => Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: _kategoriChip(k, k),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -337,8 +368,11 @@ class _ArtikelPageState extends State<ArtikelPage> {
                 padding: const EdgeInsets.only(top: 50),
                 child: Column(
                   children: [
-                    Icon(Icons.article_outlined,
-                        size: 48, color: Colors.grey[300]),
+                    Icon(
+                      Icons.article_outlined,
+                      size: 48,
+                      color: Colors.grey[300],
+                    ),
                     const SizedBox(height: 12),
                     Text(
                       'Tidak ada artikel yang cocok.',
@@ -456,15 +490,14 @@ class _ArtikelPageState extends State<ArtikelPage> {
                     left: 6,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: _green,
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: Text(
-                        '⭐',
-                        style: GoogleFonts.poppins(fontSize: 8),
-                      ),
+                      child: Text('⭐', style: GoogleFonts.poppins(fontSize: 8)),
                     ),
                   ),
               ],
@@ -473,14 +506,18 @@ class _ArtikelPageState extends State<ArtikelPage> {
             // Content
             Expanded(
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 4,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: _green.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
@@ -507,22 +544,32 @@ class _ArtikelPageState extends State<ArtikelPage> {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        Icon(Icons.person_outline,
-                            size: 12, color: Colors.grey[400]),
+                        Icon(
+                          Icons.person_outline,
+                          size: 12,
+                          color: Colors.grey[400],
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           artikel.penulis,
                           style: GoogleFonts.poppins(
-                              fontSize: 11, color: Colors.grey[500]),
+                            fontSize: 11,
+                            color: Colors.grey[500],
+                          ),
                         ),
                         const SizedBox(width: 10),
-                        Icon(Icons.visibility_outlined,
-                            size: 12, color: Colors.grey[400]),
+                        Icon(
+                          Icons.visibility_outlined,
+                          size: 12,
+                          color: Colors.grey[400],
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           '${artikel.dibaca}',
                           style: GoogleFonts.poppins(
-                              fontSize: 11, color: Colors.grey[500]),
+                            fontSize: 11,
+                            color: Colors.grey[500],
+                          ),
                         ),
                       ],
                     ),
@@ -532,8 +579,11 @@ class _ArtikelPageState extends State<ArtikelPage> {
             ),
             Padding(
               padding: const EdgeInsets.only(right: 14),
-              child: Icon(Icons.chevron_right,
-                  size: 20, color: Colors.grey[400]),
+              child: Icon(
+                Icons.chevron_right,
+                size: 20,
+                color: Colors.grey[400],
+              ),
             ),
           ],
         ),

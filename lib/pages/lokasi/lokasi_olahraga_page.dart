@@ -133,11 +133,17 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
 
   List<Map<String, dynamic>> get _filteredLocations {
     return _locations.where((loc) {
-      final matchCategory = _selectedCategory == 0 ||
+      final matchCategory =
+          _selectedCategory == 0 ||
           loc['category'] == _categories[_selectedCategory];
-      final matchSearch = _searchQuery.isEmpty ||
-          loc['name'].toString().toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          loc['address'].toString().toLowerCase().contains(_searchQuery.toLowerCase());
+      final matchSearch =
+          _searchQuery.isEmpty ||
+          loc['name'].toString().toLowerCase().contains(
+            _searchQuery.toLowerCase(),
+          ) ||
+          loc['address'].toString().toLowerCase().contains(
+            _searchQuery.toLowerCase(),
+          );
       return matchCategory && matchSearch;
     }).toList();
   }
@@ -384,7 +390,9 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
-                                color: const Color(0xFF00FF66).withValues(alpha: 0.3),
+                                color: const Color(
+                                  0xFF00FF66,
+                                ).withValues(alpha: 0.3),
                                 blurRadius: 8,
                                 offset: const Offset(0, 3),
                               ),
@@ -477,7 +485,9 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF00FF66).withValues(alpha: 0.15),
+                              color: const Color(
+                                0xFF00FF66,
+                              ).withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
@@ -631,7 +641,9 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                             ),
                             decoration: BoxDecoration(
                               color: isOpen
-                                  ? const Color(0xFF00FF66).withValues(alpha: 0.12)
+                                  ? const Color(
+                                      0xFF00FF66,
+                                    ).withValues(alpha: 0.12)
                                   : Colors.red.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(6),
                             ),
@@ -731,11 +743,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Icon(
-                  Icons.star_rounded,
-                  size: 14,
-                  color: Colors.amber,
-                ),
+                const Icon(Icons.star_rounded, size: 14, color: Colors.amber),
                 const SizedBox(width: 3),
                 Text(
                   '${loc['rating']} (${loc['reviews']} ulasan)',

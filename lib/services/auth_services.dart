@@ -98,7 +98,9 @@ class AuthServices {
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
       final idToken = googleAuth.idToken;
-      print('4. idToken: ${idToken != null ? "ADA (${idToken.substring(0, 20)}...)" : "NULL"}');
+      print(
+        '4. idToken: ${idToken != null ? "ADA (${idToken.substring(0, 20)}...)" : "NULL"}',
+      );
 
       if (idToken == null) {
         return {'success': false, 'message': 'Gagal mendapatkan token Google.'};
@@ -122,17 +124,18 @@ class AuthServices {
     } catch (e) {
       print('!!! ERROR GOOGLE SIGN-IN: $e');
       final errorString = e.toString();
-      if (errorString.contains('network_error') || 
-          errorString.contains('ApiException: 7') || 
+      if (errorString.contains('network_error') ||
+          errorString.contains('ApiException: 7') ||
           errorString.contains('Tidak ada koneksi internet')) {
         return {
-          'success': false, 
-          'message': 'Tidak ada koneksi internet. Silakan periksa jaringan Anda.'
+          'success': false,
+          'message':
+              'Tidak ada koneksi internet. Silakan periksa jaringan Anda.',
         };
       }
       return {
-        'success': false, 
-        'message': errorString.replaceFirst('Exception: ', '')
+        'success': false,
+        'message': errorString.replaceFirst('Exception: ', ''),
       };
     }
   }

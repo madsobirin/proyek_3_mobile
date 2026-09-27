@@ -46,8 +46,11 @@ class MenuDetailPage extends StatelessWidget {
                     color: Colors.black.withOpacity(0.35),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.arrow_back_ios_new,
-                      size: 18, color: Colors.white),
+                  child: const Icon(
+                    Icons.arrow_back_ios_new,
+                    size: 18,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
@@ -61,8 +64,11 @@ class MenuDetailPage extends StatelessWidget {
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) => Container(
                         color: Colors.grey[200],
-                        child: const Icon(Icons.image_not_supported,
-                            size: 48, color: Colors.grey),
+                        child: const Icon(
+                          Icons.image_not_supported,
+                          size: 48,
+                          color: Colors.grey,
+                        ),
                       ),
                     ),
                   Container(
@@ -83,7 +89,9 @@ class MenuDetailPage extends StatelessWidget {
                     right: 16,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 5),
+                        horizontal: 12,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: statusColor.withOpacity(0.9),
                         borderRadius: BorderRadius.circular(12),

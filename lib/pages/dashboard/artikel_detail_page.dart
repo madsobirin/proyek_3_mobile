@@ -25,29 +25,27 @@ class _ArtikelDetailPageState extends State<ArtikelDetailPage> {
   @override
   void initState() {
     super.initState();
-    artikel = widget.artikel; 
+    artikel = widget.artikel;
     _tambahDibaca();
   }
 
   Future<void> _tambahDibaca() async {
-    final url = Uri.parse(
-      'https://fitlife.my.id/api/artikels/${artikel.slug}',
-    );
+    final url = Uri.parse('https://fitlife.my.id/api/artikels/${artikel.slug}');
 
     try {
-    final response = await http.get(url);
+      final response = await http.get(url);
 
-    if (response.statusCode == 200 && mounted) {
-      final data = jsonDecode(response.body);
-      setState(() {
-        artikel = ArtikelModel.fromJson(data);
-      });
-    } else {
-      debugPrint('Gagal menambah dibaca: ${response.statusCode}');
+      if (response.statusCode == 200 && mounted) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          artikel = ArtikelModel.fromJson(data);
+        });
+      } else {
+        debugPrint('Gagal menambah dibaca: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('Error tambah dibaca: $e');
     }
-  } catch (e) {
-    debugPrint('Error tambah dibaca: $e');
-  }
   }
 
   String _formatDate(DateTime? date) {
