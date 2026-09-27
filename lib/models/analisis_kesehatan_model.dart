@@ -50,9 +50,19 @@ class AnalisisKesehatan {
     return {
       'tinggi_badan': tinggiBadan.round(),
       'berat_badan': beratBadan.round(),
+      'bmi': double.parse(bmi.toStringAsFixed(1)),
+      'status': status,
       'gender': gender.toLowerCase(),
       'usia': usia,
       'aktivitas': aktivitas.toLowerCase(),
+      'bmr': bmr.round(),
+      'tdee': tdee.round(),
+      'target_kalori': tdee.round(),
+      'berat_min': double.parse(beratMin.toStringAsFixed(1)),
+      'berat_max': double.parse(beratMax.toStringAsFixed(1)),
+      'protein': protein.round(),
+      'karbohidrat': karbohidrat.round(),
+      'lemak': lemak.round(),
     };
   }
 }

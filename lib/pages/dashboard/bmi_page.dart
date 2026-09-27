@@ -3,9 +3,11 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/analisis_kesehatan_model.dart';
 import '../../models/menu_model.dart';
-import '../../services/api_service.dart';
+import '../../models/perhitungan_model.dart';
+import '../../services/auth_services.dart';
 import '../../services/kalkulator_service.dart';
 import '../../services/menu_service.dart';
+import '../../services/perhitungan_service.dart';
 import 'menu_detail.dart';
 
 class BmiPage extends StatefulWidget {
@@ -18,8 +20,14 @@ class BmiPage extends StatefulWidget {
 
 class _BmiPageState extends State<BmiPage> {
   final MenuService _menuService = MenuService();
-  final ApiService _apiService = ApiService();
+  final PerhitunganService _perhitunganService = PerhitunganService();
+  final AuthServices _authServices = AuthServices();
+
   bool _isLoadingMenus = false;
+  bool _isLoggedIn = false;
+  bool _isLoadingHistory = false;
+  String? _historyError;
+  List<PerhitunganModel> _historyList = [];
 
   String gender = 'Pria';
   double height = 170;
@@ -92,6 +100,50 @@ class _BmiPageState extends State<BmiPage> {
     ],
   };
 
+  @override
+  void initState() {
+    super.initState();
+    _checkAuthAndLoadHistory();
+  }
+
+  Future<void> _checkAuthAndLoadHistory() async {
+    final token = await _authServices.getToken();
+    final loggedIn = token != null && token.isNotEmpty;
+    if (mounted) {
+      setState(() {
+        _isLoggedIn = loggedIn;
+      });
+    }
+    if (loggedIn) {
+      _loadHistory();
+    }
+  }
+
+  Future<void> _loadHistory() async {
+    if (!_isLoggedIn) return;
+    setState(() {
+      _isLoadingHistory = true;
+      _historyError = null;
+    });
+
+    try {
+      final items = await _perhitunganService.getHistory();
+      if (mounted) {
+        setState(() {
+          _historyList = items;
+          _isLoadingHistory = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _historyError = e.toString().replaceFirst('Exception: ', '');
+          _isLoadingHistory = false;
+        });
+      }
+    }
+  }
+
   void hitungAnalisis() async {
     final double roundedHeight = height.roundToDouble();
     final double roundedWeight = weight.roundToDouble();
@@ -131,11 +183,16 @@ class _BmiPageState extends State<BmiPage> {
     // Ambil menu rekomendasi
     _fetchRecommendedMenus(hasil.status);
 
-    // Kirim data ke backend untuk disimpan ke riwayat
-    try {
-      await _apiService.post('/perhitungan', hasil.toApiPayload());
-    } catch (e) {
-      debugPrint('Gagal menyimpan data perhitungan ke backend: $e');
+    // Kirim data ke backend untuk disimpan ke riwayat HANYA jika user sudah login
+    if (_isLoggedIn) {
+      try {
+        final saved = await _perhitunganService.savePerhitungan(hasil);
+        if (saved && mounted) {
+          _loadHistory();
+        }
+      } catch (e) {
+        debugPrint('Gagal menyimpan data perhitungan ke backend: $e');
+      }
     }
   }
 
@@ -1348,6 +1405,10 @@ class _BmiPageState extends State<BmiPage> {
               ),
           ],
 
+          // ── Riwayat Perhitungan Section ──
+          const SizedBox(height: 28),
+          _buildHistorySection(),
+
           const SizedBox(height: 40),
         ],
       ),
@@ -1463,6 +1524,632 @@ class _BmiPageState extends State<BmiPage> {
                     ],
                   ),
                 ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _statusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'kurus':
+        return Colors.blue;
+      case 'normal':
+        return const Color(0xFF1AB673);
+      case 'berlebih':
+        return Colors.orange;
+      case 'obesitas':
+        return Colors.red;
+      default:
+        return const Color(0xFF1AB673);
+    }
+  }
+
+  Future<void> _deleteHistoryItem(PerhitunganModel item) async {
+    if (item.id == null) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'Hapus Riwayat?',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        content: Text(
+          'Apakah Anda yakin ingin menghapus data perhitungan BMI ${item.bmiDisplay} (${item.status}) ini?',
+          style: GoogleFonts.poppins(
+            fontSize: 13,
+            color: const Color(0xFF4B5563),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              'Batal',
+              style: GoogleFonts.poppins(color: const Color(0xFF6B7280)),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              'Hapus',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      await _perhitunganService.deleteHistory(item.id!);
+      if (mounted) {
+        setState(() {
+          _historyList.removeWhere((element) => element.id == item.id);
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Riwayat perhitungan berhasil dihapus.',
+              style: GoogleFonts.poppins(fontSize: 12),
+            ),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.toString().replaceFirst('Exception: ', ''),
+              style: GoogleFonts.poppins(fontSize: 12),
+            ),
+            backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  Widget _buildHistorySection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: _green.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.history_rounded,
+                    color: _green,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Riwayat Perhitungan',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF111827),
+                      ),
+                    ),
+                    Text(
+                      'Catatan analisis kesehatan personal Anda',
+                      style: GoogleFonts.poppins(
+                        fontSize: 11,
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            if (_isLoggedIn)
+              IconButton(
+                icon: _isLoadingHistory
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: _green,
+                        ),
+                      )
+                    : const Icon(
+                        Icons.refresh_rounded,
+                        size: 20,
+                        color: Colors.grey,
+                      ),
+                tooltip: 'Segarkan Riwayat',
+                onPressed: _isLoadingHistory ? null : _loadHistory,
+              ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        if (!_isLoggedIn)
+          _buildGuestHistoryCard()
+        else if (_isLoadingHistory && _historyList.isEmpty)
+          _buildHistoryLoading()
+        else if (_historyError != null && _historyList.isEmpty)
+          _buildHistoryError()
+        else if (_historyList.isEmpty)
+          _buildHistoryEmpty()
+        else
+          _buildHistoryList(),
+      ],
+    );
+  }
+
+  Widget _buildGuestHistoryCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: _green.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.lock_outline_rounded,
+              color: _green,
+              size: 28,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Mode Tamu (Belum Masuk)',
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: const Color(0xFF111827),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Anda dapat melakukan kalkulasi kapan saja. Masuk ke akun FitLife Anda untuk menyimpan dan melihat riwayat kesehatan secara otomatis.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              color: Colors.grey[600],
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/login').then((_) {
+                  _checkAuthAndLoadHistory();
+                });
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _green,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: Text(
+                'Masuk ke Akun FitLife',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHistoryLoading() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
+      ),
+      child: const Center(child: CircularProgressIndicator(color: _green)),
+    );
+  }
+
+  Widget _buildHistoryError() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.redAccent.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        children: [
+          const Icon(
+            Icons.error_outline_rounded,
+            color: Colors.redAccent,
+            size: 32,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            _historyError ?? 'Gagal memuat riwayat perhitungan.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[700]),
+          ),
+          const SizedBox(height: 12),
+          TextButton.icon(
+            onPressed: _loadHistory,
+            icon: const Icon(Icons.refresh_rounded, size: 16, color: _green),
+            label: Text(
+              'Coba Lagi',
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+                color: _green,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHistoryEmpty() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.grey.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.analytics_outlined,
+              size: 32,
+              color: Colors.grey[500],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Belum Ada Riwayat Perhitungan',
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              color: const Color(0xFF111827),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Hasil perhitungan yang Anda simpan akan muncul di sini.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[500]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHistoryList() {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: _historyList.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        final item = _historyList[index];
+        return _buildHistoryItemCard(item);
+      },
+    );
+  }
+
+  Widget _buildHistoryItemCard(PerhitunganModel item) {
+    final statusColor = _statusColor(item.status);
+
+    return InkWell(
+      onTap: () {
+        // Memuat parameter ke form kalkulator
+        setState(() {
+          gender =
+              (item.gender != null && item.gender!.toLowerCase() == 'wanita')
+              ? 'Wanita'
+              : 'Pria';
+          height = item.tinggiBadan;
+          weight = item.beratBadan;
+          if (item.usia != null && item.usia! > 0) {
+            age = item.usia!.toDouble();
+          }
+          if (item.aktivitas != null && item.aktivitas!.isNotEmpty) {
+            aktivitas = item.aktivitas!.toLowerCase();
+          }
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Parameter riwayat (${item.beratBadan.toStringAsFixed(0)} kg, ${item.tinggiBadan.toStringAsFixed(0)} cm) dimuat ke form.',
+              style: GoogleFonts.poppins(fontSize: 12),
+            ),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(18),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Top Bar: Date, Category Badge, Delete Action
+            Row(
+              children: [
+                Icon(
+                  Icons.access_time_rounded,
+                  size: 13,
+                  color: Colors.grey[500],
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  item.formattedDate,
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 9,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    item.status,
+                    style: GoogleFonts.poppins(
+                      color: statusColor,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                if (item.id != null) ...[
+                  const SizedBox(width: 4),
+                  InkWell(
+                    onTap: () => _deleteHistoryItem(item),
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: Icon(
+                        Icons.delete_outline_rounded,
+                        size: 18,
+                        color: Colors.redAccent.withValues(alpha: 0.8),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            // Middle: BMI Box & Body Stats
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: statusColor.withValues(alpha: 0.2),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        item.bmiDisplay,
+                        style: GoogleFonts.poppins(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: statusColor,
+                        ),
+                      ),
+                      Text(
+                        'BMI',
+                        style: GoogleFonts.poppins(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: statusColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            '${item.beratBadan.toStringAsFixed(0)} kg',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                              color: const Color(0xFF111827),
+                            ),
+                          ),
+                          Text(
+                            ' • ',
+                            style: TextStyle(color: Colors.grey[400]),
+                          ),
+                          Text(
+                            '${item.tinggiBadan.toStringAsFixed(0)} cm',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                              color: const Color(0xFF111827),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Ideal: ${item.kisaranBeratDisplay}',
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      Text(
+                        'BMR: ${item.bmrDisplay} kkal • TDEE: ${item.tdeeDisplay} kkal',
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          color: Colors.grey[700],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+            Container(height: 1, color: Colors.grey.withValues(alpha: 0.1)),
+            const SizedBox(height: 10),
+
+            // Bottom: Macronutrients Chips
+            Row(
+              children: [
+                _macroChip(
+                  label: 'Protein',
+                  value: '${item.proteinDisplay}g',
+                  color: Colors.blue,
+                ),
+                const SizedBox(width: 8),
+                _macroChip(
+                  label: 'Lemak',
+                  value: '${item.lemakDisplay}g',
+                  color: Colors.orange,
+                ),
+                const SizedBox(width: 8),
+                _macroChip(
+                  label: 'Karbo',
+                  value: '${item.karbohidratDisplay}g',
+                  color: const Color(0xFF1AB673),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _macroChip({
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          children: [
+            Text(
+              label,
+              style: GoogleFonts.poppins(
+                fontSize: 9,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[600],
+              ),
+            ),
+            const SizedBox(height: 1),
+            Text(
+              value,
+              style: GoogleFonts.poppins(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: color,
               ),
             ),
           ],
