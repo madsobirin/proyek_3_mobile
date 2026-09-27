@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import '../config/config.dart';
 import '../models/analisis_kesehatan_model.dart';
 import '../models/perhitungan_model.dart';
 import 'api_service.dart';
@@ -82,24 +83,76 @@ class PerhitunganService {
       throw Exception('Silakan masuk terlebih dahulu.');
     }
 
-    final response = await _apiService.delete('/perhitungan/$id');
+    final deleteUrl = '${Config.baseUrl}/perhitungan/$id';
+    debugPrint('[DEBUG DELETE] GET record id: $id');
+    debugPrint('[DEBUG DELETE] Model id: $id');
+    debugPrint('[DEBUG DELETE] Delete id: $id');
+    debugPrint('[DEBUG DELETE] DELETE URL: $deleteUrl');
+
+    var response = await _apiService.delete('/perhitungan/$id');
+    debugPrint('[DEBUG DELETE] HTTP status: ${response.statusCode}');
+    debugPrint('[DEBUG DELETE] Response body: ${response.body}');
+
+    // Jika 404 (misal backend production menangani DELETE via query param ?id=...),
+    // lakukan fallback ke query parameter untuk kompatibilitas penuh.
+    if (response.statusCode == 404) {
+      final fallbackUrl = '${Config.baseUrl}/perhitungan?id=$id';
+      debugPrint(
+        '[DEBUG DELETE] Fallback attempt to query param DELETE URL: $fallbackUrl',
+      );
+      final fallbackResponse = await _apiService.delete('/perhitungan?id=$id');
+      debugPrint(
+        '[DEBUG DELETE] Fallback HTTP status: ${fallbackResponse.statusCode}',
+      );
+      debugPrint(
+        '[DEBUG DELETE] Fallback Response body: ${fallbackResponse.body}',
+      );
+      if (fallbackResponse.statusCode >= 200 &&
+          fallbackResponse.statusCode < 300) {
+        response = fallbackResponse;
+      }
+    }
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return;
-    } else if (response.statusCode == 404 || response.statusCode == 405) {
-      throw Exception(
-        'Fitur hapus riwayat belum didukung oleh server backend.',
-      );
-    } else if (response.statusCode == 401) {
-      throw Exception('Sesi login telah berakhir. Silakan login kembali.');
     } else {
       dynamic data;
       try {
         data = jsonDecode(response.body);
       } catch (_) {}
-      throw Exception(
-        data?['message'] ?? 'Gagal menghapus item riwayat ($id).',
-      );
+
+      final serverMessage = (data is Map && data['message'] is String)
+          ? data['message'] as String
+          : null;
+
+      if (response.statusCode == 401) {
+        throw Exception(
+          serverMessage ?? 'Sesi login telah berakhir. Silakan login kembali.',
+        );
+      } else if (response.statusCode == 403) {
+        throw Exception(
+          serverMessage ?? 'Anda tidak memiliki izin untuk menghapus data ini.',
+        );
+      } else if (response.statusCode == 404) {
+        throw Exception(
+          serverMessage ??
+              'Catatan riwayat tidak ditemukan atau sudah dihapus.',
+        );
+      } else if (response.statusCode == 405) {
+        throw Exception(
+          serverMessage ?? 'Metode permintaan tidak diizinkan oleh server.',
+        );
+      } else if (response.statusCode >= 500) {
+        throw Exception(
+          serverMessage ??
+              'Terjadi kesalahan pada server (${response.statusCode}). Silakan coba lagi nanti.',
+        );
+      } else {
+        throw Exception(
+          serverMessage ??
+              'Gagal menghapus riwayat perhitungan (kode ${response.statusCode}).',
+        );
+      }
     }
   }
 }

@@ -1,5 +1,7 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 import '../../models/analisis_kesehatan_model.dart';
 import '../../models/menu_model.dart';
@@ -290,7 +292,7 @@ class _BmiPageState extends State<BmiPage> {
       onTap: () => setState(() => aktivitas = opsi.id),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
               ? _green.withValues(alpha: 0.1)
@@ -367,24 +369,30 @@ class _BmiPageState extends State<BmiPage> {
                 ),
               ),
               const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Kalkulator Kesehatan',
-                    style: GoogleFonts.poppins(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Kalkulator Kesehatan',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  Text(
-                    'Analisis Tubuh, Energi & Nutrisi',
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      color: Colors.grey[600],
+                    Text(
+                      'Analisis Tubuh, Energi & Nutrisi',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
@@ -428,12 +436,14 @@ class _BmiPageState extends State<BmiPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Tinggi Badan',
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 13,
-                        color: Colors.grey[700],
+                    Expanded(
+                      child: Text(
+                        'Tinggi Badan',
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 13,
+                          color: Colors.grey[700],
+                        ),
                       ),
                     ),
                     RichText(
@@ -493,12 +503,14 @@ class _BmiPageState extends State<BmiPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Berat Badan',
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 13,
-                        color: Colors.grey[700],
+                    Expanded(
+                      child: Text(
+                        'Berat Badan',
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 13,
+                          color: Colors.grey[700],
+                        ),
                       ),
                     ),
                     RichText(
@@ -558,12 +570,14 @@ class _BmiPageState extends State<BmiPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Usia',
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 13,
-                        color: Colors.grey[700],
+                    Expanded(
+                      child: Text(
+                        'Usia',
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 13,
+                          color: Colors.grey[700],
+                        ),
                       ),
                     ),
                     RichText(
@@ -635,7 +649,7 @@ class _BmiPageState extends State<BmiPage> {
                   physics: const NeverScrollableScrollPhysics(),
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
-                  childAspectRatio: 1.7,
+                  childAspectRatio: 1.35,
                   children: KalkulatorService.daftarAktivitas
                       .map((opsi) => _aktivitasSelector(opsi))
                       .toList(),
@@ -665,12 +679,16 @@ class _BmiPageState extends State<BmiPage> {
                           size: 20,
                         ),
                         const SizedBox(width: 8),
-                        Text(
-                          'Hitung Analisis Kesehatan Saya',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
+                        Flexible(
+                          child: Text(
+                            'Hitung Analisis Kesehatan Saya',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                            ),
                           ),
                         ),
                       ],
@@ -1261,7 +1279,7 @@ class _BmiPageState extends State<BmiPage> {
               crossAxisCount: 2,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
-              childAspectRatio: 1.1,
+              mainAxisExtent: 185,
             ),
             itemCount: _bmiCategories.length,
             itemBuilder: (context, index) {
@@ -1271,7 +1289,7 @@ class _BmiPageState extends State<BmiPage> {
                   _hasil != null && _hasil!.status == cat['status'];
 
               return Container(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(18),
@@ -1309,6 +1327,8 @@ class _BmiPageState extends State<BmiPage> {
                     const SizedBox(height: 10),
                     Text(
                       cat['label'] as String,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.poppins(
                         fontWeight: FontWeight.w700,
                         fontSize: 13,
@@ -1324,17 +1344,15 @@ class _BmiPageState extends State<BmiPage> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Expanded(
-                      child: Text(
-                        cat['desc'] as String,
-                        style: GoogleFonts.poppins(
-                          fontSize: 10,
-                          color: Colors.grey[500],
-                          height: 1.4,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                    Text(
+                      cat['desc'] as String,
+                      style: GoogleFonts.poppins(
+                        fontSize: 10,
+                        color: Colors.grey[500],
+                        height: 1.4,
                       ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -1595,11 +1613,15 @@ class _BmiPageState extends State<BmiPage> {
     if (confirmed != true) return;
 
     try {
+      debugPrint('[DEBUG DELETE] GET record id: ${item.id}');
+      debugPrint('[DEBUG DELETE] Model id: ${item.id}');
+      debugPrint('[DEBUG DELETE] Delete id: ${item.id}');
       await _perhitunganService.deleteHistory(item.id!);
       if (mounted) {
         setState(() {
           _historyList.removeWhere((element) => element.id == item.id);
         });
+        _loadHistory();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -1631,45 +1653,81 @@ class _BmiPageState extends State<BmiPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Section Header
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(7),
-                  decoration: BoxDecoration(
-                    color: _green.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(
-                    Icons.history_rounded,
-                    color: _green,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Riwayat Perhitungan',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF111827),
-                      ),
+            Expanded(
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(7),
+                    decoration: BoxDecoration(
+                      color: _green.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    Text(
-                      'Catatan analisis kesehatan personal Anda',
-                      style: GoogleFonts.poppins(
-                        fontSize: 11,
-                        color: Colors.grey[500],
-                      ),
+                    child: const Icon(
+                      Icons.show_chart_rounded,
+                      color: _green,
+                      size: 20,
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                'Riwayat & Tren Berat Badan',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF111827),
+                                ),
+                              ),
+                            ),
+                            if (_isLoggedIn && _historyList.isNotEmpty) ...[
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 7,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: _green.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  '${_historyList.length}',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: _green,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        Text(
+                          'Visualisasi riwayat dan perkembangan berat badan Anda',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            fontSize: 11,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
             if (_isLoggedIn)
               IconButton(
@@ -1702,8 +1760,538 @@ class _BmiPageState extends State<BmiPage> {
         else if (_historyList.isEmpty)
           _buildHistoryEmpty()
         else
-          _buildHistoryList(),
+          _buildHistoryAndTrendContent(),
       ],
+    );
+  }
+
+  Widget _buildHistoryAndTrendContent() {
+    final latest = _historyList.first;
+    final oldest = _historyList.last;
+    final double beratTerbaru = latest.beratBadan;
+    final double bmiTerkini = latest.bmi;
+    final String statusTerkini = latest.status;
+    final double totalPerubahan = beratTerbaru - oldest.beratBadan;
+
+    final String statusTren;
+    if (_historyList.length == 1) {
+      statusTren = 'Awal';
+    } else if (totalPerubahan > 0.2) {
+      statusTren = 'Naik';
+    } else if (totalPerubahan < -0.2) {
+      statusTren = 'Turun';
+    } else {
+      statusTren = 'Stabil';
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 1. Summary Card
+        _buildSummaryCard(
+          beratTerbaru: beratTerbaru,
+          bmiTerkini: bmiTerkini,
+          statusTerkini: statusTerkini,
+          totalPerubahan: totalPerubahan,
+          statusTren: statusTren,
+          totalRecords: _historyList.length,
+        ),
+        const SizedBox(height: 14),
+
+        // 2. Chart or Single-Record Banner
+        if (_historyList.length == 1)
+          _buildSingleRecordBanner(latest)
+        else
+          _buildWeightTrendChart(),
+
+        const SizedBox(height: 20),
+
+        // 3. Detail Pengukuran Subheader
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Detail Pengukuran',
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF111827),
+              ),
+            ),
+            Text(
+              '${_historyList.length} Catatan Tersimpan',
+              style: GoogleFonts.poppins(
+                fontSize: 11,
+                color: Colors.grey[500],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+
+        // 4. Detail list
+        _buildHistoryList(),
+      ],
+    );
+  }
+
+  Widget _buildSummaryCard({
+    required double beratTerbaru,
+    required double bmiTerkini,
+    required String statusTerkini,
+    required double totalPerubahan,
+    required String statusTren,
+    required int totalRecords,
+  }) {
+    final statusColor = _statusColor(statusTerkini);
+
+    final Color trenColor;
+    final IconData trenIcon;
+    if (statusTren == 'Naik') {
+      trenColor = Colors.orange[700]!;
+      trenIcon = Icons.trending_up_rounded;
+    } else if (statusTren == 'Turun') {
+      trenColor = Colors.blue[600]!;
+      trenIcon = Icons.trending_down_rounded;
+    } else {
+      trenColor = _green;
+      trenIcon = Icons.trending_flat_rounded;
+    }
+
+    final String perubahanText = totalRecords == 1
+        ? '0.0 kg'
+        : '${totalPerubahan > 0 ? '+' : ''}${totalPerubahan.toStringAsFixed(1)} kg';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: _summaryMetricBox(
+                  icon: Icons.monitor_weight_outlined,
+                  iconColor: Colors.blue,
+                  title: 'Berat Terbaru',
+                  value: '${beratTerbaru.toStringAsFixed(1)} kg',
+                  subtitle: 'Catatan terkini',
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _summaryMetricBox(
+                  icon: Icons.speed_rounded,
+                  iconColor: statusColor,
+                  title: 'BMI Terkini',
+                  value: bmiTerkini.toStringAsFixed(1),
+                  badge: statusTerkini,
+                  badgeColor: statusColor,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: _summaryMetricBox(
+                  icon: Icons.compare_arrows_rounded,
+                  iconColor: trenColor,
+                  title: 'Total Perubahan',
+                  value: perubahanText,
+                  valueColor: totalRecords == 1 ? null : trenColor,
+                  subtitle: totalRecords == 1
+                      ? 'Pengukuran awal'
+                      : 'Sejak awal tercatat',
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _summaryMetricBox(
+                  icon: trenIcon,
+                  iconColor: trenColor,
+                  title: 'Status Tren',
+                  value: statusTren,
+                  valueColor: trenColor,
+                  subtitle: totalRecords == 1
+                      ? 'Belum ada tren'
+                      : 'Arah perkembangan',
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _summaryMetricBox({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String value,
+    Color? valueColor,
+    String? subtitle,
+    String? badge,
+    Color? badgeColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: iconColor.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: iconColor.withValues(alpha: 0.12)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 14, color: iconColor),
+              const SizedBox(width: 5),
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Flexible(
+                child: Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: valueColor ?? const Color(0xFF111827),
+                  ),
+                ),
+              ),
+              if (badge != null && badgeColor != null) ...[
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: badgeColor.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      badge,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        color: badgeColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          if (subtitle != null) ...[
+            const SizedBox(height: 2),
+            Text(
+              subtitle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.poppins(fontSize: 9, color: Colors.grey[500]),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSingleRecordBanner(PerhitunganModel single) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: _green.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _green.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.info_outline_rounded, color: _green, size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '1 Catatan Pengukuran Tersimpan',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                    color: const Color(0xFF111827),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Lakukan kalkulasi berikutnya untuk melihat grafik tren visualisasi perkembangan berat badan Anda.',
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: Colors.grey[700],
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWeightTrendChart() {
+    // Urutan kronologis: terlama -> terbaru
+    final chronological = _historyList.reversed.toList();
+
+    double minWeight = chronological.first.beratBadan;
+    double maxWeight = chronological.first.beratBadan;
+    for (final item in chronological) {
+      if (item.beratBadan < minWeight) minWeight = item.beratBadan;
+      if (item.beratBadan > maxWeight) maxWeight = item.beratBadan;
+    }
+
+    final double minY = (minWeight - 2).floorToDouble();
+    final double maxY = (maxWeight + 2).ceilToDouble();
+    final double interval = (maxY - minY) > 10 ? 5 : 2;
+
+    final spots = List.generate(
+      chronological.length,
+      (index) => FlSpot(index.toDouble(), chronological[index].beratBadan),
+    );
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: _green.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.timeline_rounded,
+                  color: _green,
+                  size: 16,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Grafik Tren Berat Badan',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: const Color(0xFF111827),
+                ),
+              ),
+              const Spacer(),
+              Text(
+                'Terlama → Terbaru',
+                style: GoogleFonts.poppins(
+                  fontSize: 10,
+                  color: Colors.grey[500],
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 210,
+            child: LineChart(
+              LineChartData(
+                minY: minY,
+                maxY: maxY,
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  horizontalInterval: interval > 0 ? interval : 1,
+                  getDrawingHorizontalLine: (value) => FlLine(
+                    color: Colors.grey.withValues(alpha: 0.12),
+                    strokeWidth: 1,
+                    dashArray: [4, 4],
+                  ),
+                ),
+                titlesData: FlTitlesData(
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 36,
+                      interval: interval > 0 ? interval : 1,
+                      getTitlesWidget: (value, meta) {
+                        return Text(
+                          '${value.toInt()} kg',
+                          style: GoogleFonts.poppins(
+                            fontSize: 9,
+                            color: Colors.grey[500],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 26,
+                      interval: 1,
+                      getTitlesWidget: (value, meta) {
+                        final index = value.toInt();
+                        if (index >= 0 && index < chronological.length) {
+                          final item = chronological[index];
+                          final dateText = item.createdAt != null
+                              ? DateFormat(
+                                  'd/M',
+                                ).format(item.createdAt!.toLocal())
+                              : '#${index + 1}';
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: Text(
+                              dateText,
+                              style: GoogleFonts.poppins(
+                                fontSize: 10,
+                                color: Colors.grey[600],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    ),
+                  ),
+                ),
+                borderData: FlBorderData(show: false),
+                lineTouchData: LineTouchData(
+                  handleBuiltInTouches: true,
+                  touchTooltipData: LineTouchTooltipData(
+                    getTooltipColor: (_) => const Color(0xFF111827),
+                    tooltipBorderRadius: BorderRadius.circular(10),
+                    tooltipPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    getTooltipItems: (touchedSpots) {
+                      return touchedSpots.map((spot) {
+                        final idx = spot.spotIndex;
+                        if (idx >= 0 && idx < chronological.length) {
+                          final item = chronological[idx];
+                          return LineTooltipItem(
+                            '${item.formattedDate}\n${item.beratBadan.toStringAsFixed(1)} kg\nBMI ${item.bmiDisplay} (${item.status})',
+                            GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              height: 1.3,
+                            ),
+                          );
+                        }
+                        return LineTooltipItem(
+                          '${spot.y} kg',
+                          const TextStyle(color: Colors.white),
+                        );
+                      }).toList();
+                    },
+                  ),
+                ),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: spots,
+                    isCurved: true,
+                    curveSmoothness: 0.25,
+                    color: _green,
+                    barWidth: 3,
+                    isStrokeCapRound: true,
+                    dotData: FlDotData(
+                      show: true,
+                      getDotPainter: (spot, percent, barData, index) {
+                        return FlDotCirclePainter(
+                          radius: 4.5,
+                          color: _green,
+                          strokeWidth: 2,
+                          strokeColor: Colors.white,
+                        );
+                      },
+                    ),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          _green.withValues(alpha: 0.25),
+                          _green.withValues(alpha: 0.0),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

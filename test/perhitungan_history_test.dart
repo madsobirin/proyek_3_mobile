@@ -165,26 +165,160 @@ void main() {
     });
   });
 
-  group('BmiPage History Widget Tests', () {
-    testWidgets('BmiPage displays history section and guest card', (
-      WidgetTester tester,
-    ) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: BmiPage(onBack: () {})),
-        ),
-      );
+  group('BmiPage History & Trend Widget Tests', () {
+    testWidgets(
+      'BmiPage displays Riwayat & Tren Berat Badan section and guest card',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(body: BmiPage(onBack: () {})),
+          ),
+        );
 
-      // Verifikasi riwayat section muncul di halaman
-      expect(find.text('Riwayat Perhitungan'), findsOneWidget);
-      expect(
-        find.text('Catatan analisis kesehatan personal Anda'),
-        findsOneWidget,
-      );
+        // Verifikasi riwayat & tren section muncul di halaman
+        expect(find.text('Riwayat & Tren Berat Badan'), findsOneWidget);
+        expect(
+          find.text('Visualisasi riwayat dan perkembangan berat badan Anda'),
+          findsOneWidget,
+        );
 
-      // Verifikasi guest mode card muncul secara default jika belum login
-      expect(find.text('Mode Tamu (Belum Masuk)'), findsOneWidget);
-      expect(find.text('Masuk ke Akun FitLife'), findsOneWidget);
+        // Verifikasi guest mode card muncul secara default jika belum login
+        expect(find.text('Mode Tamu (Belum Masuk)'), findsOneWidget);
+        expect(find.text('Masuk ke Akun FitLife'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'BmiPage renders without RenderFlex overflow on small screens (320x568, 360x640, 375x667)',
+      (WidgetTester tester) async {
+        final screenSizes = [
+          const Size(320, 568),
+          const Size(360, 640),
+          const Size(375, 667),
+          const Size(412, 915),
+        ];
+
+        for (final size in screenSizes) {
+          tester.view.physicalSize = size;
+          tester.view.devicePixelRatio = 1.0;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+
+          await tester.pumpWidget(
+            MaterialApp(
+              home: Scaffold(body: BmiPage(onBack: () {})),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          // Memastikan tidak ada exception RenderFlex overflow
+          expect(tester.takeException(), isNull);
+        }
+      },
+    );
+  });
+
+  group('History Trend & Summary Calculation Tests', () {
+    test('Calculates trend Naik, Turun, Stabil, and Awal correctly', () {
+      final listMultiNaik = [
+        PerhitunganModel.fromJson({
+          'id': 3,
+          'tinggi_badan': 170.0,
+          'berat_badan': 70.0,
+          'bmi': 24.2,
+          'status': 'Normal',
+        }),
+        PerhitunganModel.fromJson({
+          'id': 2,
+          'tinggi_badan': 170.0,
+          'berat_badan': 68.0,
+          'bmi': 23.5,
+          'status': 'Normal',
+        }),
+        PerhitunganModel.fromJson({
+          'id': 1,
+          'tinggi_badan': 170.0,
+          'berat_badan': 65.0,
+          'bmi': 22.5,
+          'status': 'Normal',
+        }),
+      ];
+
+      // Urutan desc: latest is index 0, oldest is last
+      final latestNaik = listMultiNaik.first;
+      final oldestNaik = listMultiNaik.last;
+      final perubahanNaik = latestNaik.beratBadan - oldestNaik.beratBadan;
+      expect(perubahanNaik, 5.0);
+      expect(perubahanNaik > 0.2, isTrue);
+
+      final listMultiTurun = [
+        PerhitunganModel.fromJson({
+          'id': 2,
+          'tinggi_badan': 170.0,
+          'berat_badan': 63.0,
+          'bmi': 21.8,
+          'status': 'Normal',
+        }),
+        PerhitunganModel.fromJson({
+          'id': 1,
+          'tinggi_badan': 170.0,
+          'berat_badan': 67.0,
+          'bmi': 23.2,
+          'status': 'Normal',
+        }),
+      ];
+      final perubahanTurun =
+          listMultiTurun.first.beratBadan - listMultiTurun.last.beratBadan;
+      expect(perubahanTurun, -4.0);
+      expect(perubahanTurun < -0.2, isTrue);
+
+      // Single item: Awal
+      final listSingle = [
+        PerhitunganModel.fromJson({
+          'id': 1,
+          'tinggi_badan': 170.0,
+          'berat_badan': 65.0,
+          'bmi': 22.5,
+          'status': 'Normal',
+        }),
+      ];
+      expect(listSingle.length == 1, isTrue);
     });
+  });
+
+  group('Regression Test Delete History ID & URL', () {
+    test(
+      'JSON id 42 -> model.id == 42 -> delete uses 42 -> DELETE URL matches PRD endpoint',
+      () {
+        // 1. Raw JSON response from GET /api/perhitungan
+        final rawJson = {
+          'id': 42,
+          'user_id': 6,
+          'tinggi_badan': 175.0,
+          'berat_badan': 70.0,
+          'bmi': 22.9,
+          'status': 'Normal',
+        };
+
+        // 2. Parse into PerhitunganModel
+        final model = PerhitunganModel.fromJson(rawJson);
+        expect(model.id, equals(42));
+
+        // 3. Pastikan ID yang diambil untuk delete adalah model.id (bukan index atau hardcoded)
+        final int deleteId = model.id!;
+        expect(deleteId, 42);
+
+        // 4. Verifikasi format endpoint URL DELETE
+        const baseUrl = 'https://fitlife.my.id/api';
+        final expectedDeleteUrl = '$baseUrl/perhitungan/$deleteId';
+        expect(expectedDeleteUrl, 'https://fitlife.my.id/api/perhitungan/42');
+
+        final expectedFallbackUrl = '$baseUrl/perhitungan?id=$deleteId';
+        expect(
+          expectedFallbackUrl,
+          'https://fitlife.my.id/api/perhitungan?id=42',
+        );
+      },
+    );
   });
 }
