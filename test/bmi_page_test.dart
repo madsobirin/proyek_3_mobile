@@ -59,5 +59,66 @@ void main() {
     expect(find.text('≈ 91g'), findsOneWidget);
     expect(find.text('≈ 82g'), findsOneWidget);
     expect(find.text('≈ 341g'), findsOneWidget);
+
+    // ── Verifikasi Rekomendasi Menu & Pembagian Kalori Harian ──
+    expect(find.text('Rekomendasi Menu Diet: Normal'), findsOneWidget);
+    expect(
+      find.text(
+        'Nutrisi seimbang untuk mendukung kebutuhan energi harian Anda (2468 kcal/hari).',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Lihat Semua'), findsOneWidget);
+
+    // Verifikasi 3 summary card (25% / 40% / 35% dari 2468)
+    // 2468 * 0.25 = 617, 2468 * 0.40 = 987, 2468 * 0.35 = 864
+    expect(find.text('🌅 Sarapan (25%)'), findsOneWidget);
+    expect(find.text('~617 kkal'), findsOneWidget);
+
+    expect(find.text('☀️ Makan Siang (40%)'), findsOneWidget);
+    expect(find.text('~987 kkal'), findsOneWidget);
+
+    expect(find.text('🌙 Makan Malam (35%)'), findsOneWidget);
+    expect(find.text('~864 kkal'), findsOneWidget);
+
+    // Verifikasi filter tabs
+    expect(find.text('Semua Menu'), findsOneWidget);
+    expect(find.text('🌅 Sarapan (~617 kkal)'), findsOneWidget);
+    expect(find.text('☀️ Makan Siang (~987 kkal)'), findsOneWidget);
+    expect(find.text('🌙 Makan Malam (~864 kkal)'), findsOneWidget);
+
+    // Test interaksi tap filter tab
+    final sarapanTab = find.text('🌅 Sarapan (~617 kkal)');
+    await tester.ensureVisible(sarapanTab);
+    await tester.tap(sarapanTab);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
   });
+
+  testWidgets(
+    'BmiPage recommendation section does not overflow on small screens (320x568)',
+    (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(320, 568);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() => tester.view.resetPhysicalSize());
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(body: BmiPage(onBack: () {})),
+        ),
+      );
+
+      final hitungBtn = find.text('Hitung Analisis Kesehatan Saya');
+      await tester.ensureVisible(hitungBtn);
+      await tester.tap(hitungBtn);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+
+      expect(find.text('Rekomendasi Menu Diet: Normal'), findsOneWidget);
+      expect(find.text('🌅 Sarapan (25%)'), findsOneWidget);
+      expect(find.text('☀️ Makan Siang (40%)'), findsOneWidget);
+      expect(find.text('🌙 Makan Malam (35%)'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }
