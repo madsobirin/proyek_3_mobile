@@ -11,6 +11,7 @@ import '../../services/kalkulator_service.dart';
 import '../../services/menu_service.dart';
 import '../../services/perhitungan_service.dart';
 import 'menu_detail.dart';
+import 'menu_page.dart';
 
 class BmiPage extends StatefulWidget {
   final VoidCallback onBack;
@@ -39,6 +40,32 @@ class _BmiPageState extends State<BmiPage> {
 
   AnalisisKesehatan? _hasil;
   List<MenuModel> _recommendedMenus = [];
+  String _selectedMealTab = 'semua';
+
+  int get _totalKcal => _hasil?.tdeeDisplay ?? 2000;
+  int get _sarapanKcal => (0.25 * _totalKcal).round();
+  int get _siangKcal => (0.40 * _totalKcal).round();
+  int get _malamKcal => (0.35 * _totalKcal).round();
+
+  List<MenuModel> get _filteredRecommendedMenus {
+    final sKcal = _sarapanKcal;
+    final lKcal = _siangKcal;
+    final dKcal = _malamKcal;
+
+    switch (_selectedMealTab) {
+      case 'sarapan':
+        return _recommendedMenus.where((m) => m.kalori <= sKcal + 150).toList();
+      case 'siang':
+        return _recommendedMenus
+            .where((m) => m.kalori >= 350 && m.kalori <= lKcal + 200)
+            .toList();
+      case 'malam':
+        return _recommendedMenus.where((m) => m.kalori <= dKcal + 150).toList();
+      case 'semua':
+      default:
+        return _recommendedMenus;
+    }
+  }
 
   static const _green = Color(0xFF1AB673);
 
@@ -180,6 +207,7 @@ class _BmiPageState extends State<BmiPage> {
 
     setState(() {
       _hasil = hasil;
+      _selectedMealTab = 'semua';
     });
 
     // Ambil menu rekomendasi
@@ -204,7 +232,7 @@ class _BmiPageState extends State<BmiPage> {
       final menus = await _menuService.getMenusByTarget(status);
       if (mounted) {
         setState(() {
-          _recommendedMenus = menus.take(5).toList();
+          _recommendedMenus = menus;
           _isLoadingMenus = false;
         });
       }
@@ -989,12 +1017,15 @@ class _BmiPageState extends State<BmiPage> {
                             children: [
                               const Icon(Icons.bolt, size: 14, color: _green),
                               const SizedBox(width: 4),
-                              Text(
-                                'Energi Harian (TDEE)',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                  color: _green,
+                              Expanded(
+                                child: Text(
+                                  'Energi Harian (TDEE)',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: _green,
+                                  ),
                                 ),
                               ),
                             ],
@@ -1042,11 +1073,14 @@ class _BmiPageState extends State<BmiPage> {
                     children: [
                       const Icon(Icons.restaurant, color: _green, size: 16),
                       const SizedBox(width: 8),
-                      Text(
-                        'Distribusi Makronutrien',
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
+                      Expanded(
+                        child: Text(
+                          'Distribusi Makronutrien',
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
                         ),
                       ),
                     ],
@@ -1059,7 +1093,7 @@ class _BmiPageState extends State<BmiPage> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             vertical: 12,
-                            horizontal: 8,
+                            horizontal: 6,
                           ),
                           decoration: BoxDecoration(
                             color: Colors.grey.withValues(alpha: 0.05),
@@ -1068,29 +1102,38 @@ class _BmiPageState extends State<BmiPage> {
                           ),
                           child: Column(
                             children: [
-                              Text(
-                                'PROTEIN',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey[600],
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  'PROTEIN',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey[600],
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              Text(
-                                '≈ ${_hasil!.proteinDisplay}g',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  '≈ ${_hasil!.proteinDisplay}g',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 2),
-                              Text(
-                                'BB × 1.4 g',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 9,
-                                  color: Colors.grey[500],
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  'BB × 1.4 g',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 9,
+                                    color: Colors.grey[500],
+                                  ),
                                 ),
                               ),
                             ],
@@ -1104,7 +1147,7 @@ class _BmiPageState extends State<BmiPage> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             vertical: 12,
-                            horizontal: 8,
+                            horizontal: 6,
                           ),
                           decoration: BoxDecoration(
                             color: Colors.grey.withValues(alpha: 0.05),
@@ -1113,29 +1156,38 @@ class _BmiPageState extends State<BmiPage> {
                           ),
                           child: Column(
                             children: [
-                              Text(
-                                'LEMAK',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey[600],
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  'LEMAK',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey[600],
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              Text(
-                                '≈ ${_hasil!.lemakDisplay}g',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  '≈ ${_hasil!.lemakDisplay}g',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 2),
-                              Text(
-                                '30% TDEE',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 9,
-                                  color: Colors.grey[500],
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  '30% TDEE',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 9,
+                                    color: Colors.grey[500],
+                                  ),
                                 ),
                               ),
                             ],
@@ -1149,7 +1201,7 @@ class _BmiPageState extends State<BmiPage> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             vertical: 12,
-                            horizontal: 8,
+                            horizontal: 6,
                           ),
                           decoration: BoxDecoration(
                             color: Colors.grey.withValues(alpha: 0.05),
@@ -1158,29 +1210,38 @@ class _BmiPageState extends State<BmiPage> {
                           ),
                           child: Column(
                             children: [
-                              Text(
-                                'KARBOHIDRAT',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey[600],
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  'KARBOHIDRAT',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey[600],
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              Text(
-                                '≈ ${_hasil!.karbohidratDisplay}g',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  '≈ ${_hasil!.karbohidratDisplay}g',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 2),
-                              Text(
-                                'Sisa Kalori',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 9,
-                                  color: Colors.grey[500],
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  'Sisa Kalori',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 9,
+                                    color: Colors.grey[500],
+                                  ),
                                 ),
                               ),
                             ],
@@ -1215,11 +1276,14 @@ class _BmiPageState extends State<BmiPage> {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      Text(
-                        'Tips Cepat Sehat',
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 15,
+                      Expanded(
+                        child: Text(
+                          'Tips Cepat Sehat',
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                          ),
                         ),
                       ),
                     ],
@@ -1364,41 +1428,134 @@ class _BmiPageState extends State<BmiPage> {
           if (_hasil != null) ...[
             const SizedBox(height: 24),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.restaurant_menu, color: _green, size: 20),
+                const Padding(
+                  padding: EdgeInsets.only(top: 2),
+                  child: Icon(Icons.restaurant_menu, color: _green, size: 20),
+                ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
-                    'Menu Rekomendasi: ${_hasil!.status}',
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Rekomendasi Menu Diet: ${_hasil!.status}',
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Nutrisi seimbang untuk mendukung kebutuhan energi harian Anda ($_totalKcal kcal/hari).',
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            MenuPage(onBack: () => Navigator.pop(context)),
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Lihat Semua',
+                          style: GoogleFonts.poppins(
+                            color: _green,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 2),
+                        const Icon(
+                          Icons.arrow_forward_ios,
+                          size: 11,
+                          color: _green,
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 4),
-            Text(
-              'Pilihan nutrisi terbaik untuk kebutuhan Anda saat ini.',
-              style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[500]),
+            const SizedBox(height: 14),
+
+            // 3 Summary Cards Pembagian Kalori
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _calorieSummaryBox(
+                      label: '🌅 Sarapan (25%)',
+                      kcal: '~$_sarapanKcal kkal',
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _calorieSummaryBox(
+                      label: '☀️ Makan Siang (40%)',
+                      kcal: '~$_siangKcal kkal',
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _calorieSummaryBox(
+                      label: '🌙 Makan Malam (35%)',
+                      kcal: '~$_malamKcal kkal',
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 14),
 
+            // Filter Tabs (Semua Menu, Sarapan, Makan Siang, Makan Malam)
+            _buildMealFilterTabs(),
+            const SizedBox(height: 14),
+
+            // Daftar Menu Rekomendasi
             if (_isLoadingMenus)
               const Center(
                 child: Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: EdgeInsets.all(24),
                   child: CircularProgressIndicator(color: _green),
                 ),
               )
-            else if (_recommendedMenus.isEmpty)
+            else if (_filteredRecommendedMenus.isEmpty)
               _modernCard(
                 child: Center(
                   child: Padding(
                     padding: const EdgeInsets.all(12),
                     child: Text(
-                      'Belum ada menu untuk kategori ini.',
+                      'Belum ada menu yang cocok untuk kategori ini.',
                       style: GoogleFonts.poppins(
                         color: Colors.grey[500],
                         fontSize: 13,
@@ -1408,18 +1565,10 @@ class _BmiPageState extends State<BmiPage> {
                 ),
               )
             else
-              SizedBox(
-                height: 200,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: _recommendedMenus.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 14),
-                  itemBuilder: (context, index) {
-                    final menu = _recommendedMenus[index];
-                    return _recommendedMenuCard(menu);
-                  },
-                ),
+              Column(
+                children: _filteredRecommendedMenus
+                    .map((menu) => _recommendedMenuCard(menu, _totalKcal))
+                    .toList(),
               ),
           ],
 
@@ -1433,7 +1582,110 @@ class _BmiPageState extends State<BmiPage> {
     );
   }
 
-  Widget _recommendedMenuCard(MenuModel menu) {
+  Widget _calorieSummaryBox({required String label, required String kcal}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.12)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              label,
+              style: GoogleFonts.poppins(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              kcal,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: _green,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMealFilterTabs() {
+    final tabs = [
+      {'id': 'semua', 'label': 'Semua Menu'},
+      {'id': 'sarapan', 'label': '🌅 Sarapan (~$_sarapanKcal kkal)'},
+      {'id': 'siang', 'label': '☀️ Makan Siang (~$_siangKcal kkal)'},
+      {'id': 'malam', 'label': '🌙 Makan Malam (~$_malamKcal kkal)'},
+    ];
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: tabs.map((tab) {
+          final id = tab['id']!;
+          final label = tab['label']!;
+          final isSelected = _selectedMealTab == id;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: GestureDetector(
+              onTap: () => setState(() => _selectedMealTab = id),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: isSelected ? _green : Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: isSelected
+                        ? _green
+                        : Colors.grey.withValues(alpha: 0.2),
+                  ),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: _green.withValues(alpha: 0.25),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Text(
+                  label,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                    color: isSelected ? Colors.white : Colors.grey[700],
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _recommendedMenuCard(MenuModel menu, int totalKcal) {
+    final targetPct = totalKcal > 0
+        ? (menu.kalori / totalKcal * 100).round()
+        : 0;
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -1444,59 +1696,113 @@ class _BmiPageState extends State<BmiPage> {
         );
       },
       child: Container(
-        width: 170,
+        margin: const EdgeInsets.only(bottom: 14),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 15,
-              offset: const Offset(0, 5),
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image
-            Container(
-              height: 110,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(18),
-                ),
-                image: DecorationImage(
-                  image: NetworkImage(menu.gambar),
-                  fit: BoxFit.cover,
-                ),
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(18),
               ),
-              child: Align(
-                alignment: Alignment.topRight,
-                child: Container(
-                  margin: const EdgeInsets.all(8),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: _green,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    'PREMIUM',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 8,
-                      fontWeight: FontWeight.w700,
+              child: Stack(
+                children: [
+                  SizedBox(
+                    height: 140,
+                    width: double.infinity,
+                    child: Image.network(
+                      menu.gambar,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        color: Colors.grey[200],
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.restaurant,
+                          color: Colors.grey[400],
+                          size: 40,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withValues(alpha: 0.65),
+                          ],
+                          stops: const [0.5, 1.0],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 8,
+                    left: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0F172A).withValues(alpha: 0.85),
+                        border: Border.all(
+                          color: _green.withValues(alpha: 0.5),
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '$targetPct% Target Harian',
+                        style: GoogleFonts.poppins(
+                          color: _green,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _green,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'RECOMMENDED',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            // Content
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1505,8 +1811,9 @@ class _BmiPageState extends State<BmiPage> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -1514,30 +1821,37 @@ class _BmiPageState extends State<BmiPage> {
                     children: [
                       Icon(
                         Icons.local_fire_department,
-                        size: 12,
+                        size: 14,
                         color: Colors.orange[400],
                       ),
                       const SizedBox(width: 3),
                       Text(
-                        '${menu.kalori} kal',
+                        '${menu.kalori} kkal',
                         style: GoogleFonts.poppins(
-                          fontSize: 11,
-                          color: Colors.grey[500],
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.orange[800],
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 14),
                       Icon(
                         Icons.access_time,
-                        size: 12,
-                        color: Colors.blue[300],
+                        size: 14,
+                        color: _green.withValues(alpha: 0.8),
                       ),
                       const SizedBox(width: 3),
                       Text(
                         '${menu.waktuMemasak}m',
                         style: GoogleFonts.poppins(
-                          fontSize: 11,
-                          color: Colors.grey[500],
+                          fontSize: 12,
+                          color: Colors.grey[600],
                         ),
+                      ),
+                      const Spacer(),
+                      const Icon(
+                        Icons.arrow_forward_ios,
+                        size: 13,
+                        color: _green,
                       ),
                     ],
                   ),
