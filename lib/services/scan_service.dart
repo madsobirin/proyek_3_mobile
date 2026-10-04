@@ -61,8 +61,7 @@ class ScanService {
       throw Exception(data?['message'] ?? 'Format barcode tidak valid.');
     } else if (statusCode == 404) {
       throw Exception(
-        data?['message'] ??
-            'Produk dengan barcode tersebut tidak ditemukan di database Open Food Facts.',
+        data?['message'] ?? 'Produk dengan barcode tersebut tidak ditemukan.',
       );
     } else if (statusCode == 422) {
       throw Exception(
