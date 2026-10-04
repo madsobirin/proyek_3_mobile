@@ -14,12 +14,9 @@ class ScanBarcodeScreen extends StatefulWidget {
 }
 
 class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
-    with SingleTickerProviderStateMixin {
-  final MobileScannerController _cameraController = MobileScannerController(
-    detectionSpeed: DetectionSpeed.normal,
-    facing: CameraFacing.back,
-    torchEnabled: false,
-  );
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+  late MobileScannerController _cameraController;
+  int _scannerKeyIndex = 0;
 
   final ScanService _scanService = ScanService();
 
@@ -34,6 +31,10 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
+    _initController();
+
     _laserAnimController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1800),
@@ -45,6 +46,74 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
 
     // Request camera permission on open
     _checkCameraPermission();
+  }
+
+  void _initController() {
+    _cameraController = MobileScannerController(
+      detectionSpeed: DetectionSpeed.normal,
+      facing: CameraFacing.back,
+      torchEnabled: false,
+      autoStart: true,
+    );
+  }
+
+  Future<void> _restartCamera() async {
+    if (!mounted || !_cameraPermissionStatus.isGranted) return;
+    try {
+      if (_cameraController.value.isRunning) {
+        await _cameraController.stop();
+      }
+    } catch (_) {}
+
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    if (!mounted) return;
+    try {
+      await _cameraController.start();
+    } catch (_) {
+      await _reinitializeController();
+    }
+
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _reinitializeController() async {
+    if (!mounted || !_cameraPermissionStatus.isGranted) return;
+    try {
+      if (_cameraController.value.isRunning) {
+        await _cameraController.stop();
+      }
+      await _cameraController.dispose();
+    } catch (_) {}
+
+    if (!mounted) return;
+    setState(() {
+      _initController();
+      _scannerKeyIndex++;
+      _isTorchOn = false;
+      _isProcessing = false;
+      _isLoading = false;
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (!mounted || !_cameraPermissionStatus.isGranted) return;
+    switch (state) {
+      case AppLifecycleState.resumed:
+        _restartCamera();
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+      case AppLifecycleState.detached:
+        try {
+          if (_cameraController.value.isRunning) {
+            _cameraController.stop();
+          }
+        } catch (_) {}
+        break;
+    }
   }
 
   Future<void> _checkCameraPermission() async {
@@ -59,8 +128,8 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
     if (!mounted) return;
     setState(() => _cameraPermissionStatus = status);
 
-    // Jika sudah granted, start kamera
-    if (status.isGranted) {
+    // Jika sudah granted dan kamera belum running, start kamera
+    if (status.isGranted && !_cameraController.value.isRunning) {
       try {
         await _cameraController.start();
       } catch (_) {}
@@ -69,6 +138,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _laserAnimController.dispose();
     _cameraController.dispose();
     super.dispose();
@@ -93,7 +163,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
         result,
         onDismissed: () {
           if (mounted) {
-            // Beri sedikit jeda sebelum mengizinkan scan berikutnya
+            _restartCamera();
             Future.delayed(const Duration(milliseconds: 600), () {
               if (mounted) setState(() => _isProcessing = false);
             });
@@ -113,6 +183,147 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
     }
   }
 
+  void _showManualInputDialog() {
+    final textController = TextEditingController();
+    String? localError;
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogCtx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          backgroundColor: Colors.white,
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF00FF66).withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.keyboard_rounded,
+                  color: Color(0xFF15803D),
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Input Barcode Manual',
+                  style: GoogleFonts.manrope(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF111827),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Masukkan digit angka barcode kemasan makanan:',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  color: const Color(0xFF6B7280),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: textController,
+                keyboardType: TextInputType.number,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: 'Contoh: 8992761011111',
+                  hintStyle: GoogleFonts.inter(
+                    color: const Color(0xFF9CA3AF),
+                    fontSize: 14,
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xFFF9FAFB),
+                  errorText: localError,
+                  prefixIcon: const Icon(
+                    Icons.qr_code_2_rounded,
+                    color: Color(0xFF15803D),
+                    size: 20,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF00FF66),
+                      width: 1.5,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogCtx),
+              child: Text(
+                'Batal',
+                style: GoogleFonts.inter(
+                  color: const Color(0xFF6B7280),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final barcode = textController.text.trim();
+                if (!ScanService.isValidBarcode(barcode)) {
+                  setDialogState(() {
+                    localError = 'Barcode harus berupa 3-64 digit angka';
+                  });
+                  return;
+                }
+                Navigator.pop(dialogCtx);
+                setState(() => _isProcessing = true);
+                _lookupBarcode(barcode);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF00FF66),
+                foregroundColor: const Color(0xFF111827),
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                'Cari Produk',
+                style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ).then((_) {
+      if (mounted && !_isLoading) {
+        _restartCamera();
+        setState(() => _isProcessing = false);
+      }
+    });
+  }
+
   void _showErrorDialog({required String title, required String message}) {
     showDialog(
       context: context,
@@ -125,7 +336,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.amber.withOpacity(0.15),
+                color: Colors.amber.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -159,14 +370,30 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
+              _showManualInputDialog();
+            },
+            child: Text(
+              'Input Manual',
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF15803D),
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
               // Lanjutkan scan setelah menutup dialog error
+              _restartCamera();
               Future.delayed(const Duration(milliseconds: 500), () {
                 if (mounted) setState(() => _isProcessing = false);
               });
             },
-            style: TextButton.styleFrom(
+            style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               backgroundColor: const Color(0xFF00FF66),
+              foregroundColor: const Color(0xFF111827),
+              elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -194,20 +421,63 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.black,
       body: Stack(
         children: [
           // Camera Preview
           MobileScanner(
+            key: ValueKey(_scannerKeyIndex),
             controller: _cameraController,
+            errorBuilder: (context, error, child) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.videocam_off_rounded,
+                        color: Colors.white54,
+                        size: 48,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Kamera tidak aktif atau terjeda.',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton.icon(
+                        onPressed: _reinitializeController,
+                        icon: const Icon(Icons.refresh_rounded, size: 18),
+                        label: const Text('Mulai Ulang Kamera'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF00FF66),
+                          foregroundColor: const Color(0xFF111827),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
             onDetect: (capture) async {
               final barcodes = capture.barcodes;
               final barcode = barcodes.firstOrNull?.rawValue;
 
               if (barcode == null || _isProcessing || _isLoading) return;
 
+              final cleaned = barcode.trim();
+              if (!ScanService.isValidBarcode(cleaned)) return;
+
               setState(() => _isProcessing = true);
-              await _lookupBarcode(barcode);
+              await _lookupBarcode(cleaned);
             },
           ),
 
@@ -261,7 +531,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                                 BoxShadow(
                                   color: const Color(
                                     0xFF00FF66,
-                                  ).withOpacity(0.8),
+                                  ).withValues(alpha: 0.8),
                                   blurRadius: 10,
                                   spreadRadius: 2,
                                 ),
@@ -318,7 +588,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
+                    color: Colors.black.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Colors.white12),
                   ),
@@ -380,24 +650,43 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                     ),
                   ),
 
-                  // History Button
-                  _buildCircleButton(
-                    icon: Icons.history_rounded,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ScanHistoryScreen(),
-                        ),
-                      );
-                    },
+                  // Action Buttons: Reload Camera & History
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildCircleButton(
+                        icon: Icons.refresh_rounded,
+                        onTap: _reinitializeController,
+                      ),
+                      const SizedBox(width: 8),
+                      _buildCircleButton(
+                        icon: Icons.history_rounded,
+                        onTap: () async {
+                          try {
+                            if (_cameraController.value.isRunning) {
+                              await _cameraController.stop();
+                            }
+                          } catch (_) {}
+                          if (!context.mounted) return;
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ScanHistoryScreen(),
+                            ),
+                          );
+                          if (mounted) {
+                            _restartCamera();
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
           ),
 
-          // Bottom Controls (Torch & Camera Switch)
+          // Bottom Controls (Torch, Manual Input, & Camera Switch)
           Positioned(
             bottom: 36,
             left: 0,
@@ -413,17 +702,31 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                   isActive: _isTorchOn,
                   label: 'Lampu',
                   onTap: () async {
-                    await _cameraController.toggleTorch();
-                    setState(() => _isTorchOn = !_isTorchOn);
+                    try {
+                      await _cameraController.toggleTorch();
+                      setState(() => _isTorchOn = !_isTorchOn);
+                    } catch (_) {}
                   },
                 ),
-                const SizedBox(width: 36),
+                const SizedBox(width: 24),
+                // Manual Barcode Input
+                _buildActionButton(
+                  icon: Icons.keyboard_rounded,
+                  isActive: false,
+                  label: 'Manual',
+                  onTap: _showManualInputDialog,
+                ),
+                const SizedBox(width: 24),
                 // Camera Flip Button
                 _buildActionButton(
                   icon: Icons.flip_camera_ios_rounded,
                   isActive: false,
                   label: 'Putar',
-                  onTap: () => _cameraController.switchCamera(),
+                  onTap: () async {
+                    try {
+                      await _cameraController.switchCamera();
+                    } catch (_) {}
+                  },
                 ),
               ],
             ),
@@ -443,7 +746,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.5),
+          color: Colors.black.withValues(alpha: 0.5),
           shape: BoxShape.circle,
           border: Border.all(color: Colors.white24),
         ),
