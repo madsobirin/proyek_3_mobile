@@ -534,6 +534,8 @@ class _ProfilePageState extends State<ProfilePage>
                                 ],
                               ),
                               const SizedBox(height: 12),
+                              _buildScanHistoryCard(),
+                              const SizedBox(height: 12),
                               _buildPasswordCard(),
                               const SizedBox(height: 20),
                               _buildLogoutButton(),
@@ -930,6 +932,66 @@ class _ProfilePageState extends State<ProfilePage>
                     ? FontStyle.normal
                     : FontStyle.italic,
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScanHistoryCard() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, '/scan-history');
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: _cardBg,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: _border),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: const Color(0xFFDCFCE7),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.receipt_long_rounded,
+                  size: 18,
+                  color: Color(0xFF15803D),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Riwayat Scan Makanan',
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: _textDark,
+                    ),
+                  ),
+                  Text(
+                    'Lihat daftar makanan yang pernah Anda scan',
+                    style: GoogleFonts.inter(fontSize: 12, color: _textMuted),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 14,
+              color: Color(0xFF9CA3AF),
             ),
           ],
         ),
