@@ -32,12 +32,28 @@ class _ScanHistoryScreenState extends State<ScanHistoryScreen> {
     });
 
     try {
+      // Sinkronkan antrean scan offline terlebih dahulu jika ada koneksi
+      final synced = await _scanService.syncOfflineScans();
+
       final items = await _scanService.getScanHistory();
       if (!mounted) return;
       setState(() {
         _historyList = items;
         _isLoading = false;
       });
+
+      if (synced > 0 && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '$synced riwayat scan offline berhasil disinkronkan ke server.',
+            ),
+            backgroundColor: const Color(0xFF15803D),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() {

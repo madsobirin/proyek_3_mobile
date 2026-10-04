@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fitlife/models/scan_makanan_model.dart';
 import 'package:fitlife/services/api_service.dart';
 
@@ -11,6 +12,8 @@ class ScanService {
 
   /// Menyimpan hasil scan sementara untuk pengguna guest yang dialihkan ke halaman login
   static ScanMakananResult? pendingScanResult;
+
+  static const String _offlineQueueKey = 'offline_scan_queue';
 
   /// Validasi format barcode (3-64 digit angka)
   static bool isValidBarcode(String barcode) {
@@ -31,6 +34,12 @@ class ScanService {
     });
 
     final statusCode = response.statusCode;
+    final xCache = response.headers['x-cache']?.toUpperCase();
+    final isFromCache = xCache == 'HIT';
+    final dataSource =
+        response.headers['x-data-source'] ??
+        (isFromCache ? 'Redis Cache' : 'Open Food Facts');
+
     dynamic data;
     try {
       data = jsonDecode(response.body);
@@ -43,6 +52,8 @@ class ScanService {
         final productData = data['data'] ?? data['product'] ?? data;
         return ScanMakananResult.fromJson(
           Map<String, dynamic>.from(productData),
+          isFromCache: isFromCache,
+          dataSource: dataSource,
         );
       }
       throw Exception('Format data produk tidak sesuai.');
@@ -153,5 +164,93 @@ class ScanService {
     }
 
     throw Exception(data?['message'] ?? 'Gagal menghapus riwayat scan.');
+  }
+
+  /// Mengunggah foto makanan kemasan ke server (mengembalikan URL publik gambar)
+  Future<String?> uploadFoodImage(String filePath) async {
+    try {
+      final response = await _apiService.postMultipart(
+        '/scan-makanan/upload',
+        'image',
+        filePath,
+      );
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        final data = jsonDecode(response.body);
+        if (data is Map<String, dynamic>) {
+          return data['url']?.toString() ??
+              data['image_url']?.toString() ??
+              data['data']?['url']?.toString() ??
+              data['data']?['image_url']?.toString();
+        }
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  /// Menyimpan hasil scan makanan secara offline di local storage saat sinyal lemah
+  Future<void> saveOfflineScan(ScanMakananResult result) async {
+    final prefs = await SharedPreferences.getInstance();
+    final currentList = await getOfflineScans();
+    currentList.removeWhere((item) => item.barcode == result.barcode);
+    currentList.insert(0, result);
+
+    final rawJsonList = currentList.map((e) => e.toStorageJson()).toList();
+    await prefs.setString(_offlineQueueKey, jsonEncode(rawJsonList));
+  }
+
+  /// Mengambil antrean scan yang tersimpan secara offline
+  Future<List<ScanMakananResult>> getOfflineScans() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_offlineQueueKey);
+    if (raw == null || raw.isEmpty) return [];
+
+    try {
+      final List<dynamic> decoded = jsonDecode(raw);
+      return decoded
+          .map(
+            (item) =>
+                ScanMakananResult.fromJson(Map<String, dynamic>.from(item)),
+          )
+          .toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  /// Menghapus scan dari antrean offline
+  Future<void> removeOfflineScan(String barcode) async {
+    final prefs = await SharedPreferences.getInstance();
+    final currentList = await getOfflineScans();
+    currentList.removeWhere((item) => item.barcode == barcode);
+    final rawJsonList = currentList.map((e) => e.toStorageJson()).toList();
+    await prefs.setString(_offlineQueueKey, jsonEncode(rawJsonList));
+  }
+
+  /// Melakukan sinkronisasi otomatis seluruh scan offline ke cloud database
+  Future<int> syncOfflineScans() async {
+    final offlineList = await getOfflineScans();
+    if (offlineList.isEmpty) return 0;
+
+    int syncedCount = 0;
+    final List<ScanMakananResult> remaining = [];
+
+    for (final item in offlineList) {
+      try {
+        await saveScanResult(item);
+        syncedCount++;
+      } catch (_) {
+        remaining.add(item);
+      }
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    if (remaining.isEmpty) {
+      await prefs.remove(_offlineQueueKey);
+    } else {
+      final raw = remaining.map((e) => e.toStorageJson()).toList();
+      await prefs.setString(_offlineQueueKey, jsonEncode(raw));
+    }
+
+    return syncedCount;
   }
 }

@@ -93,23 +93,13 @@ class _ScanResultModalState extends State<ScanResultModal> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSaving = false);
+      final errorMsg = e.toString().replaceFirst('Exception: ', '');
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Row(
-            children: [
-              const Icon(
-                Icons.error_outline_rounded,
-                color: Colors.white,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  e.toString().replaceFirst('Exception: ', ''),
-                  style: GoogleFonts.inter(color: Colors.white),
-                ),
-              ),
-            ],
+          content: Text(
+            errorMsg,
+            style: GoogleFonts.inter(color: Colors.white),
           ),
           backgroundColor: Colors.redAccent,
           behavior: SnackBarBehavior.floating,
@@ -117,6 +107,24 @@ class _ScanResultModalState extends State<ScanResultModal> {
             borderRadius: BorderRadius.circular(14),
           ),
           margin: const EdgeInsets.all(16),
+          action: SnackBarAction(
+            label: 'Simpan Offline',
+            textColor: const Color(0xFF00FF66),
+            onPressed: () async {
+              await _scanService.saveOfflineScan(widget.result);
+              if (mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Tersimpan offline. Akan disinkronkan saat membuka riwayat.',
+                    ),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              }
+            },
+          ),
         ),
       );
     }
@@ -301,27 +309,97 @@ class _ScanResultModalState extends State<ScanResultModal> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(
-                                    0xFF00FF66,
-                                  ).withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  item.brand ?? 'Produk Makanan',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w700,
-                                    color: const Color(0xFF15803D),
+                              Wrap(
+                                spacing: 6,
+                                runSpacing: 4,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(
+                                        0xFF00FF66,
+                                      ).withValues(alpha: 0.12),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      item.brand ?? 'Produk Makanan',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w700,
+                                        color: const Color(0xFF15803D),
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                                  if (item.isFromCache == true)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue.withValues(
+                                          alpha: 0.12,
+                                        ),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(
+                                            Icons.bolt_rounded,
+                                            size: 13,
+                                            color: Colors.blue,
+                                          ),
+                                          const SizedBox(width: 2),
+                                          Text(
+                                            'Redis Cache',
+                                            style: GoogleFonts.inter(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.blue[800],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  else if (item.dataSource != null)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.orange.withValues(
+                                          alpha: 0.12,
+                                        ),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(
+                                            Icons.public_rounded,
+                                            size: 13,
+                                            color: Colors.orange,
+                                          ),
+                                          const SizedBox(width: 3),
+                                          Text(
+                                            item.dataSource!,
+                                            style: GoogleFonts.inter(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.deepOrange,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                ],
                               ),
                               const SizedBox(height: 8),
                               Text(

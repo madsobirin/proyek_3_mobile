@@ -4,6 +4,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:fitlife/services/scan_service.dart';
 import 'package:fitlife/pages/scan/widgets/scan_result_modal.dart';
+import 'package:fitlife/pages/scan/widgets/manual_food_input_modal.dart';
 import 'package:fitlife/pages/scan/scan_history_screen.dart';
 
 class ScanBarcodeScreen extends StatefulWidget {
@@ -179,6 +180,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
       _showErrorDialog(
         title: 'Informasi Produk',
         message: e.toString().replaceFirst('Exception: ', ''),
+        failedBarcode: barcode,
       );
     }
   }
@@ -324,7 +326,176 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
     });
   }
 
-  void _showErrorDialog({required String title, required String message}) {
+  Future<void> _openManualFoodModal({String? barcode}) async {
+    try {
+      if (_cameraController.value.isRunning) {
+        await _cameraController.stop();
+      }
+    } catch (_) {}
+
+    if (!mounted) return;
+    await ManualFoodInputModal.show(
+      context,
+      initialBarcode: barcode,
+      onSaved: (result) {
+        if (!mounted) return;
+        ScanResultModal.show(
+          context,
+          result,
+          onDismissed: () {
+            if (mounted) _restartCamera();
+          },
+        );
+      },
+    );
+
+    if (mounted) {
+      _restartCamera();
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) setState(() => _isProcessing = false);
+      });
+    }
+  }
+
+  void _showManualOptionsSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (sheetCtx) => Container(
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 44,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5E7EB),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Pilihan Input Manual',
+                style: GoogleFonts.manrope(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF111827),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Pilih metode input makanan yang Anda inginkan:',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  color: const Color(0xFF6B7280),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ListTile(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: const BorderSide(color: Color(0xFFE5E7EB)),
+                ),
+                leading: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF00FF66).withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.qr_code_2_rounded,
+                    color: Color(0xFF15803D),
+                    size: 22,
+                  ),
+                ),
+                title: Text(
+                  'Cari Angka Barcode',
+                  style: GoogleFonts.manrope(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    color: const Color(0xFF111827),
+                  ),
+                ),
+                subtitle: Text(
+                  'Ketik nomor barcode untuk mencari gizi otomatis',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF6B7280),
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(sheetCtx);
+                  _showManualInputDialog();
+                },
+              ),
+              const SizedBox(height: 12),
+              ListTile(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: const BorderSide(color: Color(0xFFE5E7EB)),
+                ),
+                leading: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withValues(alpha: 0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.edit_note_rounded,
+                    color: Colors.blue,
+                    size: 22,
+                  ),
+                ),
+                title: Text(
+                  'Input Makanan Manual',
+                  style: GoogleFonts.manrope(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    color: const Color(0xFF111827),
+                  ),
+                ),
+                subtitle: Text(
+                  'Isi nama makanan & nilai gizi kemasan langsung',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF6B7280),
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(sheetCtx);
+                  _openManualFoodModal();
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showErrorDialog({
+    required String title,
+    required String message,
+    String? failedBarcode,
+  }) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -370,7 +541,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
-              _showManualInputDialog();
+              _openManualFoodModal(barcode: failedBarcode);
             },
             child: Text(
               'Input Manual',
@@ -709,12 +880,12 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                   },
                 ),
                 const SizedBox(width: 24),
-                // Manual Barcode Input
+                // Manual Barcode / Food Input
                 _buildActionButton(
                   icon: Icons.keyboard_rounded,
                   isActive: false,
                   label: 'Manual',
-                  onTap: _showManualInputDialog,
+                  onTap: _showManualOptionsSheet,
                 ),
                 const SizedBox(width: 24),
                 // Camera Flip Button
