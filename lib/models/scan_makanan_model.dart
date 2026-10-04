@@ -67,4 +67,32 @@ class ScanMakananResult {
       if (gula != null) 'gula': gula,
     };
   }
+
+  ScanMakananResult copyWith({
+    String? id,
+    String? barcode,
+    String? namaMakanan,
+    String? brand,
+    String? imageUrl,
+    double? kalori,
+    double? protein,
+    double? lemak,
+    double? karbohidrat,
+    double? gula,
+    DateTime? createdAt,
+  }) {
+    return ScanMakananResult(
+      id: id ?? this.id,
+      barcode: barcode ?? this.barcode,
+      namaMakanan: namaMakanan ?? this.namaMakanan,
+      brand: brand ?? this.brand,
+      imageUrl: imageUrl ?? this.imageUrl,
+      kalori: kalori ?? this.kalori,
+      protein: protein ?? this.protein,
+      lemak: lemak ?? this.lemak,
+      karbohidrat: karbohidrat ?? this.karbohidrat,
+      gula: gula ?? this.gula,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
 }

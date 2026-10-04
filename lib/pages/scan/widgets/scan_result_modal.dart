@@ -135,7 +135,7 @@ class _ScanResultModalState extends State<ScanResultModal> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF00FF66).withOpacity(0.12),
+                color: const Color(0xFF00FF66).withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -309,7 +309,7 @@ class _ScanResultModalState extends State<ScanResultModal> {
                                 decoration: BoxDecoration(
                                   color: const Color(
                                     0xFF00FF66,
-                                  ).withOpacity(0.12),
+                                  ).withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
@@ -402,7 +402,7 @@ class _ScanResultModalState extends State<ScanResultModal> {
                         ),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: const Color(0xFF00FF66).withOpacity(0.3),
+                          color: const Color(0xFF00FF66).withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
@@ -541,44 +541,68 @@ class _ScanResultModalState extends State<ScanResultModal> {
                   const SizedBox(width: 12),
                   Expanded(
                     flex: 2,
-                    child: ElevatedButton(
-                      onPressed: _isSaving ? null : _handleSave,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00FF66),
-                        foregroundColor: const Color(0xFF111827),
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: _isSaving
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                                color: Color(0xFF111827),
-                              ),
-                            )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.bookmark_add_rounded,
-                                  size: 18,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Simpan ke Riwayat',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
+                    child: widget.result.id != null
+                        ? OutlinedButton.icon(
+                            onPressed: () => Navigator.pop(context),
+                            icon: const Icon(
+                              Icons.check_circle_rounded,
+                              size: 18,
+                              color: Color(0xFF15803D),
                             ),
-                    ),
+                            label: Text(
+                              'Tersimpan di Riwayat',
+                              style: GoogleFonts.inter(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF15803D),
+                              ),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Color(0xFF00FF66)),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                          )
+                        : ElevatedButton(
+                            onPressed: _isSaving ? null : _handleSave,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF00FF66),
+                              foregroundColor: const Color(0xFF111827),
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            child: _isSaving
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                      color: Color(0xFF111827),
+                                    ),
+                                  )
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        Icons.bookmark_add_rounded,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Simpan ke Riwayat',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                          ),
                   ),
                 ],
               ),
@@ -607,7 +631,7 @@ class _ScanResultModalState extends State<ScanResultModal> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
+              color: color.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, size: 18, color: color),

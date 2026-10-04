@@ -162,7 +162,7 @@ class _ScanHistoryScreenState extends State<ScanHistoryScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -210,7 +210,7 @@ class _ScanHistoryScreenState extends State<ScanHistoryScreen> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF00FF66).withOpacity(0.12),
+                  color: const Color(0xFF00FF66).withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -285,7 +285,7 @@ class _ScanHistoryScreenState extends State<ScanHistoryScreen> {
         border: Border.all(color: const Color(0xFFE5E7EB)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -369,7 +369,7 @@ class _ScanHistoryScreenState extends State<ScanHistoryScreen> {
                               vertical: 3,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.orange.withOpacity(0.12),
+                              color: Colors.orange.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Row(
