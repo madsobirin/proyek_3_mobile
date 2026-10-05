@@ -12,6 +12,7 @@ import '../../services/menu_service.dart';
 import '../../services/perhitungan_service.dart';
 import 'menu_detail.dart';
 import 'menu_page.dart';
+import 'widgets/kartu_kesehatan_modal.dart';
 
 class BmiPage extends StatefulWidget {
   final VoidCallback onBack;
@@ -1320,6 +1321,33 @@ class _BmiPageState extends State<BmiPage> {
                     ),
                   ),
                 ],
+              ),
+            ),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  KartuKesehatanModal.show(context, _hasil!);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF090E0C),
+                  foregroundColor: const Color(0xFF00FF7F),
+                  side: const BorderSide(color: Color(0xFF00FF7F), width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 0,
+                ),
+                icon: const Icon(Icons.auto_awesome, color: Color(0xFF00FF7F), size: 18),
+                label: Text(
+                  'Unduh / Cetak Kartu Digital',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
           ],
