@@ -13,6 +13,8 @@ import '../../services/perhitungan_service.dart';
 import 'menu_detail.dart';
 import 'menu_page.dart';
 import 'widgets/kartu_kesehatan_modal.dart';
+import 'widgets/riwayat_health_card.dart';
+import '../../services/kartu_kesehatan_export_service.dart';
 
 class BmiPage extends StatefulWidget {
   final VoidCallback onBack;
@@ -32,6 +34,7 @@ class _BmiPageState extends State<BmiPage> {
   bool _isLoadingHistory = false;
   String? _historyError;
   List<PerhitunganModel> _historyList = [];
+  final GlobalKey _riwayatPngKey = GlobalKey();
 
   String gender = 'Pria';
   double height = 170;
@@ -374,30 +377,39 @@ class _BmiPageState extends State<BmiPage> {
     final currentStatus = _hasil?.status ?? 'Normal';
     final tips = _tips[currentStatus] ?? _tips['Normal']!;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Header ──
-          Row(
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              GestureDetector(
-                onTap: widget.onBack,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
+              // ── Header ──
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      if (Navigator.canPop(context)) {
+                        Navigator.pop(context);
+                      } else {
+                        widget.onBack();
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new,
+                        size: 18,
+                        color: Colors.black87,
+                      ),
+                    ),
                   ),
-                  child: const Icon(
-                    Icons.arrow_back_ios_new,
-                    size: 18,
-                    color: Colors.black87,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
+                  const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1328,7 +1340,11 @@ class _BmiPageState extends State<BmiPage> {
               height: 52,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  KartuKesehatanModal.show(context, _hasil!);
+                  KartuKesehatanModal.show(
+                    context,
+                    _hasil!,
+                    isLoggedIn: _isLoggedIn,
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF090E0C),
@@ -1605,9 +1621,20 @@ class _BmiPageState extends State<BmiPage> {
           _buildHistorySection(),
 
           const SizedBox(height: 40),
+
+          // ── Hidden widget untuk capture PNG (di-render di luar layar) ──
+          Transform.translate(
+            offset: const Offset(-10000, 0),
+            child: RepaintBoundary(
+              key: _riwayatPngKey,
+              child: RiwayatHealthCard(history: _historyList),
+            ),
+          ),
         ],
       ),
-    );
+    ),
+  ),
+);
   }
 
   Widget _calorieSummaryBox({required String label, required String kcal}) {
@@ -2071,7 +2098,7 @@ class _BmiPageState extends State<BmiPage> {
                 ],
               ),
             ),
-            if (_isLoggedIn)
+            if (_isLoggedIn) ...[
               IconButton(
                 icon: _isLoadingHistory
                     ? const SizedBox(
@@ -2090,6 +2117,7 @@ class _BmiPageState extends State<BmiPage> {
                 tooltip: 'Segarkan Riwayat',
                 onPressed: _isLoadingHistory ? null : _loadHistory,
               ),
+            ],
           ],
         ),
         const SizedBox(height: 14),
@@ -2174,6 +2202,88 @@ class _BmiPageState extends State<BmiPage> {
 
         // 4. Detail list
         _buildHistoryList(),
+
+        const SizedBox(height: 16),
+
+        // 5. Tombol Unduh Laporan
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: _green,
+                  side: const BorderSide(color: _green, width: 1),
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                onPressed: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  messenger.showSnackBar(
+                    const SnackBar(
+                      content: Text('Menyiapkan gambar PNG...'),
+                      backgroundColor: Color(0xFF1AB673),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                  final ok = await KartuKesehatanExportService
+                      .captureAndDownloadPng(_riwayatPngKey);
+                  if (!ok) {
+                    messenger.showSnackBar(
+                      const SnackBar(
+                        content: Text('Gagal membuat PNG. Coba lagi.'),
+                        backgroundColor: Colors.redAccent,
+                      ),
+                    );
+                  }
+                },
+                icon: const Icon(Icons.image_outlined, size: 16),
+                label: Text(
+                  'Unduh PNG',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _green,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                onPressed: () async {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Menyiapkan laporan PDF...'),
+                      backgroundColor: Color(0xFF1AB673),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                  await KartuKesehatanExportService.exportRiwayatToPdf(
+                    _historyList,
+                  );
+                },
+                icon: const Icon(Icons.picture_as_pdf_rounded, size: 16),
+                label: Text(
+                  'Unduh PDF',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }

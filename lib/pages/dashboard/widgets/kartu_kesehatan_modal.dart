@@ -5,7 +5,11 @@ import '../../../services/kartu_kesehatan_export_service.dart';
 import 'digital_health_card.dart';
 
 class KartuKesehatanModal {
-  static void show(BuildContext context, AnalisisKesehatan data) {
+  static void show(
+    BuildContext context,
+    AnalisisKesehatan data, {
+    bool isLoggedIn = false,
+  }) {
     final GlobalKey cardKey = GlobalKey();
     bool isExporting = false;
 
@@ -15,7 +19,24 @@ class KartuKesehatanModal {
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (context, setModalState) {
+          final maxHeight = MediaQuery.of(context).size.height * 0.90;
+
+          // Helper: tampilkan snackbar jika belum login
+          void _requireLogin() {
+            Navigator.pop(ctx);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Silakan login terlebih dahulu untuk mengunduh kartu kesehatan.',
+                ),
+                backgroundColor: Colors.redAccent,
+                duration: Duration(seconds: 3),
+              ),
+            );
+          }
+
           return Container(
+            constraints: BoxConstraints(maxHeight: maxHeight),
             decoration: const BoxDecoration(
               color: Color(0xFF111815),
               borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -24,6 +45,7 @@ class KartuKesehatanModal {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Handle bar
                 Container(
                   width: 40,
                   height: 4,
@@ -33,15 +55,80 @@ class KartuKesehatanModal {
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                SingleChildScrollView(
-                  child: RepaintBoundary(
-                    key: cardKey,
-                    child: DigitalHealthCard(data: data),
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Center(
+                      child: RepaintBoundary(
+                        key: cardKey,
+                        child: DigitalHealthCard(data: data),
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
+
+                // ── Baris tombol ──
                 Row(
                   children: [
+                    // ── Tombol Export PNG ──
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          side: BorderSide(
+                            color: Colors.white.withValues(alpha: 0.25),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        onPressed: isExporting
+                            ? null
+                            : () async {
+                                if (!isLoggedIn) {
+                                  _requireLogin();
+                                  return;
+                                }
+                                setModalState(() => isExporting = true);
+                                final bytes =
+                                    await KartuKesehatanExportService
+                                        .captureWidgetToPng(cardKey);
+                                setModalState(() => isExporting = false);
+
+                                if (bytes != null && context.mounted) {
+                                  Navigator.pop(ctx);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                          'Kartu Digital (PNG) berhasil diambil!'),
+                                      backgroundColor: Color(0xFF1AB673),
+                                    ),
+                                  );
+                                }
+                              },
+                        icon: isExporting
+                            ? const SizedBox(
+                                width: 14,
+                                height: 14,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Icon(Icons.image_outlined, size: 16),
+                        label: Text(
+                          'Export PNG',
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+
+                    // ── Tombol Export PDF ──
                     Expanded(
                       child: ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
@@ -56,39 +143,63 @@ class KartuKesehatanModal {
                         onPressed: isExporting
                             ? null
                             : () async {
+                                if (!isLoggedIn) {
+                                  _requireLogin();
+                                  return;
+                                }
                                 setModalState(() => isExporting = true);
-                                final bytes = await KartuKesehatanExportService.captureWidgetToPng(cardKey);
+                                final ok =
+                                    await KartuKesehatanExportService
+                                        .exportCardToPdf(
+                                  data,
+                                  filename:
+                                      'Kartu-Kesehatan-${data.bmiDisplay}.pdf',
+                                );
                                 setModalState(() => isExporting = false);
 
-                                if (bytes != null && context.mounted) {
-                                  Navigator.pop(ctx);
+                                if (context.mounted) {
+                                  if (ok) Navigator.pop(ctx);
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Kartu Digital berhasil disimpan!'),
-                                      backgroundColor: Color(0xFF1AB673),
+                                    SnackBar(
+                                      content: Text(ok
+                                          ? 'Dokumen PDF berhasil diunduh!'
+                                          : 'Gagal membuat PDF. Coba lagi.'),
+                                      backgroundColor: ok
+                                          ? const Color(0xFF1AB673)
+                                          : Colors.redAccent,
                                     ),
                                   );
                                 }
                               },
                         icon: isExporting
                             ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
+                                width: 14,
+                                height: 14,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.black,
+                                ),
                               )
-                            : const Icon(Icons.download_rounded, size: 20),
+                            : const Icon(Icons.picture_as_pdf_rounded, size: 16),
                         label: Text(
-                          isExporting ? 'Memproses...' : 'Unduh Kartu (PNG)',
-                          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 13),
+                          'Export PDF',
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 8),
+
+                    // ── Tombol Tutup ──
                     IconButton(
                       onPressed: () => Navigator.pop(ctx),
                       style: IconButton.styleFrom(
                         backgroundColor: Colors.white10,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                         padding: const EdgeInsets.all(12),
                       ),
                       icon: const Icon(Icons.close, color: Colors.white70),
