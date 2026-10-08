@@ -1,6 +1,6 @@
 import 'dart:typed_data';
-import 'pdf_downloader_web.dart'
-    if (dart.library.io) 'pdf_downloader_stub.dart';
+import 'pdf_downloader_stub.dart'
+    if (dart.library.html) 'pdf_downloader_web.dart';
 
 Future<void> downloadPdf(Uint8List bytes, String filename) =>
     saveOrDownloadPdf(bytes, filename);
