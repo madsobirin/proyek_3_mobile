@@ -410,500 +410,577 @@ class _BmiPageState extends State<BmiPage> {
                     ),
                   ),
                   const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Kalkulator Kesehatan',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      'Analisis Tubuh, Energi & Nutrisi',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 20),
-
-          // ── Form Input Card ──
-          _modernCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Parameter Fisik',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
-                ),
-                const SizedBox(height: 14),
-
-                // 1. Jenis Kelamin
-                Text(
-                  'Jenis Kelamin',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                    color: Colors.grey[700],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    _genderSelector('Pria'),
-                    const SizedBox(width: 10),
-                    _genderSelector('Wanita'),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                // 2. Tinggi Badan Slider
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Tinggi Badan',
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 13,
-                          color: Colors.grey[700],
-                        ),
-                      ),
-                    ),
-                    RichText(
-                      text: TextSpan(
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-                        children: [
-                          TextSpan(
-                            text: '${height.toInt()} ',
-                            style: const TextStyle(color: _green, fontSize: 20),
-                          ),
-                          TextSpan(
-                            text: 'CM',
-                            style: GoogleFonts.poppins(
-                              fontSize: 11,
-                              color: Colors.grey[500],
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Slider(
-                  value: height,
-                  min: 100,
-                  max: 220,
-                  divisions: 120,
-                  activeColor: _green,
-                  inactiveColor: Colors.grey[200],
-                  onChanged: (value) =>
-                      setState(() => height = value.roundToDouble()),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '100 cm',
-                      style: GoogleFonts.poppins(
-                        fontSize: 10,
-                        color: Colors.grey[400],
-                      ),
-                    ),
-                    Text(
-                      '220 cm',
-                      style: GoogleFonts.poppins(
-                        fontSize: 10,
-                        color: Colors.grey[400],
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                // 3. Berat Badan Slider
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Berat Badan',
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 13,
-                          color: Colors.grey[700],
-                        ),
-                      ),
-                    ),
-                    RichText(
-                      text: TextSpan(
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-                        children: [
-                          TextSpan(
-                            text: '${weight.toInt()} ',
-                            style: const TextStyle(color: _green, fontSize: 20),
-                          ),
-                          TextSpan(
-                            text: 'KG',
-                            style: GoogleFonts.poppins(
-                              fontSize: 11,
-                              color: Colors.grey[500],
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Slider(
-                  value: weight,
-                  min: 30,
-                  max: 200,
-                  divisions: 170,
-                  activeColor: _green,
-                  inactiveColor: Colors.grey[200],
-                  onChanged: (value) =>
-                      setState(() => weight = value.roundToDouble()),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '30 kg',
-                      style: GoogleFonts.poppins(
-                        fontSize: 10,
-                        color: Colors.grey[400],
-                      ),
-                    ),
-                    Text(
-                      '200 kg',
-                      style: GoogleFonts.poppins(
-                        fontSize: 10,
-                        color: Colors.grey[400],
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                // 4. Usia Slider
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Usia',
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 13,
-                          color: Colors.grey[700],
-                        ),
-                      ),
-                    ),
-                    RichText(
-                      text: TextSpan(
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-                        children: [
-                          TextSpan(
-                            text: '${age.toInt()} ',
-                            style: const TextStyle(color: _green, fontSize: 20),
-                          ),
-                          TextSpan(
-                            text: 'Tahun',
-                            style: GoogleFonts.poppins(
-                              fontSize: 11,
-                              color: Colors.grey[500],
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Slider(
-                  value: age,
-                  min: 15,
-                  max: 90,
-                  divisions: 75,
-                  activeColor: _green,
-                  inactiveColor: Colors.grey[200],
-                  onChanged: (value) =>
-                      setState(() => age = value.roundToDouble()),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '15 Tahun',
-                      style: GoogleFonts.poppins(
-                        fontSize: 10,
-                        color: Colors.grey[400],
-                      ),
-                    ),
-                    Text(
-                      '90 Tahun',
-                      style: GoogleFonts.poppins(
-                        fontSize: 10,
-                        color: Colors.grey[400],
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-
-                // 5. Tingkat Aktivitas Harian
-                Text(
-                  'Tingkat Aktivitas Harian',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                    color: Colors.grey[700],
-                  ),
-                ),
-                const SizedBox(height: 10),
-                GridView.count(
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 1.35,
-                  children: KalkulatorService.daftarAktivitas
-                      .map((opsi) => _aktivitasSelector(opsi))
-                      .toList(),
-                ),
-
-                const SizedBox(height: 24),
-
-                // Tombol Hitung
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: hitungAnalisis,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _green,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(
-                          Icons.bar_chart,
-                          color: Colors.white,
-                          size: 20,
+                        Text(
+                          'Kalkulator Kesehatan',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: Text(
-                            'Hitung Analisis Kesehatan Saya',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 15,
-                            ),
+                        Text(
+                          'Analisis Tubuh, Energi & Nutrisi',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: Colors.grey[600],
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // ── Bagian Hasil Analisis ──
-          if (_hasil == null)
-            _modernCard(
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: _green.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.info_outline,
-                      color: _green,
-                      size: 22,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Text(
-                      'Masukkan data fisik Anda dan klik hitung untuk melihat analisis tubuh, kebutuhan kalori harian, serta estimasi nutrisi.',
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ),
                 ],
               ),
-            ),
 
-          if (_hasil != null) ...[
-            // ── 1. BODY ANALYSIS (Analisis Tubuh) ──
-            Text(
-              '1. Analisis Tubuh',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10),
-            _modernCard(
-              child: Column(
-                children: [
-                  // Status & BMI Circle Banner
-                  Row(
-                    children: [
-                      Container(
-                        width: 72,
-                        height: 72,
-                        decoration: BoxDecoration(
-                          color: _kategoriColor().withValues(alpha: 0.12),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: _kategoriColor().withValues(alpha: 0.3),
-                            width: 2,
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            _hasil!.bmiDisplay,
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: _kategoriColor(),
-                            ),
-                          ),
-                        ),
+              const SizedBox(height: 20),
+
+              // ── Form Input Card ──
+              _modernCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Parameter Fisik',
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: _kategoriColor().withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: _kategoriColor().withValues(
-                                    alpha: 0.3,
-                                  ),
-                                ),
-                              ),
-                              child: Text(
-                                _hasil!.statusLabel,
-                                style: GoogleFonts.poppins(
-                                  fontWeight: FontWeight.w700,
-                                  color: _kategoriColor(),
-                                  fontSize: 14,
-                                ),
-                              ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // 1. Jenis Kelamin
+                    Text(
+                      'Jenis Kelamin',
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        _genderSelector('Pria'),
+                        const SizedBox(width: 10),
+                        _genderSelector('Wanita'),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    // 2. Tinggi Badan Slider
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Tinggi Badan',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13,
+                              color: Colors.grey[700],
                             ),
-                            const SizedBox(height: 6),
-                            Text(
-                              'Tinggi: ${_hasil!.tinggiBadan.toInt()} cm • Berat: ${_hasil!.beratBadan.toInt()} kg',
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                                fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: '${height.toInt()} ',
+                                style: const TextStyle(
+                                  color: _green,
+                                  fontSize: 20,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'CM',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11,
+                                  color: Colors.grey[500],
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Slider(
+                      value: height,
+                      min: 100,
+                      max: 220,
+                      divisions: 120,
+                      activeColor: _green,
+                      inactiveColor: Colors.grey[200],
+                      onChanged: (value) =>
+                          setState(() => height = value.roundToDouble()),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '100 cm',
+                          style: GoogleFonts.poppins(
+                            fontSize: 10,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                        Text(
+                          '220 cm',
+                          style: GoogleFonts.poppins(
+                            fontSize: 10,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // 3. Berat Badan Slider
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Berat Badan',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: '${weight.toInt()} ',
+                                style: const TextStyle(
+                                  color: _green,
+                                  fontSize: 20,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'KG',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11,
+                                  color: Colors.grey[500],
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Slider(
+                      value: weight,
+                      min: 30,
+                      max: 200,
+                      divisions: 170,
+                      activeColor: _green,
+                      inactiveColor: Colors.grey[200],
+                      onChanged: (value) =>
+                          setState(() => weight = value.roundToDouble()),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '30 kg',
+                          style: GoogleFonts.poppins(
+                            fontSize: 10,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                        Text(
+                          '200 kg',
+                          style: GoogleFonts.poppins(
+                            fontSize: 10,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // 4. Usia Slider
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Usia',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: '${age.toInt()} ',
+                                style: const TextStyle(
+                                  color: _green,
+                                  fontSize: 20,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'Tahun',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11,
+                                  color: Colors.grey[500],
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Slider(
+                      value: age,
+                      min: 15,
+                      max: 90,
+                      divisions: 75,
+                      activeColor: _green,
+                      inactiveColor: Colors.grey[200],
+                      onChanged: (value) =>
+                          setState(() => age = value.roundToDouble()),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '15 Tahun',
+                          style: GoogleFonts.poppins(
+                            fontSize: 10,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                        Text(
+                          '90 Tahun',
+                          style: GoogleFonts.poppins(
+                            fontSize: 10,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // 5. Tingkat Aktivitas Harian
+                    Text(
+                      'Tingkat Aktivitas Harian',
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    GridView.count(
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 1.35,
+                      children: KalkulatorService.daftarAktivitas
+                          .map((opsi) => _aktivitasSelector(opsi))
+                          .toList(),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Tombol Hitung
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: hitungAnalisis,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _green,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.bar_chart,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: Text(
+                                'Hitung Analisis Kesehatan Saya',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // ── Bagian Hasil Analisis ──
+              if (_hasil == null)
+                _modernCard(
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: _green.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.info_outline,
+                          color: _green,
+                          size: 22,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Text(
+                          'Masukkan data fisik Anda dan klik hitung untuk melihat analisis tubuh, kebutuhan kalori harian, serta estimasi nutrisi.',
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                  const Divider(height: 28),
+                ),
 
-                  // Grid Detail Tubuh (BMI & Kisaran Berat)
-                  Row(
+              if (_hasil != null) ...[
+                // ── 1. BODY ANALYSIS (Analisis Tubuh) ──
+                Text(
+                  '1. Analisis Tubuh',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                _modernCard(
+                  child: Column(
                     children: [
-                      // Skor BMI
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.withValues(alpha: 0.05),
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: Colors.grey[200]!),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'BMI',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey[600],
-                                ),
+                      // Status & BMI Circle Banner
+                      Row(
+                        children: [
+                          Container(
+                            width: 72,
+                            height: 72,
+                            decoration: BoxDecoration(
+                              color: _kategoriColor().withValues(alpha: 0.12),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: _kategoriColor().withValues(alpha: 0.3),
+                                width: 2,
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '≈ ${_hasil!.bmiDisplay}',
+                            ),
+                            child: Center(
+                              child: Text(
+                                _hasil!.bmiDisplay,
                                 style: GoogleFonts.poppins(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: _kategoriColor(),
                                 ),
                               ),
-                              Text(
-                                'Kategori: ${_hasil!.status}',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 10,
-                                  color: Colors.grey[500],
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: _kategoriColor().withValues(
+                                      alpha: 0.12,
+                                    ),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: _kategoriColor().withValues(
+                                        alpha: 0.3,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    _hasil!.statusLabel,
+                                    style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w700,
+                                      color: _kategoriColor(),
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  'Tinggi: ${_hasil!.tinggiBadan.toInt()} cm • Berat: ${_hasil!.beratBadan.toInt()} kg',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 10),
+                      const Divider(height: 28),
 
-                      // Kisaran Berat Ideal Berdasarkan BMI
+                      // Grid Detail Tubuh (BMI & Kisaran Berat)
+                      Row(
+                        children: [
+                          // Skor BMI
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withValues(alpha: 0.05),
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(color: Colors.grey[200]!),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'BMI',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '≈ ${_hasil!.bmiDisplay}',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: _kategoriColor(),
+                                    ),
+                                  ),
+                                  Text(
+                                    'Kategori: ${_hasil!.status}',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 10,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+
+                          // Kisaran Berat Ideal Berdasarkan BMI
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withValues(alpha: 0.05),
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(color: Colors.grey[200]!),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Kisaran Berat Sehat',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '≈ ${_hasil!.kisaranBeratDisplay}',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  Text(
+                                    'BMI 18.5 – 24.9',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 10,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // ── 2. ENERGY NEEDS (Kebutuhan Energi) ──
+                Text(
+                  '2. Kebutuhan Energi Harian',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                _modernCard(
+                  child: Row(
+                    children: [
+                      // BMR Card
                       Expanded(
                         child: Container(
-                          padding: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
                             color: Colors.grey.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(14),
@@ -912,25 +989,35 @@ class _BmiPageState extends State<BmiPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Kisaran Berat Sehat',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey[600],
-                                ),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.local_fire_department,
+                                    size: 14,
+                                    color: Colors.orange,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'BMR',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey[700],
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 6),
                               Text(
-                                '≈ ${_hasil!.kisaranBeratDisplay}',
+                                '≈ ${_hasil!.bmrDisplay}',
                                 style: GoogleFonts.poppins(
-                                  fontSize: 13,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black87,
                                 ),
                               ),
                               Text(
-                                'BMI 18.5 – 24.9',
+                                'kcal/hari (istirahat)',
                                 style: GoogleFonts.poppins(
                                   fontSize: 10,
                                   color: Colors.grey[500],
@@ -940,701 +1027,648 @@ class _BmiPageState extends State<BmiPage> {
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+                      const SizedBox(width: 10),
 
-            const SizedBox(height: 20),
-
-            // ── 2. ENERGY NEEDS (Kebutuhan Energi) ──
-            Text(
-              '2. Kebutuhan Energi Harian',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10),
-            _modernCard(
-              child: Row(
-                children: [
-                  // BMR Card
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withValues(alpha: 0.05),
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: Colors.grey[200]!),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                      // TDEE Card
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: _green.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: _green.withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Icon(
-                                Icons.local_fire_department,
-                                size: 14,
-                                color: Colors.orange,
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.bolt,
+                                    size: 14,
+                                    color: _green,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      'Energi Harian (TDEE)',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                        color: _green,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 4),
+                              const SizedBox(height: 6),
                               Text(
-                                'BMR',
+                                '≈ ${_hasil!.tdeeDisplay}',
                                 style: GoogleFonts.poppins(
-                                  fontSize: 11,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.grey[700],
+                                  color: _green,
+                                ),
+                              ),
+                              Text(
+                                'kcal/hari (aktif)',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 10,
+                                  color: Colors.grey[600],
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 6),
-                          Text(
-                            '≈ ${_hasil!.bmrDisplay}',
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          Text(
-                            'kcal/hari (istirahat)',
-                            style: GoogleFonts.poppins(
-                              fontSize: 10,
-                              color: Colors.grey[500],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // ── 3. NUTRITION ESTIMATE (Estimasi Nutrisi) ──
+                Text(
+                  '3. Rekomendasi Nutrisi Harian',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                _modernCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.restaurant, color: _green, size: 16),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Distribusi Makronutrien',
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-
-                  // TDEE Card
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: _green.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: _green.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      const SizedBox(height: 12),
+                      Row(
                         children: [
-                          Row(
+                          // Protein
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withValues(alpha: 0.05),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey[200]!),
+                              ),
+                              child: Column(
+                                children: [
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      'PROTEIN',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      '≈ ${_hasil!.proteinDisplay}g',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      'BB × 1.4 g',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 9,
+                                        color: Colors.grey[500],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+
+                          // Lemak
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withValues(alpha: 0.05),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey[200]!),
+                              ),
+                              child: Column(
+                                children: [
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      'LEMAK',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      '≈ ${_hasil!.lemakDisplay}g',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      '30% TDEE',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 9,
+                                        color: Colors.grey[500],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+
+                          // Karbohidrat
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withValues(alpha: 0.05),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey[200]!),
+                              ),
+                              child: Column(
+                                children: [
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      'KARBOHIDRAT',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      '≈ ${_hasil!.karbohidratDisplay}g',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      'Sisa Kalori',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 9,
+                                        color: Colors.grey[500],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // ── Tips Section ──
+                _modernCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.amber.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(
+                              Icons.lightbulb_outline,
+                              color: Colors.amber,
+                              size: 18,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'Tips Cepat Sehat',
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      ...tips.map(
+                        (tip) => Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Icon(Icons.bolt, size: 14, color: _green),
-                              const SizedBox(width: 4),
+                              Container(
+                                margin: const EdgeInsets.only(top: 7),
+                                width: 6,
+                                height: 6,
+                                decoration: const BoxDecoration(
+                                  color: _green,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
-                                  'Energi Harian (TDEE)',
-                                  overflow: TextOverflow.ellipsis,
+                                  tip,
                                   style: GoogleFonts.poppins(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color: _green,
+                                    fontSize: 13,
+                                    color: Colors.grey[700],
+                                    height: 1.5,
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 6),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      KartuKesehatanModal.show(
+                        context,
+                        _hasil!,
+                        isLoggedIn: _isLoggedIn,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF090E0C),
+                      foregroundColor: const Color(0xFF00FF7F),
+                      side: const BorderSide(
+                        color: Color(0xFF00FF7F),
+                        width: 1.5,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ),
+                    icon: const Icon(
+                      Icons.auto_awesome,
+                      color: Color(0xFF00FF7F),
+                      size: 18,
+                    ),
+                    label: Text(
+                      'Unduh / Cetak Kartu Digital',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+
+              const SizedBox(height: 20),
+
+              // ── Kategori BMI Reference Grid ──
+              Text(
+                'Panduan Kategori BMI',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  mainAxisExtent: 185,
+                ),
+                itemCount: _bmiCategories.length,
+                itemBuilder: (context, index) {
+                  final cat = _bmiCategories[index];
+                  final color = cat['color'] as Color;
+                  final isActive =
+                      _hasil != null && _hasil!.status == cat['status'];
+
+                  return Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: isActive
+                            ? color.withValues(alpha: 0.6)
+                            : Colors.grey[200]!,
+                        width: isActive ? 2 : 1,
+                      ),
+                      boxShadow: isActive
+                          ? [
+                              BoxShadow(
+                                color: color.withValues(alpha: 0.12),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: color.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(
+                            cat['icon'] as IconData,
+                            color: color,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          cat['label'] as String,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          cat['range'] as String,
+                          style: GoogleFonts.poppins(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: color,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          cat['desc'] as String,
+                          style: GoogleFonts.poppins(
+                            fontSize: 10,
+                            color: Colors.grey[500],
+                            height: 1.4,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+
+              // ── Rekomendasi Menu Sehat ──
+              if (_hasil != null) ...[
+                const SizedBox(height: 24),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(top: 2),
+                      child: Icon(
+                        Icons.restaurant_menu,
+                        color: _green,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
-                            '≈ ${_hasil!.tdeeDisplay}',
+                            'Rekomendasi Menu Diet: ${_hasil!.status}',
                             style: GoogleFonts.poppins(
-                              fontSize: 18,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: _green,
                             ),
                           ),
+                          const SizedBox(height: 2),
                           Text(
-                            'kcal/hari (aktif)',
+                            'Nutrisi seimbang untuk mendukung kebutuhan energi harian Anda ($_totalKcal kcal/hari).',
                             style: GoogleFonts.poppins(
-                              fontSize: 10,
+                              fontSize: 12,
                               color: Colors.grey[600],
                             ),
                           ),
                         ],
                       ),
                     ),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                MenuPage(onBack: () => Navigator.pop(context)),
+                          ),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Lihat Semua',
+                              style: GoogleFonts.poppins(
+                                color: _green,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 2),
+                            const Icon(
+                              Icons.arrow_forward_ios,
+                              size: 11,
+                              color: _green,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+
+                // 3 Summary Cards Pembagian Kalori
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.grey.withValues(alpha: 0.15),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.03),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // ── 3. NUTRITION ESTIMATE (Estimasi Nutrisi) ──
-            Text(
-              '3. Rekomendasi Nutrisi Harian',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10),
-            _modernCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+                  child: Row(
                     children: [
-                      const Icon(Icons.restaurant, color: _green, size: 16),
+                      Expanded(
+                        child: _calorieSummaryBox(
+                          label: '🌅 Sarapan (25%)',
+                          kcal: '~$_sarapanKcal kkal',
+                        ),
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
+                        child: _calorieSummaryBox(
+                          label: '☀️ Makan Siang (40%)',
+                          kcal: '~$_siangKcal kkal',
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _calorieSummaryBox(
+                          label: '🌙 Makan Malam (35%)',
+                          kcal: '~$_malamKcal kkal',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 14),
+
+                // Filter Tabs (Semua Menu, Sarapan, Makan Siang, Makan Malam)
+                _buildMealFilterTabs(),
+                const SizedBox(height: 14),
+
+                // Daftar Menu Rekomendasi
+                if (_isLoadingMenus)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(24),
+                      child: CircularProgressIndicator(color: _green),
+                    ),
+                  )
+                else if (_filteredRecommendedMenus.isEmpty)
+                  _modernCard(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
                         child: Text(
-                          'Distribusi Makronutrien',
-                          overflow: TextOverflow.ellipsis,
+                          'Belum ada menu yang cocok untuk kategori ini.',
                           style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[500],
                             fontSize: 13,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      // Protein
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 12,
-                            horizontal: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.withValues(alpha: 0.05),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey[200]!),
-                          ),
-                          child: Column(
-                            children: [
-                              FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  'PROTEIN',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  '≈ ${_hasil!.proteinDisplay}g',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  'BB × 1.4 g',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 9,
-                                    color: Colors.grey[500],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-
-                      // Lemak
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 12,
-                            horizontal: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.withValues(alpha: 0.05),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey[200]!),
-                          ),
-                          child: Column(
-                            children: [
-                              FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  'LEMAK',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  '≈ ${_hasil!.lemakDisplay}g',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  '30% TDEE',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 9,
-                                    color: Colors.grey[500],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-
-                      // Karbohidrat
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 12,
-                            horizontal: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.withValues(alpha: 0.05),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey[200]!),
-                          ),
-                          child: Column(
-                            children: [
-                              FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  'KARBOHIDRAT',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  '≈ ${_hasil!.karbohidratDisplay}g',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  'Sisa Kalori',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 9,
-                                    color: Colors.grey[500],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // ── Tips Section ──
-            _modernCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.amber.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Icon(
-                          Icons.lightbulb_outline,
-                          color: Colors.amber,
-                          size: 18,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          'Tips Cepat Sehat',
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  ...tips.map(
-                    (tip) => Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(top: 7),
-                            width: 6,
-                            height: 6,
-                            decoration: const BoxDecoration(
-                              color: _green,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              tip,
-                              style: GoogleFonts.poppins(
-                                fontSize: 13,
-                                color: Colors.grey[700],
-                                height: 1.5,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
+                  )
+                else
+                  Column(
+                    children: _filteredRecommendedMenus
+                        .map((menu) => _recommendedMenuCard(menu, _totalKcal))
+                        .toList(),
                   ),
-                ],
-              ),
-            ),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  KartuKesehatanModal.show(
-                    context,
-                    _hasil!,
-                    isLoggedIn: _isLoggedIn,
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF090E0C),
-                  foregroundColor: const Color(0xFF00FF7F),
-                  side: const BorderSide(color: Color(0xFF00FF7F), width: 1.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                ),
-                icon: const Icon(Icons.auto_awesome, color: Color(0xFF00FF7F), size: 18),
-                label: Text(
-                  'Unduh / Cetak Kartu Digital',
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ],
-
-          const SizedBox(height: 20),
-
-          // ── Kategori BMI Reference Grid ──
-          Text(
-            'Panduan Kategori BMI',
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              mainAxisExtent: 185,
-            ),
-            itemCount: _bmiCategories.length,
-            itemBuilder: (context, index) {
-              final cat = _bmiCategories[index];
-              final color = cat['color'] as Color;
-              final isActive =
-                  _hasil != null && _hasil!.status == cat['status'];
-
-              return Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: isActive
-                        ? color.withValues(alpha: 0.6)
-                        : Colors.grey[200]!,
-                    width: isActive ? 2 : 1,
-                  ),
-                  boxShadow: isActive
-                      ? [
-                          BoxShadow(
-                            color: color.withValues(alpha: 0.12),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ]
-                      : null,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: color.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        cat['icon'] as IconData,
-                        color: color,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      cat['label'] as String,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      cat['range'] as String,
-                      style: GoogleFonts.poppins(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: color,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      cat['desc'] as String,
-                      style: GoogleFonts.poppins(
-                        fontSize: 10,
-                        color: Colors.grey[500],
-                        height: 1.4,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-
-          // ── Rekomendasi Menu Sehat ──
-          if (_hasil != null) ...[
-            const SizedBox(height: 24),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(top: 2),
-                  child: Icon(Icons.restaurant_menu, color: _green, size: 20),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Rekomendasi Menu Diet: ${_hasil!.status}',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Nutrisi seimbang untuk mendukung kebutuhan energi harian Anda ($_totalKcal kcal/hari).',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            MenuPage(onBack: () => Navigator.pop(context)),
-                      ),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Lihat Semua',
-                          style: GoogleFonts.poppins(
-                            color: _green,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 2),
-                        const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 11,
-                          color: _green,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
               ],
-            ),
-            const SizedBox(height: 14),
 
-            // 3 Summary Cards Pembagian Kalori
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _calorieSummaryBox(
-                      label: '🌅 Sarapan (25%)',
-                      kcal: '~$_sarapanKcal kkal',
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _calorieSummaryBox(
-                      label: '☀️ Makan Siang (40%)',
-                      kcal: '~$_siangKcal kkal',
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _calorieSummaryBox(
-                      label: '🌙 Makan Malam (35%)',
-                      kcal: '~$_malamKcal kkal',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 14),
+              // ── Riwayat Perhitungan Section ──
+              const SizedBox(height: 28),
+              _buildHistorySection(),
 
-            // Filter Tabs (Semua Menu, Sarapan, Makan Siang, Makan Malam)
-            _buildMealFilterTabs(),
-            const SizedBox(height: 14),
+              const SizedBox(height: 40),
 
-            // Daftar Menu Rekomendasi
-            if (_isLoadingMenus)
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(24),
-                  child: CircularProgressIndicator(color: _green),
+              // ── Hidden widget untuk capture PNG (di-render di luar layar) ──
+              Transform.translate(
+                offset: const Offset(-10000, 0),
+                child: RepaintBoundary(
+                  key: _riwayatPngKey,
+                  child: RiwayatHealthCard(history: _historyList),
                 ),
-              )
-            else if (_filteredRecommendedMenus.isEmpty)
-              _modernCard(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Text(
-                      'Belum ada menu yang cocok untuk kategori ini.',
-                      style: GoogleFonts.poppins(
-                        color: Colors.grey[500],
-                        fontSize: 13,
-                      ),
-                    ),
-                  ),
-                ),
-              )
-            else
-              Column(
-                children: _filteredRecommendedMenus
-                    .map((menu) => _recommendedMenuCard(menu, _totalKcal))
-                    .toList(),
               ),
-          ],
-
-          // ── Riwayat Perhitungan Section ──
-          const SizedBox(height: 28),
-          _buildHistorySection(),
-
-          const SizedBox(height: 40),
-
-          // ── Hidden widget untuk capture PNG (di-render di luar layar) ──
-          Transform.translate(
-            offset: const Offset(-10000, 0),
-            child: RepaintBoundary(
-              key: _riwayatPngKey,
-              child: RiwayatHealthCard(history: _historyList),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
-    ),
-  ),
-);
+    );
   }
 
   Widget _calorieSummaryBox({required String label, required String kcal}) {
@@ -2227,8 +2261,10 @@ class _BmiPageState extends State<BmiPage> {
                       duration: Duration(seconds: 2),
                     ),
                   );
-                  final ok = await KartuKesehatanExportService
-                      .captureAndDownloadPng(_riwayatPngKey);
+                  final ok =
+                      await KartuKesehatanExportService.captureAndDownloadPng(
+                        _riwayatPngKey,
+                      );
                   if (!ok) {
                     messenger.showSnackBar(
                       const SnackBar(

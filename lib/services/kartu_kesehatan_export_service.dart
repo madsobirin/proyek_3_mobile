@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'package:flutter/foundation.dart' show kIsWeb;
+// import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:pdf/pdf.dart';
@@ -8,7 +8,6 @@ import 'package:pdf/widgets.dart' as pw;
 import '../models/analisis_kesehatan_model.dart';
 import '../models/perhitungan_model.dart';
 import 'pdf_downloader/pdf_downloader.dart';
-
 
 // ── Palet Warna Resmi FitLife ──
 const _primary = PdfColor.fromInt(0xFF00C864);
@@ -31,12 +30,14 @@ class KartuKesehatanExportService {
   // ─────────────────────────────────────────────────────────
   static Future<Uint8List?> captureWidgetToPng(GlobalKey boundaryKey) async {
     try {
-      final boundary = boundaryKey.currentContext?.findRenderObject()
-          as RenderRepaintBoundary?;
+      final boundary =
+          boundaryKey.currentContext?.findRenderObject()
+              as RenderRepaintBoundary?;
       if (boundary == null) return null;
       final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-      final ByteData? byteData =
-          await image.toByteData(format: ui.ImageByteFormat.png);
+      final ByteData? byteData = await image.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
       return byteData?.buffer.asUint8List();
     } catch (e) {
       debugPrint('Gagal capture PNG: $e');
@@ -62,7 +63,6 @@ class KartuKesehatanExportService {
       return false;
     }
   }
-
 
   // ─────────────────────────────────────────────────────────
   // 3. EXPORT KARTU INDIVIDUAL → PDF TABEL RESMI (PERSIS WEB)
@@ -112,38 +112,63 @@ class KartuKesehatanExportService {
       final pdf = pw.Document();
 
       // Palet warna persis kode website (jsPDF)
-      const primaryColor = PdfColor.fromInt(0xFF00C864);       // [0, 200, 100]
-      const primaryDarkColor = PdfColor.fromInt(0xFF00964B);   // [0, 150, 75]
-      const bgDarkColor = PdfColor.fromInt(0xFF0F1714);        // [15, 23, 20]
-      const textDarkColor = PdfColor.fromInt(0xFF1E1E1E);      // [30, 30, 30]
-      const textMutedColor = PdfColor.fromInt(0xFF787878);     // [120, 120, 120]
-      const borderLightColor = PdfColor.fromInt(0xFFDCDCDC);   // [220, 220, 220]
-      const bgLightColor = PdfColor.fromInt(0xFFF6FCF9);       // [246, 252, 249]
+      const primaryColor = PdfColor.fromInt(0xFF00C864); // [0, 200, 100]
+      const primaryDarkColor = PdfColor.fromInt(0xFF00964B); // [0, 150, 75]
+      const bgDarkColor = PdfColor.fromInt(0xFF0F1714); // [15, 23, 20]
+      const textDarkColor = PdfColor.fromInt(0xFF1E1E1E); // [30, 30, 30]
+      const textMutedColor = PdfColor.fromInt(0xFF787878); // [120, 120, 120]
+      const borderLightColor = PdfColor.fromInt(0xFFDCDCDC); // [220, 220, 220]
+      const bgLightColor = PdfColor.fromInt(0xFFF6FCF9); // [246, 252, 249]
 
       const monthNames = [
-        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember',
       ];
       const monthShortNames = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-        'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'Mei',
+        'Jun',
+        'Jul',
+        'Ags',
+        'Sep',
+        'Okt',
+        'Nov',
+        'Des',
       ];
 
       final sortedChrono = List<PerhitunganModel>.from(history)
-        ..sort((a, b) => (a.createdAt ?? DateTime.now())
-            .compareTo(b.createdAt ?? DateTime.now()));
+        ..sort(
+          (a, b) => (a.createdAt ?? DateTime.now()).compareTo(
+            b.createdAt ?? DateTime.now(),
+          ),
+        );
 
       final first = sortedChrono.isNotEmpty ? sortedChrono.first : null;
       final last = sortedChrono.isNotEmpty ? sortedChrono.last : null;
       final deltaBerat = (first != null && last != null)
           ? double.parse(
-              (last.beratBadan - first.beratBadan).toStringAsFixed(1))
+              (last.beratBadan - first.beratBadan).toStringAsFixed(1),
+            )
           : 0.0;
       final avgBmi = sortedChrono.isNotEmpty
           ? double.parse(
               (sortedChrono.map((e) => e.bmi).reduce((a, b) => a + b) /
                       sortedChrono.length)
-                  .toStringAsFixed(1))
+                  .toStringAsFixed(1),
+            )
           : 0.0;
 
       final now = DateTime.now();
@@ -156,7 +181,9 @@ class KartuKesehatanExportService {
       pdf.addPage(
         pw.MultiPage(
           pageFormat: PdfPageFormat.a4,
-          margin: pw.EdgeInsets.zero, // Zero margin untuk full-width header & footer
+          margin: pw
+              .EdgeInsets
+              .zero, // Zero margin untuk full-width header & footer
           header: (pw.Context ctx) {
             return pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -250,11 +277,17 @@ class KartuKesehatanExportService {
                 children: [
                   pw.Text(
                     'Dibuat dengan Kalkulator BMI | Konsultasikan dengan dokter untuk hasil yang lebih akurat',
-                    style: const pw.TextStyle(color: textMutedColor, fontSize: 7.5),
+                    style: const pw.TextStyle(
+                      color: textMutedColor,
+                      fontSize: 7.5,
+                    ),
                   ),
                   pw.Text(
                     'Halaman ${ctx.pageNumber} dari ${ctx.pagesCount}',
-                    style: const pw.TextStyle(color: textMutedColor, fontSize: 7.5),
+                    style: const pw.TextStyle(
+                      color: textMutedColor,
+                      fontSize: 7.5,
+                    ),
                   ),
                 ],
               ),
@@ -288,7 +321,9 @@ class KartuKesehatanExportService {
                       children: [
                         // Header Tabel
                         pw.TableRow(
-                          decoration: const pw.BoxDecoration(color: primaryColor),
+                          decoration: const pw.BoxDecoration(
+                            color: primaryColor,
+                          ),
                           children: [
                             _webHeaderCell('No'),
                             _webHeaderCell('Tanggal'),
@@ -335,14 +370,34 @@ class KartuKesehatanExportService {
                               color: isOdd ? bgLightColor : _white,
                             ),
                             children: [
-                              _webBodyCell(idx.toString(), isBold: true, color: textMutedColor),
+                              _webBodyCell(
+                                idx.toString(),
+                                isBold: true,
+                                color: textMutedColor,
+                              ),
                               _webBodyCell(dateStr),
                               _webBodyCell(item.tinggiBadan.toStringAsFixed(0)),
                               _webBodyCell(item.beratBadan.toStringAsFixed(0)),
-                              _webBodyCell(item.bmi.toStringAsFixed(1), isBold: true, color: primaryDarkColor),
-                              _webBodyCell(item.status, isBold: true, color: statusColor),
-                              _webBodyCell(item.bmr > 0 ? item.bmr.round().toString() : '-'),
-                              _webBodyCell(item.tdee > 0 ? item.tdee.round().toString() : '-'),
+                              _webBodyCell(
+                                item.bmi.toStringAsFixed(1),
+                                isBold: true,
+                                color: primaryDarkColor,
+                              ),
+                              _webBodyCell(
+                                item.status,
+                                isBold: true,
+                                color: statusColor,
+                              ),
+                              _webBodyCell(
+                                item.bmr > 0
+                                    ? item.bmr.round().toString()
+                                    : '-',
+                              ),
+                              _webBodyCell(
+                                item.tdee > 0
+                                    ? item.tdee.round().toString()
+                                    : '-',
+                              ),
                             ],
                           );
                         }),
@@ -370,11 +425,15 @@ class KartuKesehatanExportService {
                             deltaBerat < 0
                                 ? primaryDarkColor
                                 : deltaBerat > 0
-                                    ? const PdfColor.fromInt(0xFFC86432)
-                                    : textMutedColor,
+                                ? const PdfColor.fromInt(0xFFC86432)
+                                : textMutedColor,
                           ),
                           pw.SizedBox(width: 4 * PdfPageFormat.mm),
-                          _summaryCard('RATA-RATA BMI', avgBmi.toString(), primaryDarkColor),
+                          _summaryCard(
+                            'RATA-RATA BMI',
+                            avgBmi.toString(),
+                            primaryDarkColor,
+                          ),
                           pw.SizedBox(width: 4 * PdfPageFormat.mm),
                           _summaryCard(
                             'STATUS TERAKHIR',
@@ -491,8 +550,10 @@ class KartuKesehatanExportService {
         ),
         child: pw.Column(
           children: [
-            pw.Text(label,
-                style: const pw.TextStyle(color: _textMuted, fontSize: 7.5)),
+            pw.Text(
+              label,
+              style: const pw.TextStyle(color: _textMuted, fontSize: 7.5),
+            ),
             pw.Text(
               value,
               style: pw.TextStyle(
@@ -560,7 +621,9 @@ class KartuKesehatanExportService {
         height: 24 * PdfPageFormat.mm,
         decoration: pw.BoxDecoration(
           color: const PdfColor.fromInt(0xFFFAFCFB),
-          borderRadius: const pw.BorderRadius.all(pw.Radius.circular(2 * PdfPageFormat.mm)),
+          borderRadius: const pw.BorderRadius.all(
+            pw.Radius.circular(2 * PdfPageFormat.mm),
+          ),
           border: pw.Border.all(color: _borderLight, width: 0.3),
         ),
         child: pw.Row(
@@ -682,7 +745,8 @@ class KartuKesehatanExportService {
         return {
           'fokus': 'Meningkatkan massa otot & surplus kalori teratur.',
           'olahraga': 'Latihan beban 3-4x seminggu. Batasi kardio berlebih.',
-          'nutrisi': 'Tingkatkan porsi protein tinggi dan makanan padat nutrisi.',
+          'nutrisi':
+              'Tingkatkan porsi protein tinggi dan makanan padat nutrisi.',
         };
       case 'Berlebih':
         return {
@@ -694,7 +758,8 @@ class KartuKesehatanExportService {
         return {
           'fokus': 'Penurunan berat badan bertahap yang aman bagi sendi.',
           'olahraga': 'Olahraga low-impact: jalan kaki cepat, renang, sepeda.',
-          'nutrisi': 'Defisit 500 kkal/hari, cukupi air putih minimal 2.5L/hari.',
+          'nutrisi':
+              'Defisit 500 kkal/hari, cukupi air putih minimal 2.5L/hari.',
         };
       default:
         return {

@@ -9,11 +9,7 @@ class RiwayatHealthCard extends StatelessWidget {
   final List<PerhitunganModel> history;
   final DateTime? tanggal;
 
-  const RiwayatHealthCard({
-    super.key,
-    required this.history,
-    this.tanggal,
-  });
+  const RiwayatHealthCard({super.key, required this.history, this.tanggal});
 
   static const _primary = Color(0xFF00C864);
   static const _primaryDark = Color(0xFF00964B);
@@ -25,12 +21,32 @@ class RiwayatHealthCard extends StatelessWidget {
   static const _white = Colors.white;
 
   static const _monthNames = [
-    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
   ];
   static const _monthShort = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-    'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'Mei',
+    'Jun',
+    'Jul',
+    'Ags',
+    'Sep',
+    'Okt',
+    'Nov',
+    'Des',
   ];
 
   String _fmtLong(DateTime d) =>
@@ -63,11 +79,13 @@ class RiwayatHealthCard extends StatelessWidget {
     final first = sorted.first;
     final last = sorted.last;
 
-    final deltaBerat =
-        double.parse((last.beratBadan - first.beratBadan).toStringAsFixed(1));
+    final deltaBerat = double.parse(
+      (last.beratBadan - first.beratBadan).toStringAsFixed(1),
+    );
     final avgBmi = double.parse(
-        (sorted.map((e) => e.bmi).reduce((a, b) => a + b) / sorted.length)
-            .toStringAsFixed(1));
+      (sorted.map((e) => e.bmi).reduce((a, b) => a + b) / sorted.length)
+          .toStringAsFixed(1),
+    );
 
     return Container(
       width: 860,
@@ -160,13 +178,21 @@ class RiwayatHealthCard extends StatelessWidget {
                         deltaBerat < 0
                             ? _primaryDark
                             : deltaBerat > 0
-                                ? const Color(0xFFC86432)
-                                : _textMuted,
+                            ? const Color(0xFFC86432)
+                            : _textMuted,
                       ),
                       const SizedBox(width: 12),
-                      _summaryCard('RATA-RATA BMI', avgBmi.toString(), _primaryDark),
+                      _summaryCard(
+                        'RATA-RATA BMI',
+                        avgBmi.toString(),
+                        _primaryDark,
+                      ),
                       const SizedBox(width: 12),
-                      _summaryCard('STATUS TERAKHIR', last.status, _primaryDark),
+                      _summaryCard(
+                        'STATUS TERAKHIR',
+                        last.status,
+                        _primaryDark,
+                      ),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -260,16 +286,22 @@ class RiwayatHealthCard extends StatelessWidget {
               : '-';
 
           return TableRow(
-            decoration: BoxDecoration(
-              color: isOdd ? _bgLight : _white,
-            ),
+            decoration: BoxDecoration(color: isOdd ? _bgLight : _white),
             children: [
               _tdCell((idx + 1).toString(), color: _textMuted, bold: true),
               _tdCell(dateStr),
               _tdCell(item.tinggiBadan.toStringAsFixed(0)),
               _tdCell(item.beratBadan.toStringAsFixed(0)),
-              _tdCell(item.bmi.toStringAsFixed(1), color: _primaryDark, bold: true),
-              _tdCell(item.status, color: _statusColor(item.status), bold: true),
+              _tdCell(
+                item.bmi.toStringAsFixed(1),
+                color: _primaryDark,
+                bold: true,
+              ),
+              _tdCell(
+                item.status,
+                color: _statusColor(item.status),
+                bold: true,
+              ),
               _tdCell(item.bmr > 0 ? item.bmr.round().toString() : '-'),
               _tdCell(item.tdee > 0 ? item.tdee.round().toString() : '-'),
             ],
