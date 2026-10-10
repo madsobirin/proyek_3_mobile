@@ -7,6 +7,7 @@ import 'package:fitlife/pages/dashboard/guest_profile_page.dart';
 import 'package:fitlife/pages/dashboard/menu_page.dart';
 import 'package:fitlife/pages/scan/scan_barcode_screen.dart';
 import 'package:fitlife/pages/lokasi/lokasi_olahraga_page.dart';
+import 'package:fitlife/pages/chat/chat_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
@@ -20,6 +21,7 @@ class _HomeState extends State<Home> {
   int _selectedIndex = 0;
   final List<int> _history = [];
   bool _isLoggedIn = false;
+  bool _isChatOpen = false;
 
   @override
   void initState() {
@@ -108,7 +110,7 @@ class _HomeState extends State<Home> {
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(45)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00FF66).withOpacity(0.15),
+            color: const Color(0xFF00FF66).withValues(alpha: 0.15),
             blurRadius: 30,
             offset: const Offset(0, 15),
           ),
@@ -157,7 +159,7 @@ class _HomeState extends State<Home> {
                 borderRadius: BorderRadius.circular(30),
               ),
               elevation: 4,
-              shadowColor: const Color(0xFF00FF66).withOpacity(0.4),
+              shadowColor: const Color(0xFF00FF66).withValues(alpha: 0.4),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -263,7 +265,7 @@ class _HomeState extends State<Home> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 15,
               offset: const Offset(0, 5),
             ),
@@ -274,7 +276,7 @@ class _HomeState extends State<Home> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.12),
+                color: color.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: color, size: 28),
@@ -362,7 +364,7 @@ class _HomeState extends State<Home> {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 15,
                     offset: const Offset(0, 5),
                   ),
@@ -456,7 +458,7 @@ class _HomeState extends State<Home> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
+                  color: Colors.black.withValues(alpha: 0.04),
                   blurRadius: 15,
                   offset: const Offset(0, 5),
                 ),
@@ -484,7 +486,9 @@ class _HomeState extends State<Home> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF00FF66).withOpacity(0.15),
+                          color: const Color(
+                            0xFF00FF66,
+                          ).withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -525,20 +529,57 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      body: SafeArea(
-        child: IndexedStack(
-          index: _selectedIndex,
-          children: [
-            _buildHomeContent(), // 0
-            BmiPage(onBack: _goBack), // 1
-            MenuPage(onBack: _goBack), // 2
-            ArtikelPage(onBack: _goBack), // 3
-            LocationOlahragaPage(onBack: _goBack), // 4
-            _isLoggedIn ? const ProfilePage() : const GuestProfilePage(), // 5
-          ],
-        ),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: IndexedStack(
+              index: _selectedIndex,
+              children: [
+                _buildHomeContent(),
+                BmiPage(onBack: _goBack),
+                MenuPage(onBack: _goBack),
+                ArtikelPage(onBack: _goBack),
+                LocationOlahragaPage(onBack: _goBack),
+                _isLoggedIn ? const ProfilePage() : const GuestProfilePage(),
+              ],
+            ),
+          ),
+          if (_isChatOpen)
+            Positioned(
+              right: 12,
+              bottom: 12,
+              child: SizedBox(
+                width: MediaQuery.sizeOf(context).width >= 420
+                    ? 380
+                    : MediaQuery.sizeOf(context).width - 24,
+                height: (MediaQuery.sizeOf(context).height * 0.65).clamp(
+                  320.0,
+                  620.0,
+                ),
+                child: const ChatPanel(),
+              ),
+            ),
+        ],
       ),
       bottomNavigationBar: _buildBottomNav(),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF247447),
+        onPressed: () {
+          setState(() {
+            _isChatOpen = !_isChatOpen;
+          });
+        },
+        child: _isChatOpen
+            ? const Icon(Icons.close_rounded, color: Colors.white)
+            : Image.asset(
+                'assets/maskot-ai/first.png',
+                width: 32,
+                height: 32,
+                errorBuilder: (_, __, ___) =>
+                    const Icon(Icons.chat_rounded, color: Colors.white),
+              ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 

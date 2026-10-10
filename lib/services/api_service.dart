@@ -103,7 +103,9 @@ class ApiService {
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return data;
       } else {
-        throw Exception(data['message'] ?? 'Terjadi kesalahan pada server');
+        throw Exception(
+          data['message'] ?? data['error'] ?? 'Terjadi kesalahan pada server',
+        );
       }
     } catch (e) {
       if (e is FormatException) {
