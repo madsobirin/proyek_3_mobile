@@ -6,11 +6,7 @@ class DigitalHealthCard extends StatelessWidget {
   final AnalisisKesehatan data;
   final DateTime? tanggal;
 
-  const DigitalHealthCard({
-    super.key,
-    required this.data,
-    this.tanggal,
-  });
+  const DigitalHealthCard({super.key, required this.data, this.tanggal});
 
   // ── Palet warna profesional (sesuai PDF) ──
   static const _primary = Color(0xFF00C864);
@@ -41,7 +37,8 @@ class DigitalHealthCard extends StatelessWidget {
         return {
           'Fokus': 'Meningkatkan massa otot & surplus kalori teratur.',
           'Latihan': 'Latihan beban 3-4x seminggu. Batasi kardio berlebih.',
-          'Nutrisi': 'Tingkatkan porsi protein tinggi dan makanan padat nutrisi.',
+          'Nutrisi':
+              'Tingkatkan porsi protein tinggi dan makanan padat nutrisi.',
         };
       case 'Berlebih':
         return {
@@ -53,7 +50,8 @@ class DigitalHealthCard extends StatelessWidget {
         return {
           'Fokus': 'Penurunan berat badan bertahap yang aman bagi sendi.',
           'Latihan': 'Olahraga low-impact: jalan kaki cepat, renang, sepeda.',
-          'Nutrisi': 'Defisit 500 kkal/hari, cukupi air putih minimal 2.5L/hari.',
+          'Nutrisi':
+              'Defisit 500 kkal/hari, cukupi air putih minimal 2.5L/hari.',
         };
       default:
         return {
@@ -66,8 +64,18 @@ class DigitalHealthCard extends StatelessWidget {
 
   String _formatTanggal(DateTime d) {
     const bulan = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
     ];
     return '${d.day} ${bulan[d.month - 1]} ${d.year}';
   }
@@ -138,11 +146,16 @@ class DigitalHealthCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 3),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: _primary.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: _primary.withValues(alpha: 0.4)),
+                          border: Border.all(
+                            color: _primary.withValues(alpha: 0.4),
+                          ),
                         ),
                         child: Text(
                           'FITLIFE',
@@ -172,7 +185,10 @@ class DigitalHealthCard extends StatelessWidget {
                     children: [
                       _dataChip('Tinggi', '${data.tinggiBadan.round()} cm'),
                       const SizedBox(width: 6),
-                      _dataChip('Berat', '${data.beratBadan.toStringAsFixed(1)} kg'),
+                      _dataChip(
+                        'Berat',
+                        '${data.beratBadan.toStringAsFixed(1)} kg',
+                      ),
                       const SizedBox(width: 6),
                       _dataChip('Gender', data.gender),
                       const SizedBox(width: 6),
@@ -193,7 +209,10 @@ class DigitalHealthCard extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: _bgLight,
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: _statusColor.withValues(alpha: 0.5), width: 1),
+                            border: Border.all(
+                              color: _statusColor.withValues(alpha: 0.5),
+                              width: 1,
+                            ),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,7 +237,10 @@ class DigitalHealthCard extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
                                 decoration: BoxDecoration(
                                   color: _statusColor.withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(10),
@@ -287,11 +309,24 @@ class DigitalHealthCard extends StatelessWidget {
                   // ── 4. Tiga Pilar Energi ──
                   Row(
                     children: [
-                      _energyCard('BMR', '${data.bmrDisplay} kkal', 'Metabolisme basal'),
+                      _energyCard(
+                        'BMR',
+                        '${data.bmrDisplay} kkal',
+                        'Metabolisme basal',
+                      ),
                       const SizedBox(width: 6),
-                      _energyCard('TDEE', '${data.tdeeDisplay} kkal', data.aktivitas),
+                      _energyCard(
+                        'TDEE',
+                        '${data.tdeeDisplay} kkal',
+                        data.aktivitas,
+                      ),
                       const SizedBox(width: 6),
-                      _energyCard('Target', '${data.tdeeDisplay} kkal', 'Kebutuhan harian', highlight: true),
+                      _energyCard(
+                        'Target',
+                        '${data.tdeeDisplay} kkal',
+                        'Kebutuhan harian',
+                        highlight: true,
+                      ),
                     ],
                   ),
 
@@ -368,10 +403,7 @@ class DigitalHealthCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'Dibuat dengan Kalkulator BMI | Konsultasikan dengan dokter untuk hasil yang lebih akurat',
-                    style: GoogleFonts.poppins(
-                      color: _textMuted,
-                      fontSize: 7,
-                    ),
+                    style: GoogleFonts.poppins(color: _textMuted, fontSize: 7),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -413,7 +445,12 @@ class DigitalHealthCard extends StatelessWidget {
     );
   }
 
-  Widget _energyCard(String title, String val, String subtitle, {bool highlight = false}) {
+  Widget _energyCard(
+    String title,
+    String val,
+    String subtitle, {
+    bool highlight = false,
+  }) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(8),

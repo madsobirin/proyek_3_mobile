@@ -7,6 +7,7 @@ import 'package:fitlife/pages/dashboard/guest_profile_page.dart';
 import 'package:fitlife/pages/dashboard/menu_page.dart';
 import 'package:fitlife/pages/scan/scan_barcode_screen.dart';
 import 'package:fitlife/pages/lokasi/lokasi_olahraga_page.dart';
+import 'package:fitlife/pages/chat/chat_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
@@ -20,6 +21,7 @@ class _HomeState extends State<Home> {
   int _selectedIndex = 0;
   final List<int> _history = [];
   bool _isLoggedIn = false;
+  bool _isChatOpen = false;
 
   @override
   void initState() {
@@ -236,7 +238,10 @@ class _HomeState extends State<Home> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
@@ -271,18 +276,24 @@ class _HomeState extends State<Home> {
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => BmiPage(onBack: () => Navigator.pop(context)),
+                          builder: (_) =>
+                              BmiPage(onBack: () => Navigator.pop(context)),
                         ),
                       ),
                       borderRadius: BorderRadius.circular(20),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFF00CC52),
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF00CC52).withValues(alpha: 0.3),
+                              color: const Color(
+                                0xFF00CC52,
+                              ).withValues(alpha: 0.3),
                               blurRadius: 6,
                               offset: const Offset(0, 2),
                             ),
@@ -376,7 +387,10 @@ class _HomeState extends State<Home> {
             Expanded(
               child: RichText(
                 text: TextSpan(
-                  style: GoogleFonts.poppins(fontSize: 11, color: const Color(0xFF4B5563)),
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: const Color(0xFF4B5563),
+                  ),
                   children: [
                     TextSpan(
                       text: "Tips Hari Ini: ",
@@ -386,7 +400,8 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                     const TextSpan(
-                      text: "Minum air putih minimal 2L & sempatkan jalan 20 menit.",
+                      text:
+                          "Minum air putih minimal 2L & sempatkan jalan 20 menit.",
                     ),
                   ],
                 ),
@@ -425,7 +440,8 @@ class _HomeState extends State<Home> {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => BmiPage(onBack: () => Navigator.pop(context)),
+                      builder: (_) =>
+                          BmiPage(onBack: () => Navigator.pop(context)),
                     ),
                   ),
                 ),
@@ -450,8 +466,9 @@ class _HomeState extends State<Home> {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          LocationOlahragaPage(onBack: () => Navigator.pop(context)),
+                      builder: (_) => LocationOlahragaPage(
+                        onBack: () => Navigator.pop(context),
+                      ),
                     ),
                   ),
                 ),
@@ -778,7 +795,9 @@ class _HomeState extends State<Home> {
                               vertical: 3,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF00FF66).withValues(alpha: 0.15),
+                              color: const Color(
+                                0xFF00FF66,
+                              ).withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -829,18 +848,57 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      body: SafeArea(
-        child: IndexedStack(
-          index: _selectedIndex,
-          children: [
-            _buildHomeContent(), // 0 - Home
-            MenuPage(onBack: _goBack), // 1 - Menu
-            ArtikelPage(onBack: _goBack), // 2 - Artikel
-            _isLoggedIn ? const ProfilePage() : const GuestProfilePage(), // 3 - Profil
-          ],
-        ),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: IndexedStack(
+              index: _selectedIndex,
+              children: [
+                _buildHomeContent(), // 0 - Home
+                MenuPage(onBack: _goBack), // 1 - Menu
+                ArtikelPage(onBack: _goBack), // 2 - Artikel
+                _isLoggedIn
+                    ? const ProfilePage()
+                    : const GuestProfilePage(), // 3 - Profil
+              ],
+            ),
+          ),
+          if (_isChatOpen)
+            Positioned(
+              right: 12,
+              bottom: 12,
+              child: SizedBox(
+                width: MediaQuery.sizeOf(context).width >= 420
+                    ? 380
+                    : MediaQuery.sizeOf(context).width - 24,
+                height: (MediaQuery.sizeOf(context).height * 0.65).clamp(
+                  320.0,
+                  620.0,
+                ),
+                child: const ChatPanel(),
+              ),
+            ),
+        ],
       ),
       bottomNavigationBar: _buildBottomNav(),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF247447),
+        onPressed: () {
+          setState(() {
+            _isChatOpen = !_isChatOpen;
+          });
+        },
+        child: _isChatOpen
+            ? const Icon(Icons.close_rounded, color: Colors.white)
+            : Image.asset(
+                'assets/maskot-ai/first.png',
+                width: 32,
+                height: 32,
+                errorBuilder: (_, __, ___) =>
+                    const Icon(Icons.chat_rounded, color: Colors.white),
+              ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 

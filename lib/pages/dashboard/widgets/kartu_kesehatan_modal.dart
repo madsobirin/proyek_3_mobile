@@ -92,8 +92,9 @@ class KartuKesehatanModal {
                                 }
                                 setModalState(() => isExporting = true);
                                 final bytes =
-                                    await KartuKesehatanExportService
-                                        .captureWidgetToPng(cardKey);
+                                    await KartuKesehatanExportService.captureWidgetToPng(
+                                      cardKey,
+                                    );
                                 setModalState(() => isExporting = false);
 
                                 if (bytes != null && context.mounted) {
@@ -101,7 +102,8 @@ class KartuKesehatanModal {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text(
-                                          'Kartu Digital (PNG) berhasil diambil!'),
+                                        'Kartu Digital (PNG) berhasil diambil!',
+                                      ),
                                       backgroundColor: Color(0xFF1AB673),
                                     ),
                                   );
@@ -149,21 +151,22 @@ class KartuKesehatanModal {
                                 }
                                 setModalState(() => isExporting = true);
                                 final ok =
-                                    await KartuKesehatanExportService
-                                        .exportCardToPdf(
-                                  data,
-                                  filename:
-                                      'Kartu-Kesehatan-${data.bmiDisplay}.pdf',
-                                );
+                                    await KartuKesehatanExportService.exportCardToPdf(
+                                      data,
+                                      filename:
+                                          'Kartu-Kesehatan-${data.bmiDisplay}.pdf',
+                                    );
                                 setModalState(() => isExporting = false);
 
                                 if (context.mounted) {
                                   if (ok) Navigator.pop(ctx);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text(ok
-                                          ? 'Dokumen PDF berhasil diunduh!'
-                                          : 'Gagal membuat PDF. Coba lagi.'),
+                                      content: Text(
+                                        ok
+                                            ? 'Dokumen PDF berhasil diunduh!'
+                                            : 'Gagal membuat PDF. Coba lagi.',
+                                      ),
                                       backgroundColor: ok
                                           ? const Color(0xFF1AB673)
                                           : Colors.redAccent,
@@ -180,7 +183,10 @@ class KartuKesehatanModal {
                                   color: Colors.black,
                                 ),
                               )
-                            : const Icon(Icons.picture_as_pdf_rounded, size: 16),
+                            : const Icon(
+                                Icons.picture_as_pdf_rounded,
+                                size: 16,
+                              ),
                         label: Text(
                           'Export PDF',
                           style: GoogleFonts.poppins(
