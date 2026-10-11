@@ -7,7 +7,6 @@ import 'menu_detail.dart';
 class MenuPage extends StatefulWidget {
   final VoidCallback onBack;
   const MenuPage({super.key, required this.onBack});
-
   @override
   State<MenuPage> createState() => _MenuPageState();
 }
@@ -19,18 +18,14 @@ class _MenuPageState extends State<MenuPage> {
   String _search = '';
   String _activeFilter = '';
   String _sortBy = 'terbaru'; // terbaru, kalori_asc, kalori_desc
-
   static const _green = Color(0xFF1AB673);
-
   static const _statusFilters = ['Kurus', 'Normal', 'Berlebih', 'Obesitas'];
-
   static const Map<String, Color> _statusColors = {
     'Kurus': Colors.blue,
     'Normal': Color(0xFF1AB673),
     'Berlebih': Colors.orange,
     'Obesitas': Colors.red,
   };
-
   @override
   void initState() {
     super.initState();
@@ -63,7 +58,6 @@ class _MenuPageState extends State<MenuPage> {
           _activeFilter.isEmpty || m.targetStatus == _activeFilter;
       return matchSearch && matchFilter;
     }).toList();
-
     switch (_sortBy) {
       case 'kalori_asc':
         list.sort((a, b) => a.kalori.compareTo(b.kalori));
@@ -158,9 +152,7 @@ class _MenuPageState extends State<MenuPage> {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator(color: _green));
     }
-
     final filtered = _filteredMenus;
-
     return RefreshIndicator(
       color: _green,
       onRefresh: () async {
@@ -221,7 +213,6 @@ class _MenuPageState extends State<MenuPage> {
               ),
             ),
           ),
-
           // ── Search Bar ──
           SliverToBoxAdapter(
             child: Padding(
@@ -256,22 +247,21 @@ class _MenuPageState extends State<MenuPage> {
                     vertical: 14,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(16),
                     borderSide: BorderSide(color: Colors.grey[200]!),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(16),
                     borderSide: BorderSide(color: Colors.grey[200]!),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(16),
                     borderSide: const BorderSide(color: _green, width: 1.5),
                   ),
                 ),
               ),
             ),
           ),
-
           // ── Filter Chips ──
           SliverToBoxAdapter(
             child: Padding(
@@ -294,7 +284,6 @@ class _MenuPageState extends State<MenuPage> {
               ),
             ),
           ),
-
           // ── Count + Sort Label ──
           SliverToBoxAdapter(
             child: Padding(
@@ -330,7 +319,6 @@ class _MenuPageState extends State<MenuPage> {
               ),
             ),
           ),
-
           // ── Menu List ──
           if (filtered.isEmpty)
             SliverToBoxAdapter(
@@ -386,15 +374,14 @@ class _MenuPageState extends State<MenuPage> {
   Widget _filterChip(String label, String value) {
     final isActive = _activeFilter == value;
     final statusColor = value.isNotEmpty ? _getStatusColor(value) : _green;
-
     return GestureDetector(
       onTap: () => setState(() => _activeFilter = value),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: isActive ? statusColor.withOpacity(0.15) : Colors.grey[50],
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isActive ? statusColor : Colors.grey[200]!,
             width: isActive ? 1.5 : 1,
@@ -430,7 +417,6 @@ class _MenuPageState extends State<MenuPage> {
 
   Widget _menuCard(MenuModel menu) {
     final statusColor = _getStatusColor(menu.targetStatus);
-
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -441,15 +427,15 @@ class _MenuPageState extends State<MenuPage> {
         );
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 18,
-              offset: const Offset(0, 6),
+              color: Colors.black.withOpacity(0.035),
+              blurRadius: 12,
+              offset: const Offset(0, 3),
             ),
           ],
         ),
@@ -459,12 +445,12 @@ class _MenuPageState extends State<MenuPage> {
             Stack(
               children: [
                 Container(
-                  width: 100,
-                  height: 100,
+                  width: 96,
+                  height: 96,
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      bottomLeft: Radius.circular(20),
+                      topLeft: Radius.circular(16),
+                      bottomLeft: Radius.circular(16),
                     ),
                     image: DecorationImage(
                       image: NetworkImage(menu.gambar),

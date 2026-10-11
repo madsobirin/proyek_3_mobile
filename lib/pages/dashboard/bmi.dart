@@ -5,22 +5,30 @@ import 'dart:math';
 class BmiPage extends StatefulWidget {
   final VoidCallback onBack;
   const BmiPage({super.key, required this.onBack});
-
   @override
   State<BmiPage> createState() => _BmiPageState();
 }
 
 class _BmiPageState extends State<BmiPage> {
   String gender = "Pria";
-  double height = 170;
-  double weight = 65;
+  double height = 0;
+  double weight = 0;
   double? bmiResult;
   String kategori = "";
-
+  final TextEditingController _heightController = TextEditingController();
+  final TextEditingController _weightController = TextEditingController();
   void hitungBMI() {
+    if (height == 0 || weight == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Masukkan tinggi dan berat badan terlebih dahulu."),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
     double tinggiMeter = height / 100;
     double bmi = weight / pow(tinggiMeter, 2);
-
     String hasilKategori;
     if (bmi < 18.5) {
       hasilKategori = "Berat Badan Rendah";
@@ -31,7 +39,6 @@ class _BmiPageState extends State<BmiPage> {
     } else {
       hasilKategori = "Obesitas";
     }
-
     setState(() {
       bmiResult = bmi;
       kategori = hasilKategori;
@@ -79,7 +86,6 @@ class _BmiPageState extends State<BmiPage> {
 
   Widget genderSelector(String label) {
     final isSelected = gender == label;
-
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() => gender = label),
@@ -104,6 +110,13 @@ class _BmiPageState extends State<BmiPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _heightController.dispose();
+    _weightController.dispose();
+    super.dispose();
   }
 
   @override
@@ -139,7 +152,6 @@ class _BmiPageState extends State<BmiPage> {
               ),
             ],
           ),
-
           const SizedBox(height: 20),
 
           /// FORM CARD
@@ -159,49 +171,69 @@ class _BmiPageState extends State<BmiPage> {
                     genderSelector("Wanita"),
                   ],
                 ),
-
                 const SizedBox(height: 20),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text("Tinggi"),
-                    Text(
-                      "${height.toInt()} cm",
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                Text(
+                  "Tinggi Badan (cm)",
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _heightController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  onChanged: (value) {
+                    setState(
+                      () => height =
+                          double.tryParse(value.replaceAll(',', '.')) ?? 0,
+                    );
+                  },
+                  decoration: InputDecoration(
+                    hintText: "Contoh: 165",
+                    suffixText: "cm",
+                    filled: true,
+                    fillColor: const Color(0xFFF8FAFC),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 13,
                     ),
-                  ],
-                ),
-                Slider(
-                  value: height,
-                  min: 100,
-                  max: 250,
-                  activeColor: const Color(0xFF1AB673),
-                  onChanged: (value) => setState(() => height = value),
-                ),
-
-                const SizedBox(height: 10),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text("Berat"),
-                    Text(
-                      "${weight.toInt()} kg",
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                  ],
+                  ),
                 ),
-                Slider(
-                  value: weight,
-                  min: 30,
-                  max: 200,
-                  activeColor: const Color(0xFF1AB673),
-                  onChanged: (value) => setState(() => weight = value),
+                const SizedBox(height: 14),
+                Text(
+                  "Berat Badan (kg)",
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
                 ),
-
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _weightController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  onChanged: (value) {
+                    setState(
+                      () => weight =
+                          double.tryParse(value.replaceAll(',', '.')) ?? 0,
+                    );
+                  },
+                  decoration: InputDecoration(
+                    hintText: "Contoh: 55",
+                    suffixText: "kg",
+                    filled: true,
+                    fillColor: const Color(0xFFF8FAFC),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 13,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 20),
-
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -225,7 +257,6 @@ class _BmiPageState extends State<BmiPage> {
               ],
             ),
           ),
-
           const SizedBox(height: 20),
 
           /// MINI INFO SEBELUM RESULT
@@ -251,7 +282,6 @@ class _BmiPageState extends State<BmiPage> {
           /// RESULT + ADVICE
           if (bmiResult != null) ...[
             const SizedBox(height: 20),
-
             modernCard(
               child: Column(
                 children: [
@@ -269,7 +299,6 @@ class _BmiPageState extends State<BmiPage> {
                       color: kategoriColor(),
                     ),
                   ),
-
                   const SizedBox(height: 15),
 
                   /// ANGKA BMI
@@ -281,7 +310,6 @@ class _BmiPageState extends State<BmiPage> {
                       color: kategoriColor(),
                     ),
                   ),
-
                   const SizedBox(height: 4),
 
                   /// KATEGORI
@@ -292,11 +320,8 @@ class _BmiPageState extends State<BmiPage> {
                       color: kategoriColor(),
                     ),
                   ),
-
                   const SizedBox(height: 15),
-
                   Divider(color: Colors.grey.shade200),
-
                   const SizedBox(height: 10),
 
                   /// HASIL ANALISIS TITLE
@@ -310,7 +335,6 @@ class _BmiPageState extends State<BmiPage> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 8),
 
                   /// ADVICE TEXT
