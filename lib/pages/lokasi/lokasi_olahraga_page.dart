@@ -4,7 +4,17 @@ import 'package:url_launcher/url_launcher.dart';
 
 class LocationOlahragaPage extends StatefulWidget {
   final VoidCallback onBack;
-  const LocationOlahragaPage({super.key, required this.onBack});
+  final String? initialCategory;
+  final String? bmiCategory;
+  final String? bmiRecommendationReason;
+
+  const LocationOlahragaPage({
+    super.key,
+    required this.onBack,
+    this.initialCategory,
+    this.bmiCategory,
+    this.bmiRecommendationReason,
+  });
 
   @override
   State<LocationOlahragaPage> createState() => _LocationOlahragaPageState();
@@ -149,20 +159,73 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
   }
 
   Future<void> _openMaps(String query) async {
-    final uri = Uri.parse(
-      'https://www.google.com/maps/search/?api=1&query=$query',
-    );
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    final cleanQuery = query.replaceAll('+', ' ').trim();
+    bool launched = false;
+
+    // 1. Coba native Android Google Maps intent via geo:0,0?q=... (Menggunakan GPS pengguna saat ini)
+    final geoUri = Uri.parse('geo:0,0?q=${Uri.encodeComponent(cleanQuery)}');
+    try {
+      if (await canLaunchUrl(geoUri)) {
+        launched = await launchUrl(
+          geoUri,
+          mode: LaunchMode.externalApplication,
+        );
+      }
+    } catch (_) {}
+
+    // 2. Jika intent geo belum terbuka, coba URL Google Maps Search
+    if (!launched) {
+      final webUri = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(cleanQuery)}',
+      );
+      try {
+        if (await canLaunchUrl(webUri)) {
+          launched = await launchUrl(
+            webUri,
+            mode: LaunchMode.externalApplication,
+          );
+        }
+      } catch (_) {}
+
+      // 3. Fallback platformDefault / browser
+      if (!launched) {
+        try {
+          launched = await launchUrl(
+            webUri,
+            mode: LaunchMode.platformDefault,
+          );
+        } catch (_) {}
+      }
+    }
+
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Tidak dapat membuka Google Maps. Pastikan aplikasi Google Maps atau browser terpasang.',
+            style: GoogleFonts.inter(fontSize: 12),
+          ),
+          backgroundColor: Colors.red[700],
+          duration: const Duration(seconds: 3),
+        ),
+      );
     }
   }
 
   Future<void> _openNearbyGyms() async {
-    final uri = Uri.parse(
-      'https://www.google.com/maps/search/tempat+olahraga+terdekat/',
-    );
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    await _openMaps('tempat olahraga terdekat');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialCategory != null) {
+      final idx = _categories.indexWhere(
+        (c) => c.toLowerCase() == widget.initialCategory!.toLowerCase(),
+      );
+      if (idx != -1) {
+        _selectedCategory = idx;
+      }
     }
   }
 
@@ -170,6 +233,113 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Widget _buildBmiRecommendationAlert() {
+    if (widget.bmiCategory == null) return const SizedBox.shrink();
+
+    Color badgeColor = const Color(0xFF1AB673);
+    IconData badgeIcon = Icons.health_and_safety_rounded;
+    if (widget.bmiCategory!.toLowerCase().contains('kurus')) {
+      badgeColor = Colors.blue;
+      badgeIcon = Icons.fitness_center_rounded;
+    } else if (widget.bmiCategory!.toLowerCase().contains('lebih') ||
+        widget.bmiCategory!.toLowerCase().contains('obes')) {
+      badgeColor = Colors.orange;
+      badgeIcon = Icons.pool_rounded;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: badgeColor.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: badgeColor.withValues(alpha: 0.35),
+            width: 1.2,
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: badgeColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(badgeIcon, color: badgeColor, size: 22),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: badgeColor,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          'REKOMENDASI BMI',
+                          style: GoogleFonts.manrope(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        widget.bmiCategory!,
+                        style: GoogleFonts.manrope(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: badgeColor,
+                        ),
+                      ),
+                      const Spacer(),
+                      if (_selectedCategory != 0)
+                        GestureDetector(
+                          onTap: () => setState(() => _selectedCategory = 0),
+                          child: Text(
+                            'Semua',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w600,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    widget.bmiRecommendationReason ??
+                        'Fasilitas olahraga disaring sesuai dengan kondisi fisik dan target kesehatan Anda.',
+                    style: GoogleFonts.inter(
+                      fontSize: 11.5,
+                      color: Colors.black87,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -182,6 +352,10 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
           slivers: [
             // Header
             SliverToBoxAdapter(child: _buildHeader()),
+
+            // BMI Recommendation Alert
+            if (widget.bmiCategory != null)
+              SliverToBoxAdapter(child: _buildBmiRecommendationAlert()),
 
             // Search & Filter
             SliverToBoxAdapter(child: _buildSearchAndFilter()),
