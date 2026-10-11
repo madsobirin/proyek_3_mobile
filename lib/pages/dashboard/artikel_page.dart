@@ -7,7 +7,6 @@ import 'artikel_detail_page.dart';
 class ArtikelPage extends StatefulWidget {
   final VoidCallback onBack;
   const ArtikelPage({super.key, required this.onBack});
-
   @override
   State<ArtikelPage> createState() => _ArtikelPageState();
 }
@@ -18,9 +17,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
   bool _isLoading = true;
   String _search = '';
   String _activeKategori = '';
-
   static const _green = Color(0xFF1AB673);
-
   @override
   void initState() {
     super.initState();
@@ -92,12 +89,10 @@ class _ArtikelPageState extends State<ArtikelPage> {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator(color: _green));
     }
-
     final filtered = _filteredArtikels;
     final featured = _featuredArtikel;
     final showFeatured =
         featured != null && _search.isEmpty && _activeKategori.isEmpty;
-
     return RefreshIndicator(
       color: _green,
       onRefresh: () async {
@@ -139,7 +134,6 @@ class _ArtikelPageState extends State<ArtikelPage> {
               ),
             ),
           ),
-
           // ── Search Bar ──
           SliverToBoxAdapter(
             child: Padding(
@@ -189,7 +183,6 @@ class _ArtikelPageState extends State<ArtikelPage> {
               ),
             ),
           ),
-
           // ── Featured Article ──
           if (showFeatured)
             SliverToBoxAdapter(
@@ -203,11 +196,11 @@ class _ArtikelPageState extends State<ArtikelPage> {
                   );
                 },
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                   child: Container(
-                    height: 200,
+                    height: 180,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: BorderRadius.circular(18),
                       image: DecorationImage(
                         image: NetworkImage(featured.gambar),
                         fit: BoxFit.cover,
@@ -216,7 +209,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
                     child: Container(
                       padding: const EdgeInsets.all(18),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(18),
                         gradient: LinearGradient(
                           colors: [
                             Colors.black.withOpacity(0.65),
@@ -298,7 +291,6 @@ class _ArtikelPageState extends State<ArtikelPage> {
                 ),
               ),
             ),
-
           // ── Kategori Filter ──
           if (_kategoris.isNotEmpty)
             SliverToBoxAdapter(
@@ -322,7 +314,6 @@ class _ArtikelPageState extends State<ArtikelPage> {
                 ),
               ),
             ),
-
           // ── Section Title ──
           SliverToBoxAdapter(
             child: Padding(
@@ -360,7 +351,6 @@ class _ArtikelPageState extends State<ArtikelPage> {
               ),
             ),
           ),
-
           // ── Article List ──
           if (filtered.isEmpty)
             SliverToBoxAdapter(
@@ -415,12 +405,11 @@ class _ArtikelPageState extends State<ArtikelPage> {
 
   Widget _kategoriChip(String label, String value) {
     final isActive = _activeKategori == value;
-
     return GestureDetector(
       onTap: () => setState(() => _activeKategori = value),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: isActive ? _green : Colors.grey[50],
           borderRadius: BorderRadius.circular(20),
@@ -452,7 +441,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
         );
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
