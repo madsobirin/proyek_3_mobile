@@ -312,7 +312,7 @@ class _ProfilePageState extends State<ProfilePage>
               height: 60,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.red.withOpacity(0.1),
+                color: Colors.red.withValues(alpha: 0.1),
               ),
               child: const Center(
                 child: Icon(
@@ -598,7 +598,7 @@ class _ProfilePageState extends State<ProfilePage>
         border: Border.all(color: _border),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00FF66).withOpacity(0.06),
+            color: const Color(0xFF00FF66).withValues(alpha: 0.06),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -614,10 +614,10 @@ class _ProfilePageState extends State<ProfilePage>
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF00FF66).withOpacity(0.15),
+                    color: const Color(0xFF00FF66).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
-                      color: const Color(0xFF00FF66).withOpacity(0.4),
+                      color: const Color(0xFF00FF66).withValues(alpha: 0.4),
                       width: 1.5,
                     ),
                     image: _user?.photo != null
@@ -1063,9 +1063,9 @@ class _ProfilePageState extends State<ProfilePage>
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: Colors.red.withOpacity(0.05),
+          color: Colors.red.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.red.withOpacity(0.2)),
+          border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

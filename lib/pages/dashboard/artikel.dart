@@ -31,7 +31,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
         decoration: BoxDecoration(
           color: isSelected
               ? const Color(0xFF1AB673)
-              : Colors.grey.withOpacity(0.1),
+              : Colors.grey.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
@@ -55,7 +55,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 15,
             offset: const Offset(0, 6),
           ),
@@ -128,7 +128,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -168,7 +168,10 @@ class _ArtikelPageState extends State<ArtikelPage> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
                 gradient: LinearGradient(
-                  colors: [Colors.black.withOpacity(0.6), Colors.transparent],
+                  colors: [
+                    Colors.black.withValues(alpha: 0.6),
+                    Colors.transparent,
+                  ],
                   begin: Alignment.bottomLeft,
                   end: Alignment.topRight,
                 ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+// import '../../models/lokasi_olahraga_model.dart';
+import '../../services/lokasi_olahraga_service.dart';
 
 class LocationOlahragaPage extends StatefulWidget {
   final VoidCallback onBack;
@@ -26,116 +28,41 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
     'Semua',
     'Gym',
     'Lapangan',
-    'Kolam Renang',
-    'Jogging Track',
-    'Stadion',
+    'Aktivitas Ringan',
   ];
-  final List<Map<String, dynamic>> _locations = [
-    {
-      'name': 'FitFirst Fitness Center',
-      'category': 'Gym',
-      'address': 'Jl. Sudirman No.45, Jakarta Pusat',
-      'distance': '0.8 km',
-      'rating': 4.7,
-      'reviews': 312,
-      'open': true,
-      'hours': '06.00 – 22.00',
-      'icon': Icons.fitness_center_rounded,
-      'color': Colors.purple,
-      'mapQuery': 'Fitness+Center+Jakarta',
-    },
-    {
-      'name': 'Gelora Bung Karno Sport Complex',
-      'category': 'Stadion',
-      'address': 'Jl. Pintu Satu Senayan, Jakarta Pusat',
-      'distance': '1.2 km',
-      'rating': 4.8,
-      'reviews': 5210,
-      'open': true,
-      'hours': '05.00 – 21.00',
-      'icon': Icons.stadium_rounded,
-      'color': Colors.red,
-      'mapQuery': 'Gelora+Bung+Karno+Jakarta',
-    },
-    {
-      'name': 'Lapangan Badminton Gor Ciracas',
-      'category': 'Lapangan',
-      'address': 'Jl. Raya Bogor No.1, Jakarta Timur',
-      'distance': '2.1 km',
-      'rating': 4.3,
-      'reviews': 128,
-      'open': true,
-      'hours': '07.00 – 23.00',
-      'icon': Icons.sports_tennis_rounded,
-      'color': Colors.orange,
-      'mapQuery': 'Lapangan+Badminton+Jakarta',
-    },
-    {
-      'name': 'Kolam Renang Senayan',
-      'category': 'Kolam Renang',
-      'address': 'Komplek GBK, Senayan, Jakarta Selatan',
-      'distance': '1.5 km',
-      'rating': 4.6,
-      'reviews': 874,
-      'open': false,
-      'hours': '06.00 – 18.00',
-      'icon': Icons.pool_rounded,
-      'color': Colors.blue,
-      'mapQuery': 'Kolam+Renang+Senayan+Jakarta',
-    },
-    {
-      'name': 'Hutan Kota Srengseng',
-      'category': 'Jogging Track',
-      'address': 'Jl. Srengseng Raya, Jakarta Barat',
-      'distance': '3.4 km',
-      'rating': 4.5,
-      'reviews': 642,
-      'open': true,
-      'hours': '05.00 – 18.00',
-      'icon': Icons.nature_people_rounded,
-      'color': const Color(0xFF22C55E),
-      'mapQuery': 'Hutan+Kota+Srengseng+Jakarta',
-    },
-    {
-      'name': 'Gold\'s Gym Kelapa Gading',
-      'category': 'Gym',
-      'address': 'Mal Kelapa Gading Lt.3, Jakarta Utara',
-      'distance': '4.0 km',
-      'rating': 4.9,
-      'reviews': 1203,
-      'open': true,
-      'hours': '06.00 – 23.00',
-      'icon': Icons.fitness_center_rounded,
-      'color': Colors.deepOrange,
-      'mapQuery': "Gold's+Gym+Kelapa+Gading+Jakarta",
-    },
-    {
-      'name': 'Lapangan Sepak Bola Ragunan',
-      'category': 'Lapangan',
-      'address': 'Jl. Harsono RM, Ragunan, Jakarta Selatan',
-      'distance': '5.2 km',
-      'rating': 4.2,
-      'reviews': 231,
-      'open': true,
-      'hours': '07.00 – 18.00',
-      'icon': Icons.sports_soccer_rounded,
-      'color': Colors.green,
-      'mapQuery': 'Lapangan+Sepak+Bola+Ragunan+Jakarta',
-    },
-    {
-      'name': 'Rooftop Jogging Track SCBD',
-      'category': 'Jogging Track',
-      'address': 'Jl. Jend. Sudirman Kav.52, Jakarta Selatan',
-      'distance': '1.9 km',
-      'rating': 4.4,
-      'reviews': 89,
-      'open': true,
-      'hours': '05.30 – 20.00',
-      'icon': Icons.directions_run_rounded,
-      'color': Colors.teal,
-      'mapQuery': 'Jogging+Track+SCBD+Jakarta',
-    },
-  ];
+
+  final LokasiOlahragaService _lokasiService = LokasiOlahragaService.instance;
+  List<Map<String, dynamic>> _locations = [];
+  bool _isLoadingLocations = true;
+  String? _locationError;
+
+  Future<void> _loadLocations() async {
+    if (mounted) {
+      setState(() {
+        _isLoadingLocations = true;
+        _locationError = null;
+      });
+    }
+
+    try {
+      final results = await _lokasiService.fetchAll();
+      if (!mounted) return;
+      setState(() {
+        _locations = results
+            .map((location) => location.toDisplayMap())
+            .toList();
+        _isLoadingLocations = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _locationError =
+            'Data lokasi gagal dimuat. Periksa koneksi internet lalu coba lagi.';
+        _isLoadingLocations = false;
+      });
+    }
+  }
+
   List<Map<String, dynamic>> get _filteredLocations {
     return _locations.where((loc) {
       final matchCategory =
@@ -208,13 +135,18 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
   void initState() {
     super.initState();
     if (widget.initialCategory != null) {
-      final idx = _categories.indexWhere(
-        (c) => c.toLowerCase() == widget.initialCategory!.toLowerCase(),
-      );
-      if (idx != -1) {
-        _selectedCategory = idx;
+      final requested = widget.initialCategory!.toLowerCase();
+      var idx = _categories.indexWhere((c) => c.toLowerCase() == requested);
+      if (idx == -1 &&
+          (requested.contains('jogging') ||
+              requested.contains('renang') ||
+              requested.contains('low_impact') ||
+              requested.contains('aktivitas ringan'))) {
+        idx = _categories.indexOf('Aktivitas Ringan');
       }
+      if (idx != -1) _selectedCategory = idx;
     }
+    _loadLocations();
   }
 
   @override
@@ -370,7 +302,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
-                        'Dekat Lokasimu',
+                        'Lokasi FitLife',
                         style: GoogleFonts.inter(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
@@ -383,7 +315,64 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
               ),
             ),
             // Location List
-            if (_filteredLocations.isEmpty)
+            if (_isLoadingLocations)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 42),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        const CircularProgressIndicator(
+                          color: Color(0xFF22C55E),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Memuat lokasi olahraga...',
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            color: const Color(0xFF6B7280),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            else if (_locationError != null)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
+                  child: Column(
+                    children: [
+                      const Icon(
+                        Icons.cloud_off_rounded,
+                        size: 42,
+                        color: Color(0xFF9CA3AF),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        _locationError!,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: const Color(0xFF6B7280),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      ElevatedButton.icon(
+                        onPressed: _loadLocations,
+                        icon: const Icon(Icons.refresh_rounded),
+                        label: const Text('Coba Lagi'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF22C55E),
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else if (_filteredLocations.isEmpty)
               SliverToBoxAdapter(child: _buildEmptyState())
             else
               SliverPadding(
@@ -441,9 +430,9 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                 children: [
                   Text(
                     'Lokasi Olahraga',
-                    style: GoogleFonts.poppins(
-                      fontSize: 19,
-                      fontWeight: FontWeight.bold,
+                    style: GoogleFonts.manrope(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
                       color: const Color(0xFF202124),
                       height: 1.2,
                     ),
@@ -451,9 +440,9 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                   const SizedBox(height: 3),
                   Text(
                     'Temukan tempat olahraga yang sesuai dengan kebutuhanmu.',
-                    style: GoogleFonts.poppins(
-                      fontSize: 13,
-                      color: Colors.grey[600],
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: const Color(0xFF777777),
                       height: 1.35,
                     ),
                   ),
@@ -592,7 +581,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
       child: GestureDetector(
         onTap: _openNearbyGyms,
         child: Container(
-          height: 170,
+          height: 148,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
             gradient: const LinearGradient(
@@ -725,8 +714,8 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
   }
 
   Widget _buildLocationCard(Map<String, dynamic> loc) {
-    final bool isOpen = loc['open'] as bool;
-    final Color catColor = loc['color'] as Color;
+    final bool? isOpen = loc['open'] as bool?;
+    final Color catColor = loc['color'] as Color? ?? const Color(0xFF22C55E);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -805,7 +794,11 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: isOpen
+                              color: isOpen == null
+                                  ? const Color(
+                                      0xFF9CA3AF,
+                                    ).withValues(alpha: 0.12)
+                                  : isOpen
                                   ? const Color(
                                       0xFF22C55E,
                                     ).withValues(alpha: 0.12)
@@ -813,13 +806,17 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
-                              isOpen ? 'Buka' : 'Tutup',
+                              isOpen == null
+                                  ? 'Belum diketahui'
+                                  : (isOpen ? 'Buka' : 'Tutup'),
                               style: GoogleFonts.inter(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
-                                color: isOpen
-                                    ? const Color(0xFF15803D)
-                                    : Colors.redAccent,
+                                color: isOpen == null
+                                    ? const Color(0xFF6B7280)
+                                    : (isOpen
+                                          ? const Color(0xFF15803D)
+                                          : Colors.redAccent),
                               ),
                             ),
                           ),
@@ -851,7 +848,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                           ),
                           const SizedBox(width: 3),
                           Text(
-                            loc['distance'],
+                            loc['distance'] ?? 'Belum diketahui',
                             style: GoogleFonts.inter(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
@@ -901,7 +898,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  loc['hours'],
+                  loc['hours'] ?? 'Jam buka belum tersedia',
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     color: const Color(0xFF6B7280),
@@ -911,7 +908,9 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                 const Icon(Icons.star_rounded, size: 14, color: Colors.amber),
                 const SizedBox(width: 3),
                 Text(
-                  '${loc['rating']} (${loc['reviews']} ulasan)',
+                  loc['rating'] == null
+                      ? 'Rating belum tersedia'
+                      : '${loc['rating']} (${loc['reviews'] ?? 0} ulasan)',
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     color: const Color(0xFF6B7280),
@@ -924,7 +923,8 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () => _openMaps(loc['mapQuery'] as String),
+                onPressed: () =>
+                    _openMaps((loc['mapQuery'] ?? loc['name']).toString()),
                 icon: const Icon(Icons.map_rounded, size: 16),
                 label: Text(
                   'Buka di Google Maps',

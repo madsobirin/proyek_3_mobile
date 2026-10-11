@@ -43,7 +43,7 @@ class MenuDetailPage extends StatelessWidget {
                 onTap: () => Navigator.pop(context),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.35),
+                    color: Colors.black.withValues(alpha: 0.35),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -77,7 +77,7 @@ class MenuDetailPage extends StatelessWidget {
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
                         colors: [
-                          Colors.black.withOpacity(0.5),
+                          Colors.black.withValues(alpha: 0.5),
                           Colors.transparent,
                         ],
                       ),
@@ -93,7 +93,7 @@ class MenuDetailPage extends StatelessWidget {
                         vertical: 5,
                       ),
                       decoration: BoxDecoration(
-                        color: statusColor.withOpacity(0.9),
+                        color: statusColor.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
