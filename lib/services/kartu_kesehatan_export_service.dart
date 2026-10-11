@@ -30,10 +30,14 @@ class KartuKesehatanExportService {
   // ─────────────────────────────────────────────────────────
   static Future<Uint8List?> captureWidgetToPng(GlobalKey boundaryKey) async {
     try {
+      await Future.delayed(const Duration(milliseconds: 60));
       final boundary =
           boundaryKey.currentContext?.findRenderObject()
               as RenderRepaintBoundary?;
-      if (boundary == null) return null;
+      if (boundary == null) {
+        debugPrint('RenderRepaintBoundary tidak ditemukan');
+        return null;
+      }
       final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
       final ByteData? byteData = await image.toByteData(
         format: ui.ImageByteFormat.png,

@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/analisis_kesehatan_model.dart';
 import '../../models/menu_model.dart';
@@ -12,9 +13,10 @@ import '../../services/menu_service.dart';
 import '../../services/perhitungan_service.dart';
 import 'menu_detail.dart';
 import 'menu_page.dart';
-import 'widgets/kartu_kesehatan_modal.dart';
+import '../lokasi/lokasi_olahraga_page.dart';
 import 'widgets/riwayat_health_card.dart';
 import '../../services/kartu_kesehatan_export_service.dart';
+import '../../services/download_notification_service.dart';
 
 class BmiPage extends StatefulWidget {
   final VoidCallback onBack;
@@ -35,6 +37,8 @@ class _BmiPageState extends State<BmiPage> {
   String? _historyError;
   List<PerhitunganModel> _historyList = [];
   final GlobalKey _riwayatPngKey = GlobalKey();
+  bool _isExportingPng = false;
+  bool _isExportingPdf = false;
 
   String gender = 'Pria';
   double height = 170;
@@ -69,6 +73,33 @@ class _BmiPageState extends State<BmiPage> {
       default:
         return _recommendedMenus;
     }
+  }
+
+  List<PerhitunganModel> get _exportHistoryList {
+    if (_historyList.isNotEmpty) return _historyList;
+    if (_hasil != null) {
+      return [
+        PerhitunganModel(
+          tinggiBadan: _hasil!.tinggiBadan,
+          beratBadan: _hasil!.beratBadan,
+          bmi: _hasil!.bmi,
+          status: _hasil!.status,
+          gender: _hasil!.gender,
+          usia: _hasil!.usia,
+          aktivitas: _hasil!.aktivitas,
+          bmr: _hasil!.bmr,
+          tdee: _hasil!.tdee,
+          targetKalori: _hasil!.tdee,
+          beratMin: _hasil!.beratMin,
+          beratMax: _hasil!.beratMax,
+          protein: _hasil!.protein,
+          karbohidrat: _hasil!.karbohidrat,
+          lemak: _hasil!.lemak,
+          createdAt: DateTime.now(),
+        ),
+      ];
+    }
+    return [];
   }
 
   static const _green = Color(0xFF1AB673);
@@ -137,6 +168,7 @@ class _BmiPageState extends State<BmiPage> {
   void initState() {
     super.initState();
     _checkAuthAndLoadHistory();
+    DownloadNotificationService().initialize();
   }
 
   Future<void> _checkAuthAndLoadHistory() async {
@@ -1356,44 +1388,6 @@ class _BmiPageState extends State<BmiPage> {
                     ],
                   ),
                 ),
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      KartuKesehatanModal.show(
-                        context,
-                        _hasil!,
-                        isLoggedIn: _isLoggedIn,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF090E0C),
-                      foregroundColor: const Color(0xFF00FF7F),
-                      side: const BorderSide(
-                        color: Color(0xFF00FF7F),
-                        width: 1.5,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 0,
-                    ),
-                    icon: const Icon(
-                      Icons.auto_awesome,
-                      color: Color(0xFF00FF7F),
-                      size: 18,
-                    ),
-                    label: Text(
-                      'Unduh / Cetak Kartu Digital',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
               ],
 
               const SizedBox(height: 20),
@@ -1650,18 +1644,35 @@ class _BmiPageState extends State<BmiPage> {
                   ),
               ],
 
+              // ── Rekomendasi Peta Olahraga (Berdasarkan Kategori BMI) ──
+              if (_hasil != null) ...[
+                const SizedBox(height: 28),
+                _buildSportsMapRecommendationSection(),
+              ],
+
               // ── Riwayat Perhitungan Section ──
               const SizedBox(height: 28),
               _buildHistorySection(),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 32),
 
-              // ── Hidden widget untuk capture PNG (di-render di luar layar) ──
-              Transform.translate(
-                offset: const Offset(-10000, 0),
-                child: RepaintBoundary(
-                  key: _riwayatPngKey,
-                  child: RiwayatHealthCard(history: _historyList),
+              // ── Hidden widget untuk capture PNG (0x0 space, tidak membuat halaman kelebihan/kosong) ──
+              SizedBox(
+                width: 0,
+                height: 0,
+                child: OverflowBox(
+                  alignment: Alignment.topLeft,
+                  minWidth: 860,
+                  maxWidth: 860,
+                  minHeight: 0,
+                  maxHeight: double.infinity,
+                  child: Transform.translate(
+                    offset: const Offset(-10000, 0),
+                    child: RepaintBoundary(
+                      key: _riwayatPngKey,
+                      child: RiwayatHealthCard(history: _exportHistoryList),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -2155,6 +2166,11 @@ class _BmiPageState extends State<BmiPage> {
           ],
         ),
         const SizedBox(height: 14),
+
+        // ── Tombol Unduh PNG & PDF Tepat Di Bawah Riwayat & Tren Berat Badan (Sesuai Foto) ──
+        _buildExportButtons(),
+
+        const SizedBox(height: 16),
         if (!_isLoggedIn)
           _buildGuestHistoryCard()
         else if (_isLoadingHistory && _historyList.isEmpty)
@@ -2165,6 +2181,396 @@ class _BmiPageState extends State<BmiPage> {
           _buildHistoryEmpty()
         else
           _buildHistoryAndTrendContent(),
+      ],
+    );
+  }
+
+  Widget _buildExportButtons() {
+    final bool isExporting = _isExportingPng || _isExportingPdf;
+
+    return Row(
+      children: [
+        // ── Tombol Unduh PNG (Outlined Hijau) ──
+        Expanded(
+          child: OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: _green,
+              side: const BorderSide(color: _green, width: 1.5),
+              padding: const EdgeInsets.symmetric(vertical: 13),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              elevation: 0,
+            ),
+            onPressed: isExporting
+                ? null
+                : () async {
+                    final dataToExport = _exportHistoryList;
+                    if (dataToExport.isEmpty) {
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            children: [
+                              const Icon(
+                                Icons.info_outline_rounded,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Belum ada data untuk diunduh. Silakan hitung analisis BMI terlebih dahulu.',
+                                  style: GoogleFonts.poppins(fontSize: 12),
+                                ),
+                              ),
+                            ],
+                          ),
+                          backgroundColor: Colors.orange,
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+
+                    setState(() => _isExportingPng = true);
+                    final messenger = ScaffoldMessenger.of(context);
+                    messenger.hideCurrentSnackBar();
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Row(
+                          children: [
+                            const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.2,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'Sedang memproses dan menyimpan gambar PNG...',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        backgroundColor: const Color(0xFF1F2937),
+                        duration: const Duration(seconds: 15),
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    );
+
+                    // Kirim notifikasi sistem ke device HP
+                    await DownloadNotificationService().showDownloadStart(
+                      id: 101,
+                      title: 'Menyimpan Gambar PNG',
+                      body: 'Sedang memproses gambar kartu riwayat FitLife...',
+                    );
+
+                    final ok =
+                        await KartuKesehatanExportService.captureAndDownloadPng(
+                          _riwayatPngKey,
+                        );
+
+                    if (mounted) {
+                      setState(() => _isExportingPng = false);
+                      messenger.hideCurrentSnackBar();
+                      if (ok) {
+                        // Notifikasi device berhasil
+                        await DownloadNotificationService().showDownloadComplete(
+                          id: 101,
+                          title: 'Unduhan PNG Selesai',
+                          body: 'Gambar kartu riwayat berhasil disimpan ke perangkat.',
+                        );
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Row(
+                              children: [
+                                const Icon(
+                                  Icons.check_circle_rounded,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    'Gambar PNG berhasil diunduh dan disimpan ke perangkat!',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            backgroundColor: const Color(0xFF1AB673),
+                            duration: const Duration(seconds: 4),
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        );
+                      } else {
+                        // Notifikasi device gagal
+                        await DownloadNotificationService().showDownloadFailed(
+                          id: 101,
+                          title: 'Unduhan PNG Gagal',
+                          body: 'Gagal membuat dan menyimpan gambar kartu riwayat.',
+                        );
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Row(
+                              children: [
+                                const Icon(
+                                  Icons.error_outline_rounded,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    'Gagal membuat dan menyimpan gambar PNG. Silakan coba lagi.',
+                                    style: GoogleFonts.poppins(fontSize: 12),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            backgroundColor: Colors.redAccent,
+                            duration: const Duration(seconds: 3),
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        );
+                      }
+                    }
+                  },
+            icon: _isExportingPng
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: _green,
+                    ),
+                  )
+                : const Icon(Icons.image_outlined, size: 18),
+            label: Text(
+              _isExportingPng ? 'Menyimpan...' : 'Unduh PNG',
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+                color: _green,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+
+        // ── Tombol Unduh PDF (Filled Hijau) ──
+        Expanded(
+          child: ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _green,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(vertical: 13),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+            ),
+            onPressed: isExporting
+                ? null
+                : () async {
+                    final dataToExport = _exportHistoryList;
+                    if (dataToExport.isEmpty) {
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            children: [
+                              const Icon(
+                                Icons.info_outline_rounded,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Belum ada data untuk diunduh. Silakan hitung analisis BMI terlebih dahulu.',
+                                  style: GoogleFonts.poppins(fontSize: 12),
+                                ),
+                              ),
+                            ],
+                          ),
+                          backgroundColor: Colors.orange,
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+
+                    setState(() => _isExportingPdf = true);
+                    final messenger = ScaffoldMessenger.of(context);
+                    messenger.hideCurrentSnackBar();
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Row(
+                          children: [
+                            const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.2,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'Sedang membuat dan memproses dokumen PDF...',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        backgroundColor: const Color(0xFF1F2937),
+                        duration: const Duration(seconds: 15),
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    );
+
+                    // Kirim notifikasi sistem ke device HP
+                    await DownloadNotificationService().showDownloadStart(
+                      id: 102,
+                      title: 'Mengunduh Laporan PDF',
+                      body: 'Sedang menyusun dokumen laporan BMI FitLife...',
+                    );
+
+                    final ok =
+                        await KartuKesehatanExportService.exportRiwayatToPdf(
+                          dataToExport,
+                        );
+
+                    if (mounted) {
+                      setState(() => _isExportingPdf = false);
+                      messenger.hideCurrentSnackBar();
+                      if (ok) {
+                        // Notifikasi device berhasil
+                        await DownloadNotificationService().showDownloadComplete(
+                          id: 102,
+                          title: 'Unduhan PDF Selesai',
+                          body: 'Dokumen laporan PDF berhasil disimpan ke perangkat.',
+                        );
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Row(
+                              children: [
+                                const Icon(
+                                  Icons.check_circle_rounded,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    'Dokumen PDF berhasil diunduh dan disimpan ke perangkat!',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            backgroundColor: const Color(0xFF1AB673),
+                            duration: const Duration(seconds: 4),
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        );
+                      } else {
+                        // Notifikasi device gagal
+                        await DownloadNotificationService().showDownloadFailed(
+                          id: 102,
+                          title: 'Unduhan PDF Gagal',
+                          body: 'Gagal membuat dokumen laporan PDF.',
+                        );
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Row(
+                              children: [
+                                const Icon(
+                                  Icons.error_outline_rounded,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    'Gagal membuat dokumen PDF. Silakan coba lagi.',
+                                    style: GoogleFonts.poppins(fontSize: 12),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            backgroundColor: Colors.redAccent,
+                            duration: const Duration(seconds: 3),
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        );
+                      }
+                    }
+                  },
+            icon: _isExportingPdf
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Icon(Icons.picture_as_pdf_rounded, size: 18),
+            label: Text(
+              _isExportingPdf ? 'Menyimpan...' : 'Unduh PDF',
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -2236,90 +2642,6 @@ class _BmiPageState extends State<BmiPage> {
 
         // 4. Detail list
         _buildHistoryList(),
-
-        const SizedBox(height: 16),
-
-        // 5. Tombol Unduh Laporan
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: _green,
-                  side: const BorderSide(color: _green, width: 1),
-                  padding: const EdgeInsets.symmetric(vertical: 13),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                onPressed: () async {
-                  final messenger = ScaffoldMessenger.of(context);
-                  messenger.showSnackBar(
-                    const SnackBar(
-                      content: Text('Menyiapkan gambar PNG...'),
-                      backgroundColor: Color(0xFF1AB673),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                  final ok =
-                      await KartuKesehatanExportService.captureAndDownloadPng(
-                        _riwayatPngKey,
-                      );
-                  if (!ok) {
-                    messenger.showSnackBar(
-                      const SnackBar(
-                        content: Text('Gagal membuat PNG. Coba lagi.'),
-                        backgroundColor: Colors.redAccent,
-                      ),
-                    );
-                  }
-                },
-                icon: const Icon(Icons.image_outlined, size: 16),
-                label: Text(
-                  'Unduh PNG',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _green,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 13),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                onPressed: () async {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Menyiapkan laporan PDF...'),
-                      backgroundColor: Color(0xFF1AB673),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                  await KartuKesehatanExportService.exportRiwayatToPdf(
-                    _historyList,
-                  );
-                },
-                icon: const Icon(Icons.picture_as_pdf_rounded, size: 16),
-                label: Text(
-                  'Unduh PDF',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
       ],
     );
   }
@@ -3031,15 +3353,19 @@ class _BmiPageState extends State<BmiPage> {
                   color: Colors.grey[500],
                 ),
                 const SizedBox(width: 4),
-                Text(
-                  item.formattedDate,
-                  style: GoogleFonts.poppins(
-                    fontSize: 11,
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.w500,
+                Expanded(
+                  child: Text(
+                    item.formattedDate,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                      fontSize: 11,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 9,
@@ -3153,6 +3479,8 @@ class _BmiPageState extends State<BmiPage> {
                       ),
                       Text(
                         'BMR: ${item.bmrDisplay} kkal • TDEE: ${item.tdeeDisplay} kkal',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.poppins(
                           fontSize: 11,
                           color: Colors.grey[700],
@@ -3229,6 +3557,730 @@ class _BmiPageState extends State<BmiPage> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  // ── Integrasi Rekomendasi Peta Olahraga Berdasarkan Kategori BMI ──
+  Future<void> _openMapsQuery(String query) async {
+    final cleanQuery = query.replaceAll('+', ' ').trim();
+    bool launched = false;
+
+    // 1. Coba native Android Google Maps intent via geo:0,0?q=... (Menggunakan GPS pengguna saat ini)
+    final geoUri = Uri.parse('geo:0,0?q=${Uri.encodeComponent(cleanQuery)}');
+    try {
+      if (await canLaunchUrl(geoUri)) {
+        launched = await launchUrl(
+          geoUri,
+          mode: LaunchMode.externalApplication,
+        );
+      }
+    } catch (_) {}
+
+    // 2. Jika intent geo belum terbuka, coba URL Google Maps Search
+    if (!launched) {
+      final webUri = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(cleanQuery)}',
+      );
+      try {
+        if (await canLaunchUrl(webUri)) {
+          launched = await launchUrl(
+            webUri,
+            mode: LaunchMode.externalApplication,
+          );
+        }
+      } catch (_) {}
+
+      // 3. Fallback platformDefault / browser
+      if (!launched) {
+        try {
+          launched = await launchUrl(
+            webUri,
+            mode: LaunchMode.platformDefault,
+          );
+        } catch (_) {}
+      }
+    }
+
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Tidak dapat membuka Google Maps. Pastikan aplikasi Google Maps atau browser terpasang.',
+            style: GoogleFonts.poppins(fontSize: 12),
+          ),
+          backgroundColor: Colors.red[700],
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  Widget _buildSportsMapRecommendationSection() {
+    if (_hasil == null) return const SizedBox.shrink();
+
+    final status = _hasil!.status;
+    final isLowImpact = status == 'Berlebih' || status == 'Obesitas';
+    final isUnderweight = status == 'Kurus';
+
+    final String categoryTitle;
+    final String sportSubtitle;
+    final String reasonText;
+    final Color accentColor;
+    final IconData mainIcon;
+    final String initialMapCat;
+    final String mapsQuery;
+    final List<String> quickTags;
+    final List<Map<String, dynamic>> places;
+
+    if (isLowImpact) {
+      categoryTitle = 'Fasilitas Low-Impact';
+      sportSubtitle = 'Jalur Jogging & Kolam Renang';
+      reasonText =
+          'Berdasarkan status BMI Anda (${_hasil!.statusLabel}), olahraga low-impact seperti berenang atau jalan santai di lintasan jogging sangat dianjurkan untuk membakar lemak secara aman tanpa membebani persendian lutut.';
+      accentColor = const Color(0xFF0284C7);
+      mainIcon = Icons.pool_rounded;
+      initialMapCat = 'Kolam Renang';
+      mapsQuery = 'kolam renang terdekat';
+      quickTags = ['🏊 Kolam Renang', '🏃 Jogging Track', '🌿 Jalur Santai'];
+      places = [
+        {
+          'name': 'Kolam Renang Senayan',
+          'category': 'Kolam Renang',
+          'address': 'Komplek GBK, Senayan, Jakarta Selatan',
+          'distance': '1.5 km',
+          'rating': 4.6,
+          'hours': '06.00 – 18.00',
+          'icon': Icons.pool_rounded,
+          'color': Colors.blue,
+          'mapQuery': 'Kolam+Renang+Senayan+Jakarta',
+        },
+        {
+          'name': 'Hutan Kota Srengseng',
+          'category': 'Jogging Track',
+          'address': 'Jl. Srengseng Raya, Jakarta Barat',
+          'distance': '3.4 km',
+          'rating': 4.5,
+          'hours': '05.00 – 18.00',
+          'icon': Icons.nature_people_rounded,
+          'color': const Color(0xFF00CC52),
+          'mapQuery': 'Hutan+Kota+Srengseng+Jakarta',
+        },
+        {
+          'name': 'Rooftop Jogging Track SCBD',
+          'category': 'Jogging Track',
+          'address': 'Jl. Jend. Sudirman Kav.52, Jakarta Selatan',
+          'distance': '1.9 km',
+          'rating': 4.4,
+          'hours': '05.30 – 20.00',
+          'icon': Icons.directions_run_rounded,
+          'color': Colors.teal,
+          'mapQuery': 'Jogging+Track+SCBD+Jakarta',
+        },
+      ];
+    } else if (isUnderweight) {
+      categoryTitle = 'Fitness Center & Gym';
+      sportSubtitle = 'Latihan Beban & Massa Otot';
+      reasonText =
+          'Berdasarkan status BMI Anda (${_hasil!.statusLabel}), Anda disarankan untuk berlatih resistensi atau angkat beban di fitness center / gym guna menstimulasi pertumbuhan massa otot dan menaikkan berat badan ideal.';
+      accentColor = const Color(0xFF7C3AED);
+      mainIcon = Icons.fitness_center_rounded;
+      initialMapCat = 'Gym';
+      mapsQuery = 'gym terdekat';
+      quickTags = ['🏋️ Fitness Center', '💪 Free Weight Gym', '🔥 Mesin Beban'];
+      places = [
+        {
+          'name': 'FitFirst Fitness Center',
+          'category': 'Gym',
+          'address': 'Jl. Sudirman No.45, Jakarta Pusat',
+          'distance': '0.8 km',
+          'rating': 4.7,
+          'hours': '06.00 – 22.00',
+          'icon': Icons.fitness_center_rounded,
+          'color': Colors.purple,
+          'mapQuery': 'FitFirst Fitness Center Sudirman Jakarta',
+        },
+        {
+          'name': "Gold's Gym Kelapa Gading",
+          'category': 'Gym',
+          'address': 'Mal Kelapa Gading Lt.3, Jakarta Utara',
+          'distance': '4.0 km',
+          'rating': 4.9,
+          'hours': '06.00 – 23.00',
+          'icon': Icons.fitness_center_rounded,
+          'color': Colors.deepOrange,
+          'mapQuery': "Gold's Gym Kelapa Gading Jakarta",
+        },
+      ];
+    } else {
+      categoryTitle = 'Lapangan & Komunitas Olahraga';
+      sportSubtitle = 'Lapangan Terbuka & Sport Complex';
+      reasonText =
+          'Hebat! Berat badan Anda (${_hasil!.statusLabel}) sudah berada di rentang ideal. Pertahankan daya tahan fisik dan kebugaran jantung dengan aktif berolahraga di lapangan terbuka atau sarana olahraga bersama komunitas.';
+      accentColor = const Color(0xFF16A34A);
+      mainIcon = Icons.sports_tennis_rounded;
+      initialMapCat = 'Lapangan';
+      mapsQuery = 'lapangan olahraga terdekat';
+      quickTags = ['🏸 Lapangan Badminton', '⚽ Sepak Bola', '🏟️ Stadion Kompleks'];
+      places = [
+        {
+          'name': 'Gelora Bung Karno Sport Complex',
+          'category': 'Stadion',
+          'address': 'Jl. Pintu Satu Senayan, Jakarta Pusat',
+          'distance': '1.2 km',
+          'rating': 4.8,
+          'hours': '05.00 – 21.00',
+          'icon': Icons.stadium_rounded,
+          'color': Colors.red,
+          'mapQuery': 'Gelora Bung Karno Jakarta',
+        },
+        {
+          'name': 'Lapangan Badminton Gor Ciracas',
+          'category': 'Lapangan',
+          'address': 'Jl. Raya Bogor No.1, Jakarta Timur',
+          'distance': '2.1 km',
+          'rating': 4.3,
+          'hours': '07.00 – 23.00',
+          'icon': Icons.sports_tennis_rounded,
+          'color': Colors.orange,
+          'mapQuery': 'Lapangan Badminton Gor Ciracas Jakarta',
+        },
+        {
+          'name': 'Lapangan Sepak Bola Ragunan',
+          'category': 'Lapangan',
+          'address': 'Jl. Harsono RM, Ragunan, Jakarta Selatan',
+          'distance': '5.2 km',
+          'rating': 4.2,
+          'hours': '07.00 – 18.00',
+          'icon': Icons.sports_soccer_rounded,
+          'color': Colors.green,
+          'mapQuery': 'Lapangan Sepak Bola Ragunan Jakarta',
+        },
+      ];
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header Section
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: accentColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                Icons.map_rounded,
+                color: accentColor,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Rekomendasi Peta Olahraga',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Fasilitas olahraga terdekat yang disesuaikan dengan hasil BMI Anda.',
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => LocationOlahragaPage(
+                      onBack: () => Navigator.pop(context),
+                      initialCategory: initialMapCat,
+                      bmiCategory: _hasil!.status,
+                      bmiRecommendationReason: reasonText,
+                    ),
+                  ),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Peta Lengkap',
+                      style: GoogleFonts.poppins(
+                        color: accentColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 11,
+                      color: accentColor,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 14),
+
+        // Banner Card Rekomendasi Khusus Kategori BMI
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: accentColor.withValues(alpha: 0.25),
+              width: 1.2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: accentColor.withValues(alpha: 0.06),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Top Bar Badge
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: accentColor.withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      mainIcon,
+                      color: accentColor,
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: accentColor,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                'BMI: ${_hasil!.statusLabel}',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                categoryTitle,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          sportSubtitle,
+                          style: GoogleFonts.poppins(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 12),
+
+              // Penjelasan medis / alasan rekomendasi
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: accentColor.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.lightbulb_rounded,
+                      size: 16,
+                      color: accentColor,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        reasonText,
+                        style: GoogleFonts.poppins(
+                          fontSize: 11.5,
+                          color: Colors.black87,
+                          height: 1.45,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              // Quick tags
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: quickTags.map((tag) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.grey.withValues(alpha: 0.18),
+                      ),
+                    ),
+                    child: Text(
+                      tag,
+                      style: GoogleFonts.poppins(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 14),
+
+        // List preview fasilitas olahraga yang cocok
+        ...places.map((place) => _buildSportLocationCard(place, accentColor)),
+
+        const SizedBox(height: 8),
+
+        // Action Buttons Row (Buka Peta FitLife & Cari di Google Maps Sekitar)
+        Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LocationOlahragaPage(
+                        onBack: () => Navigator.pop(context),
+                        initialCategory: initialMapCat,
+                        bmiCategory: _hasil!.status,
+                        bmiRecommendationReason: reasonText,
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(
+                  Icons.explore_rounded,
+                  size: 18,
+                  color: Colors.white,
+                ),
+                label: Text(
+                  'Buka Peta Lengkap',
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _green,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  elevation: 0,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              flex: 2,
+              child: OutlinedButton.icon(
+                onPressed: () => _openMapsQuery(mapsQuery),
+                icon: const Icon(
+                  Icons.my_location_rounded,
+                  size: 16,
+                  color: _green,
+                ),
+                label: Text(
+                  'Cari Sekitar',
+                  style: GoogleFonts.poppins(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    color: _green,
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  side: const BorderSide(color: _green, width: 1.4),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSportLocationCard(Map<String, dynamic> loc, Color accentColor) {
+    final placeColor = loc['color'] as Color? ?? accentColor;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.16)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => _openMapsQuery(loc['mapQuery'] as String),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Icon Box
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: placeColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    loc['icon'] as IconData? ?? Icons.location_on_rounded,
+                    color: placeColor,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                // Info Details
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              loc['name'] as String,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: placeColor.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              loc['category'] as String,
+                              style: GoogleFonts.poppins(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w600,
+                                color: placeColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        loc['address'] as String,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          // Distance
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.place_outlined,
+                                size: 12,
+                                color: Colors.grey[600],
+                              ),
+                              const SizedBox(width: 2),
+                              Text(
+                                loc['distance'] as String,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(width: 10),
+                          // Rating
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.star_rounded,
+                                size: 13,
+                                color: Colors.amber,
+                              ),
+                              const SizedBox(width: 2),
+                              Text(
+                                '${loc['rating']}',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(width: 10),
+                          // Hours
+                          Expanded(
+                            child: Text(
+                              '🕒 ${loc['hours']}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.poppins(
+                                fontSize: 10,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Action Button: Buka Google Maps dengan tombol Rute
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 7,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _green,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _green.withValues(alpha: 0.25),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.directions,
+                        size: 14,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        'Rute',
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
