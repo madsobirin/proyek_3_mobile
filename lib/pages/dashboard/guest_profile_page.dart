@@ -20,7 +20,7 @@ class GuestProfilePage extends StatelessWidget {
                 height: 120,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF00FF66).withOpacity(0.1),
+                  color: const Color(0xFF00FF66).withValues(alpha: 0.1),
                 ),
                 child: const Icon(
                   Icons.person_outline_rounded,

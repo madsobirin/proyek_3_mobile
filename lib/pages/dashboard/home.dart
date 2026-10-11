@@ -9,11 +9,13 @@ import 'package:fitlife/pages/scan/scan_barcode_screen.dart';
 import 'package:fitlife/pages/lokasi/lokasi_olahraga_page.dart';
 import 'package:fitlife/pages/chat/chat_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 class Home extends StatefulWidget {
   const Home({super.key});
   @override
   State<Home> createState() => _HomeState();
 }
+
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
   final List<int> _history = [];
@@ -24,6 +26,7 @@ class _HomeState extends State<Home> {
     super.initState();
     _checkLoginStatus();
   }
+
   Future<void> _checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userData = prefs.getString('user');
@@ -33,12 +36,14 @@ class _HomeState extends State<Home> {
       });
     }
   }
+
   void _onItemTapped(int index) {
     if (index != _selectedIndex) {
       _history.add(_selectedIndex);
       setState(() => _selectedIndex = index);
     }
   }
+
   void _goBack() {
     if (_history.isNotEmpty) {
       setState(() {
@@ -50,6 +55,7 @@ class _HomeState extends State<Home> {
       });
     }
   }
+
   // ================= HOME CONTENT =================
   Widget _buildHomeContent() {
     final width = MediaQuery.of(context).size.width;
@@ -86,6 +92,7 @@ class _HomeState extends State<Home> {
       ],
     );
   }
+
   // --- 1. Top Header with User Greeting & Brand Badge ---
   Widget _buildTopHeader(bool isSmall) {
     return Padding(
@@ -178,6 +185,7 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+
   // --- 2. Hero Section Banner ---
   Widget _buildHeroSection(bool isSmall) {
     return Padding(
@@ -286,6 +294,7 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+
   // --- 3. Daily Tip Card (Slim) ---
   Widget _buildDailyTipCard(bool isSmall) {
     return Padding(
@@ -349,6 +358,7 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+
   // --- 5. Section Header ---
   Widget _buildSectionHeader({
     required String title,
@@ -408,6 +418,7 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+
   // --- 6. Latest Menu Carousel ---
   Widget _buildLatestMenu(bool isSmall) {
     final titles = [
@@ -418,9 +429,9 @@ class _HomeState extends State<Home> {
     final cals = ["250 kcal", "320 kcal", "450 kcal"];
     final tags = ["Rendah Kalori", "Tinggi Serat", "Tinggi Protein"];
     final images = [
-      "https\://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=400&auto=format&fit=crop",
-      "https\://images.unsplash.com/photo-1517673132405-a56a62b18caf?q=80&w=400&auto=format&fit=crop",
-      "https\://images.unsplash.com/photo-1532550907401-a500c9a57435?q=80&w=400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1517673132405-a56a62b18caf?q=80&w=400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1532550907401-a500c9a57435?q=80&w=400&auto=format&fit=crop",
     ];
     return SizedBox(
       height: 195,
@@ -533,6 +544,7 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+
   // --- 7. Latest Articles List ---
   Widget _buildLatestArtikel(bool isSmall) {
     final titles = [
@@ -543,9 +555,9 @@ class _HomeState extends State<Home> {
     final categories = ["Diet & Nutrisi", "Kebugaran", "Gaya Hidup"];
     final readTimes = ["3 mnt baca", "4 mnt baca", "2 mnt baca"];
     final images = [
-      "https\://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=400&auto=format&fit=crop",
-      "https\://images.unsplash.com/photo-1523362628745-0c100150b504?q=80&w=400&auto=format&fit=crop",
-      "https\://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1523362628745-0c100150b504?q=80&w=400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=400&auto=format&fit=crop",
     ];
     return ListView.separated(
       padding: EdgeInsets.symmetric(horizontal: isSmall ? 16 : 20),
@@ -640,6 +652,7 @@ class _HomeState extends State<Home> {
       },
     );
   }
+
   // ================= BUILD =================
   @override
   Widget build(BuildContext context) {
@@ -700,6 +713,7 @@ class _HomeState extends State<Home> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
+
   Widget _buildBottomNav() {
     return Container(
       decoration: const BoxDecoration(
@@ -721,11 +735,7 @@ class _HomeState extends State<Home> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              _buildNavItem(
-                index: 0,
-                icon: Icons.home_rounded,
-                label: "Home",
-              ),
+              _buildNavItem(index: 0, icon: Icons.home_rounded, label: "Home"),
               _buildNavItem(
                 index: 4,
                 icon: Icons.monitor_weight_rounded,
@@ -748,6 +758,7 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+
   Widget _buildScanNavItem() {
     return GestureDetector(
       onTap: () {
@@ -801,6 +812,7 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+
   Widget _buildNavItem({
     required int index,
     required IconData icon,

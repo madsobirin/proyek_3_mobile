@@ -85,7 +85,7 @@ class _ArtikelDetailPageState extends State<ArtikelDetailPage> {
                 onTap: () => Navigator.pop(context, artikel),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.35),
+                    color: Colors.black.withValues(alpha: 0.35),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -118,7 +118,7 @@ class _ArtikelDetailPageState extends State<ArtikelDetailPage> {
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
                         colors: [
-                          Colors.black.withOpacity(0.5),
+                          Colors.black.withValues(alpha: 0.5),
                           Colors.transparent,
                         ],
                       ),
@@ -166,9 +166,9 @@ class _ArtikelDetailPageState extends State<ArtikelDetailPage> {
                       vertical: 5,
                     ),
                     decoration: BoxDecoration(
-                      color: _green.withOpacity(0.1),
+                      color: _green.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: _green.withOpacity(0.3)),
+                      border: Border.all(color: _green.withValues(alpha: 0.3)),
                     ),
                     child: Text(
                       artikel.kategori,
@@ -209,7 +209,7 @@ class _ArtikelDetailPageState extends State<ArtikelDetailPage> {
                           width: 36,
                           height: 36,
                           decoration: BoxDecoration(
-                            color: _green.withOpacity(0.15),
+                            color: _green.withValues(alpha: 0.15),
                             shape: BoxShape.circle,
                           ),
                           child: Center(

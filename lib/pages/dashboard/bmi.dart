@@ -74,7 +74,7 @@ class _BmiPageState extends State<BmiPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
@@ -94,8 +94,8 @@ class _BmiPageState extends State<BmiPage> {
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
             color: isSelected
-                ? const Color(0xFF1AB673).withOpacity(0.12)
-                : Colors.grey.withOpacity(0.08),
+                ? const Color(0xFF1AB673).withValues(alpha: 0.12)
+                : Colors.grey.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Center(
@@ -132,7 +132,7 @@ class _BmiPageState extends State<BmiPage> {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -290,7 +290,7 @@ class _BmiPageState extends State<BmiPage> {
                     width: 70,
                     height: 70,
                     decoration: BoxDecoration(
-                      color: kategoriColor().withOpacity(0.12),
+                      color: kategoriColor().withValues(alpha: 0.12),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
