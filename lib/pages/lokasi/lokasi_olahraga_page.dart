@@ -4,8 +4,16 @@ import 'package:url_launcher/url_launcher.dart';
 
 class LocationOlahragaPage extends StatefulWidget {
   final VoidCallback onBack;
-  const LocationOlahragaPage({super.key, required this.onBack});
-
+  final String? initialCategory;
+  final String? bmiCategory;
+  final String? bmiRecommendationReason;
+  const LocationOlahragaPage({
+    super.key,
+    required this.onBack,
+    this.initialCategory,
+    this.bmiCategory,
+    this.bmiRecommendationReason,
+  });
   @override
   State<LocationOlahragaPage> createState() => _LocationOlahragaPageState();
 }
@@ -14,7 +22,6 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
   final TextEditingController _searchController = TextEditingController();
   int _selectedCategory = 0;
   String _searchQuery = '';
-
   final List<String> _categories = [
     'Semua',
     'Gym',
@@ -23,7 +30,6 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
     'Jogging Track',
     'Stadion',
   ];
-
   final List<Map<String, dynamic>> _locations = [
     {
       'name': 'FitFirst Fitness Center',
@@ -87,7 +93,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
       'open': true,
       'hours': '05.00 – 18.00',
       'icon': Icons.nature_people_rounded,
-      'color': const Color(0xFF00CC52),
+      'color': const Color(0xFF22C55E),
       'mapQuery': 'Hutan+Kota+Srengseng+Jakarta',
     },
     {
@@ -130,7 +136,6 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
       'mapQuery': 'Jogging+Track+SCBD+Jakarta',
     },
   ];
-
   List<Map<String, dynamic>> get _filteredLocations {
     return _locations.where((loc) {
       final matchCategory =
@@ -149,20 +154,66 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
   }
 
   Future<void> _openMaps(String query) async {
-    final uri = Uri.parse(
-      'https://www.google.com/maps/search/?api=1&query=$query',
-    );
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    final cleanQuery = query.replaceAll('+', ' ').trim();
+    bool launched = false;
+    // 1. Coba native Android Google Maps intent via geo:0,0?q=... (Menggunakan GPS pengguna saat ini)
+    final geoUri = Uri.parse('geo:0,0?q=${Uri.encodeComponent(cleanQuery)}');
+    try {
+      if (await canLaunchUrl(geoUri)) {
+        launched = await launchUrl(
+          geoUri,
+          mode: LaunchMode.externalApplication,
+        );
+      }
+    } catch (_) {}
+    // 2. Jika intent geo belum terbuka, coba URL Google Maps Search
+    if (!launched) {
+      final webUri = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(cleanQuery)}',
+      );
+      try {
+        if (await canLaunchUrl(webUri)) {
+          launched = await launchUrl(
+            webUri,
+            mode: LaunchMode.externalApplication,
+          );
+        }
+      } catch (_) {}
+      // 3. Fallback platformDefault / browser
+      if (!launched) {
+        try {
+          launched = await launchUrl(webUri, mode: LaunchMode.platformDefault);
+        } catch (_) {}
+      }
+    }
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Tidak dapat membuka Google Maps. Pastikan aplikasi Google Maps atau browser terpasang.',
+            style: GoogleFonts.inter(fontSize: 12),
+          ),
+          backgroundColor: Colors.red[700],
+          duration: const Duration(seconds: 3),
+        ),
+      );
     }
   }
 
   Future<void> _openNearbyGyms() async {
-    final uri = Uri.parse(
-      'https://www.google.com/maps/search/tempat+olahraga+terdekat/',
-    );
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    await _openMaps('tempat olahraga terdekat');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialCategory != null) {
+      final idx = _categories.indexWhere(
+        (c) => c.toLowerCase() == widget.initialCategory!.toLowerCase(),
+      );
+      if (idx != -1) {
+        _selectedCategory = idx;
+      }
     }
   }
 
@@ -172,23 +223,128 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
     super.dispose();
   }
 
+  Widget _buildBmiRecommendationAlert() {
+    if (widget.bmiCategory == null) return const SizedBox.shrink();
+    Color badgeColor = const Color(0xFF1AB673);
+    IconData badgeIcon = Icons.health_and_safety_rounded;
+    if (widget.bmiCategory!.toLowerCase().contains('kurus')) {
+      badgeColor = Colors.blue;
+      badgeIcon = Icons.fitness_center_rounded;
+    } else if (widget.bmiCategory!.toLowerCase().contains('lebih') ||
+        widget.bmiCategory!.toLowerCase().contains('obes')) {
+      badgeColor = Colors.orange;
+      badgeIcon = Icons.pool_rounded;
+    }
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: badgeColor.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: badgeColor.withValues(alpha: 0.35),
+            width: 1.2,
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: badgeColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(badgeIcon, color: badgeColor, size: 22),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: badgeColor,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          'REKOMENDASI BMI',
+                          style: GoogleFonts.manrope(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        widget.bmiCategory!,
+                        style: GoogleFonts.manrope(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: badgeColor,
+                        ),
+                      ),
+                      const Spacer(),
+                      if (_selectedCategory != 0)
+                        GestureDetector(
+                          onTap: () => setState(() => _selectedCategory = 0),
+                          child: Text(
+                            'Semua',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w600,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    widget.bmiRecommendationReason ??
+                        'Fasilitas olahraga disaring sesuai dengan kondisi fisik dan target kesehatan Anda.',
+                    style: GoogleFonts.inter(
+                      fontSize: 11.5,
+                      color: Colors.black87,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FFFA),
+      backgroundColor: const Color(0xFFF7F9F7),
       body: SafeArea(
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
             // Header
             SliverToBoxAdapter(child: _buildHeader()),
-
+            // BMI Recommendation Alert
+            if (widget.bmiCategory != null)
+              SliverToBoxAdapter(child: _buildBmiRecommendationAlert()),
             // Search & Filter
             SliverToBoxAdapter(child: _buildSearchAndFilter()),
-
             // Map Banner
             SliverToBoxAdapter(child: _buildMapBanner()),
-
             // Section Title
             SliverToBoxAdapter(
               child: Padding(
@@ -210,8 +366,8 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF00FF66).withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(20),
+                        color: const Color(0xFF22C55E).withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
                         'Dekat Lokasimu',
@@ -226,7 +382,6 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                 ),
               ),
             ),
-
             // Location List
             if (_filteredLocations.isEmpty)
               SliverToBoxAdapter(child: _buildEmptyState())
@@ -251,77 +406,64 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      child: Column(
+      padding: const EdgeInsets.fromLTRB(16, 16, 20, 0),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  if (Navigator.canPop(context)) {
-                    Navigator.pop(context);
-                  } else {
-                    widget.onBack();
-                  }
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  margin: const EdgeInsets.only(right: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.arrow_back_ios_new,
-                    size: 18,
-                    color: Colors.black87,
-                  ),
-                ),
+          GestureDetector(
+            onTap: () {
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              } else {
+                widget.onBack();
+              }
+            },
+            child: Container(
+              width: 42,
+              height: 42,
+              margin: const EdgeInsets.only(right: 16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0F2F3),
+                shape: BoxShape.circle,
               ),
-              Container(
-                width: 34,
-                height: 34,
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Center(child: Image.asset('assets/images/logo.png')),
+              child: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                size: 19,
+                color: Color(0xFF252525),
               ),
-              const SizedBox(width: 8),
-              Text(
-                'Fitlife.id',
-                style: GoogleFonts.manrope(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF111827),
-                  letterSpacing: -0.5,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Lokasi Olahraga 📍',
-            style: GoogleFonts.manrope(
-              fontSize: 26,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF111827),
-              height: 1.2,
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            'Temukan gym, lapangan, dan tempat olahraga terdekat di sekitarmu.',
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: const Color(0xFF6B7280),
-              height: 1.5,
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Lokasi Olahraga',
+                    style: GoogleFonts.poppins(
+                      fontSize: 19,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF202124),
+                      height: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    'Temukan tempat olahraga yang sesuai dengan kebutuhanmu.',
+                    style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      color: Colors.grey[600],
+                      height: 1.35,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 20),
         ],
       ),
+      margin: const EdgeInsets.only(bottom: 20),
     );
   }
 
@@ -403,19 +545,19 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                     ),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? const Color(0xFF00FF66)
+                          ? const Color(0xFF22C55E)
                           : Colors.white,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: isSelected
-                            ? const Color(0xFF00FF66)
+                            ? const Color(0xFF22C55E)
                             : const Color(0xFFE5E7EB),
                       ),
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
                                 color: const Color(
-                                  0xFF00FF66,
+                                  0xFF22C55E,
                                 ).withValues(alpha: 0.3),
                                 blurRadius: 8,
                                 offset: const Offset(0, 3),
@@ -450,7 +592,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
       child: GestureDetector(
         onTap: _openNearbyGyms,
         child: Container(
-          height: 160,
+          height: 170,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
             gradient: const LinearGradient(
@@ -477,7 +619,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                   height: 130,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFF00FF66).withValues(alpha: 0.08),
+                    color: const Color(0xFF22C55E).withValues(alpha: 0.08),
                   ),
                 ),
               ),
@@ -510,16 +652,16 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                             ),
                             decoration: BoxDecoration(
                               color: const Color(
-                                0xFF00FF66,
+                                0xFF22C55E,
                               ).withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(16),
                             ),
                             child: Text(
                               'GOOGLE MAPS',
                               style: GoogleFonts.inter(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF00FF66),
+                                color: const Color(0xFF22C55E),
                                 letterSpacing: 1,
                               ),
                             ),
@@ -539,7 +681,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                             children: [
                               const Icon(
                                 Icons.open_in_new_rounded,
-                                color: Color(0xFF00FF66),
+                                color: Color(0xFF22C55E),
                                 size: 14,
                               ),
                               const SizedBox(width: 4),
@@ -548,7 +690,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                                 style: GoogleFonts.inter(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF00FF66),
+                                  color: const Color(0xFF22C55E),
                                 ),
                               ),
                             ],
@@ -560,15 +702,15 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                       width: 70,
                       height: 70,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF00FF66).withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(20),
+                        color: const Color(0xFF22C55E).withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: const Color(0xFF00FF66).withValues(alpha: 0.3),
+                          color: const Color(0xFF22C55E).withValues(alpha: 0.3),
                         ),
                       ),
                       child: const Icon(
                         Icons.map_rounded,
-                        color: Color(0xFF00FF66),
+                        color: Color(0xFF22C55E),
                         size: 36,
                       ),
                     ),
@@ -585,11 +727,10 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
   Widget _buildLocationCard(Map<String, dynamic> loc) {
     final bool isOpen = loc['open'] as bool;
     final Color catColor = loc['color'] as Color;
-
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE5E7EB)),
         boxShadow: [
           BoxShadow(
@@ -666,7 +807,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                             decoration: BoxDecoration(
                               color: isOpen
                                   ? const Color(
-                                      0xFF00FF66,
+                                      0xFF22C55E,
                                     ).withValues(alpha: 0.12)
                                   : Colors.red.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(6),
@@ -818,7 +959,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: const Color(0xFF00FF66).withValues(alpha: 0.1),
+              color: const Color(0xFF22C55E).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(

@@ -9,26 +9,21 @@ import 'package:fitlife/pages/scan/scan_barcode_screen.dart';
 import 'package:fitlife/pages/lokasi/lokasi_olahraga_page.dart';
 import 'package:fitlife/pages/chat/chat_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 class Home extends StatefulWidget {
   const Home({super.key});
-
   @override
   State<Home> createState() => _HomeState();
 }
-
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
   final List<int> _history = [];
   bool _isLoggedIn = false;
   bool _isChatOpen = false;
-
   @override
   void initState() {
     super.initState();
     _checkLoginStatus();
   }
-
   Future<void> _checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userData = prefs.getString('user');
@@ -38,14 +33,12 @@ class _HomeState extends State<Home> {
       });
     }
   }
-
   void _onItemTapped(int index) {
     if (index != _selectedIndex) {
       _history.add(_selectedIndex);
       setState(() => _selectedIndex = index);
     }
   }
-
   void _goBack() {
     if (_history.isNotEmpty) {
       setState(() {
@@ -57,12 +50,10 @@ class _HomeState extends State<Home> {
       });
     }
   }
-
   // ================= HOME CONTENT =================
   Widget _buildHomeContent() {
     final width = MediaQuery.of(context).size.width;
     final isSmall = width < 370;
-
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.only(bottom: 100),
@@ -72,9 +63,7 @@ class _HomeState extends State<Home> {
         _buildHeroSection(isSmall),
         const SizedBox(height: 12),
         _buildDailyTipCard(isSmall),
-        const SizedBox(height: 20),
-        _buildFeatureSection(isSmall),
-        const SizedBox(height: 28),
+        const SizedBox(height: 24),
         _buildSectionHeader(
           title: "Menu Sehat Populer",
           actionText: "Lihat Semua",
@@ -97,7 +86,6 @@ class _HomeState extends State<Home> {
       ],
     );
   }
-
   // --- 1. Top Header with User Greeting & Brand Badge ---
   Widget _buildTopHeader(bool isSmall) {
     return Padding(
@@ -190,7 +178,6 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-
   // --- 2. Hero Section Banner ---
   Widget _buildHeroSection(bool isSmall) {
     return Padding(
@@ -235,7 +222,6 @@ class _HomeState extends State<Home> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -272,54 +258,6 @@ class _HomeState extends State<Home> {
                         ],
                       ),
                     ),
-                    InkWell(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              BmiPage(onBack: () => Navigator.pop(context)),
-                        ),
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF00CC52),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(
-                                0xFF00CC52,
-                              ).withValues(alpha: 0.3),
-                              blurRadius: 6,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "Cek BMI",
-                              style: GoogleFonts.poppins(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            const Icon(
-                              Icons.arrow_forward_rounded,
-                              size: 13,
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -334,7 +272,7 @@ class _HomeState extends State<Home> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "Pantau kalkulasi BMI, telusuri asupan gizi sehat, serta cari tempat olahraga terdekat.",
+                  "Temukan inspirasi makanan sehat dan mulai kebiasaan hidup lebih aktif bersama FitLife.",
                   style: GoogleFonts.poppins(
                     fontSize: isSmall ? 11 : 11.5,
                     height: 1.35,
@@ -348,7 +286,6 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-
   // --- 3. Daily Tip Card (Slim) ---
   Widget _buildDailyTipCard(bool isSmall) {
     return Padding(
@@ -412,140 +349,6 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-
-  // --- 4. Feature Section (4 Quick Cards) ---
-  Widget _buildFeatureSection(bool isSmall) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: isSmall ? 16 : 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Fitur Utama",
-            style: GoogleFonts.poppins(
-              fontSize: isSmall ? 16 : 18,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF111827),
-            ),
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: _buildSquareFeatureCard(
-                  icon: Icons.monitor_weight_rounded,
-                  title: "Kalkulator\nBMI",
-                  color: Colors.orange,
-                  badgeText: "Cek",
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          BmiPage(onBack: () => Navigator.pop(context)),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _buildSquareFeatureCard(
-                  icon: Icons.restaurant_menu_rounded,
-                  title: "Menu\nSehat",
-                  color: Colors.pink,
-                  badgeText: "Nutrisi",
-                  onTap: () => _onItemTapped(1), // Menu = index 1
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _buildSquareFeatureCard(
-                  icon: Icons.place_rounded,
-                  title: "Lokasi\nOlahraga",
-                  color: Colors.indigo,
-                  badgeText: "Dekat",
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => LocationOlahragaPage(
-                        onBack: () => Navigator.pop(context),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _buildSquareFeatureCard(
-                  icon: Icons.qr_code_scanner_rounded,
-                  title: "Scan\nMakanan",
-                  color: const Color(0xFF00CC52),
-                  badgeText: "AI",
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const ScanBarcodeScreen(),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSquareFeatureCard({
-    required IconData icon,
-    required String title,
-    required Color color,
-    required String badgeText,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 14,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: color, size: 24),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: const Color(0xFF1F2937),
-                height: 1.25,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   // --- 5. Section Header ---
   Widget _buildSectionHeader({
     required String title,
@@ -605,7 +408,6 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-
   // --- 6. Latest Menu Carousel ---
   Widget _buildLatestMenu(bool isSmall) {
     final titles = [
@@ -616,11 +418,10 @@ class _HomeState extends State<Home> {
     final cals = ["250 kcal", "320 kcal", "450 kcal"];
     final tags = ["Rendah Kalori", "Tinggi Serat", "Tinggi Protein"];
     final images = [
-      "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=400&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1517673132405-a56a62b18caf?q=80&w=400&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1532550907401-a500c9a57435?q=80&w=400&auto=format&fit=crop",
+      "https\://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=400&auto=format&fit=crop",
+      "https\://images.unsplash.com/photo-1517673132405-a56a62b18caf?q=80&w=400&auto=format&fit=crop",
+      "https\://images.unsplash.com/photo-1532550907401-a500c9a57435?q=80&w=400&auto=format&fit=crop",
     ];
-
     return SizedBox(
       height: 195,
       child: ListView.separated(
@@ -732,7 +533,6 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-
   // --- 7. Latest Articles List ---
   Widget _buildLatestArtikel(bool isSmall) {
     final titles = [
@@ -743,11 +543,10 @@ class _HomeState extends State<Home> {
     final categories = ["Diet & Nutrisi", "Kebugaran", "Gaya Hidup"];
     final readTimes = ["3 mnt baca", "4 mnt baca", "2 mnt baca"];
     final images = [
-      "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=400&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1523362628745-0c100150b504?q=80&w=400&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=400&auto=format&fit=crop",
+      "https\://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=400&auto=format&fit=crop",
+      "https\://images.unsplash.com/photo-1523362628745-0c100150b504?q=80&w=400&auto=format&fit=crop",
+      "https\://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=400&auto=format&fit=crop",
     ];
-
     return ListView.separated(
       padding: EdgeInsets.symmetric(horizontal: isSmall ? 16 : 20),
       shrinkWrap: true,
@@ -841,9 +640,7 @@ class _HomeState extends State<Home> {
       },
     );
   }
-
   // ================= BUILD =================
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -855,11 +652,13 @@ class _HomeState extends State<Home> {
               index: _selectedIndex,
               children: [
                 _buildHomeContent(), // 0 - Home
-                MenuPage(onBack: _goBack), // 1 - Menu
-                ArtikelPage(onBack: _goBack), // 2 - Artikel
+                MenuPage(onBack: _goBack), // 1 - Menu (diakses dari Home)
+                ArtikelPage(onBack: _goBack), // 2 - Artikel (diakses dari Home)
                 _isLoggedIn
                     ? const ProfilePage()
                     : const GuestProfilePage(), // 3 - Profil
+                BmiPage(onBack: _goBack), // 4 - Kalkulator BMI
+                LocationOlahragaPage(onBack: _goBack), // 5 - Lokasi Olahraga
               ],
             ),
           ),
@@ -901,7 +700,6 @@ class _HomeState extends State<Home> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
-
   Widget _buildBottomNav() {
     return Container(
       decoration: const BoxDecoration(
@@ -923,17 +721,21 @@ class _HomeState extends State<Home> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              _buildNavItem(index: 0, icon: Icons.home_rounded, label: "Home"),
               _buildNavItem(
-                index: 1,
-                icon: Icons.restaurant_menu_rounded,
-                label: "Menu",
+                index: 0,
+                icon: Icons.home_rounded,
+                label: "Home",
+              ),
+              _buildNavItem(
+                index: 4,
+                icon: Icons.monitor_weight_rounded,
+                label: "Kalkulator",
               ),
               _buildScanNavItem(),
               _buildNavItem(
-                index: 2,
-                icon: Icons.article_rounded,
-                label: "Artikel",
+                index: 5,
+                icon: Icons.place_rounded,
+                label: "Lokasi",
               ),
               _buildNavItem(
                 index: 3,
@@ -946,7 +748,6 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-
   Widget _buildScanNavItem() {
     return GestureDetector(
       onTap: () {
@@ -1000,7 +801,6 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-
   Widget _buildNavItem({
     required int index,
     required IconData icon,
