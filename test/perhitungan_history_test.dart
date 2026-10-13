@@ -175,16 +175,16 @@ void main() {
           ),
         );
 
-        // Verifikasi riwayat & tren section muncul di halaman
-        expect(find.text('Riwayat & Tren Berat Badan'), findsOneWidget);
+        final historyTab = find.text('Riwayat & Tren');
+        expect(historyTab, findsOneWidget);
+        await tester.tap(historyTab);
+        await tester.pump();
+
+        expect(find.text('Simpan Riwayat Anda'), findsOneWidget);
         expect(
-          find.text('Visualisasi riwayat dan perkembangan berat badan Anda'),
+          find.textContaining('Masuk ke akun FitLife Anda'),
           findsOneWidget,
         );
-
-        // Verifikasi guest mode card muncul secara default jika belum login
-        expect(find.text('Mode Tamu (Belum Masuk)'), findsOneWidget);
-        expect(find.text('Masuk ke Akun FitLife'), findsOneWidget);
       },
     );
 
