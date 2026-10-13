@@ -657,16 +657,20 @@ class _BmiPageState extends State<BmiPage> {
                                     : Colors.grey[600],
                               ),
                               const SizedBox(width: 6),
-                              Text(
-                                'Kalkulator BMI',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 13,
-                                  fontWeight: _selectedMainTab == 0
-                                      ? FontWeight.bold
-                                      : FontWeight.w500,
-                                  color: _selectedMainTab == 0
-                                      ? _green
-                                      : Colors.grey[600],
+                              Flexible(
+                                child: Text(
+                                  'Kalkulator BMI',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: _selectedMainTab == 0
+                                        ? FontWeight.bold
+                                        : FontWeight.w500,
+                                    color: _selectedMainTab == 0
+                                        ? _green
+                                        : Colors.grey[600],
+                                  ),
                                 ),
                               ),
                             ],
@@ -708,16 +712,20 @@ class _BmiPageState extends State<BmiPage> {
                                     : Colors.grey[600],
                               ),
                               const SizedBox(width: 6),
-                              Text(
-                                'Riwayat & Tren',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 13,
-                                  fontWeight: _selectedMainTab == 1
-                                      ? FontWeight.bold
-                                      : FontWeight.w500,
-                                  color: _selectedMainTab == 1
-                                      ? _green
-                                      : Colors.grey[600],
+                              Flexible(
+                                child: Text(
+                                  'Riwayat & Tren',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: _selectedMainTab == 1
+                                        ? FontWeight.bold
+                                        : FontWeight.w500,
+                                    color: _selectedMainTab == 1
+                                        ? _green
+                                        : Colors.grey[600],
+                                  ),
                                 ),
                               ),
                               if (_displayHistoryList.isNotEmpty) ...[
@@ -1084,12 +1092,17 @@ class _BmiPageState extends State<BmiPage> {
                     size: 19,
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    'Hitung Analisis Kesehatan',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14.5,
+                  Flexible(
+                    child: Text(
+                      'Hitung Analisis Kesehatan',
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14.5,
+                      ),
                     ),
                   ),
                 ],
@@ -1111,7 +1124,7 @@ class _BmiPageState extends State<BmiPage> {
               // Circular BMI Score Ring
               Container(
                 width: 76,
-                height: 76,
+                height: 78,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: _kategoriColor().withValues(alpha: 0.1),

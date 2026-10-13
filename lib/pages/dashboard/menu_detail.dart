@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 class MenuDetailPage extends StatelessWidget {
   final Map<String, dynamic> menu;
@@ -26,6 +27,10 @@ class MenuDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = _getStatusColor(menu['target_status'] ?? '');
+    final biayaPerPorsi = menu['biaya_per_porsi'];
+    final biayaLabel = biayaPerPorsi == null
+        ? '-'
+        : '${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(num.tryParse(biayaPerPorsi.toString()) ?? 0)}/porsi';
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -141,30 +146,48 @@ class MenuDetailPage extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _infoItem(
-                          Icons.local_fire_department,
-                          '${menu['kalori'] ?? 0} kal',
-                          Colors.orange,
+                        Expanded(
+                          child: _infoItem(
+                            Icons.local_fire_department,
+                            '${menu['kalori'] ?? 0} kal',
+                            Colors.orange,
+                          ),
                         ),
                         Container(
                           width: 1,
-                          height: 30,
+                          height: 44,
                           color: Colors.grey[200],
                         ),
-                        _infoItem(
-                          Icons.access_time,
-                          '${menu['waktu_memasak'] ?? 0} menit',
-                          Colors.blue,
+                        Expanded(
+                          child: _infoItem(
+                            Icons.access_time,
+                            '${menu['waktu_memasak'] ?? 0} menit',
+                            Colors.blue,
+                          ),
                         ),
                         Container(
                           width: 1,
-                          height: 30,
+                          height: 44,
                           color: Colors.grey[200],
                         ),
-                        _infoItem(
-                          Icons.visibility_outlined,
-                          '${menu['dibaca'] ?? 0} views',
-                          _green,
+                        Expanded(
+                          child: _infoItem(
+                            Icons.visibility_outlined,
+                            '${menu['dibaca'] ?? 0} views',
+                            _green,
+                          ),
+                        ),
+                        Container(
+                          width: 1,
+                          height: 44,
+                          color: Colors.grey[200],
+                        ),
+                        Expanded(
+                          child: _infoItem(
+                            Icons.account_balance_wallet_outlined,
+                            biayaLabel,
+                            _green,
+                          ),
                         ),
                       ],
                     ),
@@ -232,9 +255,12 @@ class MenuDetailPage extends StatelessWidget {
         const SizedBox(height: 6),
         Text(
           label,
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
-            fontSize: 13,
+            fontSize: 11,
             color: Colors.black54,
           ),
         ),

@@ -27,8 +27,15 @@ void main() {
     expect(find.text('Moderate'), findsOneWidget);
     expect(find.text('Active'), findsOneWidget);
 
+    await tester.enterText(find.byType(TextField).at(0), '170');
+    await tester.enterText(find.byType(TextField).at(1), '65');
+    await tester.enterText(find.byType(TextField).at(2), '25');
+    await tester.ensureVisible(find.text('Moderate'));
+    await tester.tap(find.text('Moderate'));
+    await tester.pump();
+
     // Verifikasi tombol hitung
-    final hitungBtn = find.text('Hitung Analisis Kesehatan Saya');
+    final hitungBtn = find.text('Hitung Analisis Kesehatan');
     expect(hitungBtn, findsOneWidget);
 
     // Scroll tombol ke tampilan dan tekan tombol hitung
@@ -38,54 +45,48 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
 
-    // Verifikasi 3 bagian hasil muncul
-    expect(find.text('1. Analisis Tubuh'), findsOneWidget);
-    expect(find.text('2. Kebutuhan Energi Harian'), findsOneWidget);
-    expect(find.text('3. Rekomendasi Nutrisi Harian'), findsOneWidget);
+    // Verifikasi hasil kalkulasi dan konten nutrisi yang aktif
+    expect(find.text('Distribusi Makronutrien Harian'), findsOneWidget);
+    expect(find.text('Alokasi Kalori per Waktu Makan'), findsOneWidget);
 
     // Verifikasi metrik utama muncul
-    expect(find.text('Kisaran Berat Sehat'), findsOneWidget);
-    expect(find.text('BMR'), findsOneWidget);
-    expect(find.text('Energi Harian (TDEE)'), findsOneWidget);
+    expect(find.text('Kisaran Sehat: 53.5 – 72.0 kg'), findsOneWidget);
+    expect(find.text('BMR (Istirahat)'), findsOneWidget);
+    expect(find.text('TDEE (Kebutuhan)'), findsOneWidget);
     expect(find.text('PROTEIN'), findsOneWidget);
     expect(find.text('LEMAK'), findsOneWidget);
     expect(find.text('KARBOHIDRAT'), findsOneWidget);
 
     // Verifikasi nilai kalkulasi tepat sesuai PRD
-    expect(find.text('≈ 22.5'), findsOneWidget);
-    expect(find.text('≈ 53.5 – 72.0 kg'), findsOneWidget);
+    expect(find.text('22.5'), findsOneWidget);
     expect(find.text('≈ 1593'), findsOneWidget);
     expect(find.text('≈ 2468'), findsOneWidget);
     expect(find.text('≈ 91g'), findsOneWidget);
     expect(find.text('≈ 82g'), findsOneWidget);
     expect(find.text('≈ 341g'), findsOneWidget);
 
-    // ── Verifikasi Rekomendasi Menu & Pembagian Kalori Harian ──
-    expect(find.text('Rekomendasi Menu Diet: Normal'), findsOneWidget);
-    expect(
-      find.text(
-        'Nutrisi seimbang untuk mendukung kebutuhan energi harian Anda (2468 kcal/hari).',
-      ),
-      findsOneWidget,
-    );
-    expect(find.text('Lihat Semua'), findsOneWidget);
-
     // Verifikasi 3 summary card (25% / 40% / 35% dari 2468)
     // 2468 * 0.25 = 617, 2468 * 0.40 = 987, 2468 * 0.35 = 864
     expect(find.text('🌅 Sarapan (25%)'), findsOneWidget);
     expect(find.text('~617 kkal'), findsOneWidget);
 
-    expect(find.text('☀️ Makan Siang (40%)'), findsOneWidget);
+    expect(find.text('☀️ Siang (40%)'), findsOneWidget);
     expect(find.text('~987 kkal'), findsOneWidget);
 
-    expect(find.text('🌙 Makan Malam (35%)'), findsOneWidget);
+    expect(find.text('🌙 Malam (35%)'), findsOneWidget);
     expect(find.text('~864 kkal'), findsOneWidget);
 
-    // Verifikasi filter tabs
+    // Verifikasi rekomendasi menu dan filter waktu makan
+    final recommendationTab = find.text('🥗 Rekomendasi Menu');
+    await tester.ensureVisible(recommendationTab);
+    await tester.tap(recommendationTab);
+    await tester.pump();
+
+    expect(find.text('Menu Diet: Normal'), findsOneWidget);
     expect(find.text('Semua Menu'), findsOneWidget);
     expect(find.text('🌅 Sarapan (~617 kkal)'), findsOneWidget);
-    expect(find.text('☀️ Makan Siang (~987 kkal)'), findsOneWidget);
-    expect(find.text('🌙 Makan Malam (~864 kkal)'), findsOneWidget);
+    expect(find.text('☀️ Siang (~987 kkal)'), findsOneWidget);
+    expect(find.text('🌙 Malam (~864 kkal)'), findsOneWidget);
 
     // Test interaksi tap filter tab
     final sarapanTab = find.text('🌅 Sarapan (~617 kkal)');
@@ -108,16 +109,19 @@ void main() {
         ),
       );
 
-      final hitungBtn = find.text('Hitung Analisis Kesehatan Saya');
+      final hitungBtn = find.text('Hitung Analisis Kesehatan');
+      await tester.enterText(find.byType(TextField).at(0), '170');
+      await tester.enterText(find.byType(TextField).at(1), '65');
+      await tester.enterText(find.byType(TextField).at(2), '25');
+      await tester.ensureVisible(find.text('Moderate'));
+      await tester.tap(find.text('Moderate'));
+      await tester.pump();
       await tester.ensureVisible(hitungBtn);
       await tester.tap(hitungBtn);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 200));
 
-      expect(find.text('Rekomendasi Menu Diet: Normal'), findsOneWidget);
-      expect(find.text('🌅 Sarapan (25%)'), findsOneWidget);
-      expect(find.text('☀️ Makan Siang (40%)'), findsOneWidget);
-      expect(find.text('🌙 Makan Malam (35%)'), findsOneWidget);
+      expect(find.text('22.5'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );

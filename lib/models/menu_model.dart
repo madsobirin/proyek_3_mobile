@@ -8,6 +8,7 @@ class MenuModel {
   final int waktuMemasak;
   final int dibaca;
   final String gambar;
+  final num? biayaPerPorsi;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -21,6 +22,7 @@ class MenuModel {
     required this.waktuMemasak,
     this.dibaca = 0,
     required this.gambar,
+    this.biayaPerPorsi,
     this.createdAt,
     this.updatedAt,
   });
@@ -44,6 +46,9 @@ class MenuModel {
           ? json['dibaca']
           : int.tryParse(json['dibaca']?.toString() ?? '') ?? 0,
       gambar: json['gambar']?.toString() ?? '',
+      biayaPerPorsi: json['biaya_per_porsi'] == null
+    ? null
+    : num.tryParse(json['biaya_per_porsi'].toString()),
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'].toString())
           : null,
@@ -64,6 +69,7 @@ class MenuModel {
       'waktu_memasak': waktuMemasak,
       'dibaca': dibaca,
       'gambar': gambar,
+      'biaya_per_porsi': biayaPerPorsi,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
