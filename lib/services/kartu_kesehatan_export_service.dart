@@ -25,9 +25,7 @@ Future<void> _openPdf(Uint8List pdfBytes, String filename) async {
 }
 
 class KartuKesehatanExportService {
-  // ─────────────────────────────────────────────────────────
   // 1. CAPTURE PNG dari RepaintBoundary (tetap tersedia)
-  // ─────────────────────────────────────────────────────────
   static Future<Uint8List?> captureWidgetToPng(GlobalKey boundaryKey) async {
     try {
       await Future.delayed(const Duration(milliseconds: 60));
@@ -49,10 +47,8 @@ class KartuKesehatanExportService {
     }
   }
 
-  // ─────────────────────────────────────────────────────────
   // 2. EXPORT RIWAYAT → PNG via GlobalKey (isi = RiwayatHealthCard)
   //    Caller must embed an invisible RepaintBoundary in the widget tree
-  // ─────────────────────────────────────────────────────────
   static Future<bool> captureAndDownloadPng(
     GlobalKey boundaryKey, {
     String filename = 'Riwayat-BMI-FitLife.png',
@@ -68,9 +64,7 @@ class KartuKesehatanExportService {
     }
   }
 
-  // ─────────────────────────────────────────────────────────
-  // 3. EXPORT KARTU INDIVIDUAL → PDF TABEL RESMI (PERSIS WEB)
-  // ─────────────────────────────────────────────────────────
+  // 3. EXPORT KARTU INDIVIDUAL → PDF TABEL RESMI
   static Future<bool> exportCardToPdf(
     AnalisisKesehatan data, {
     String filename = 'Kartu-Kesehatan-FitLife.pdf',
@@ -102,10 +96,7 @@ class KartuKesehatanExportService {
     }
   }
 
-  // ─────────────────────────────────────────────────────────
   // 3. EXPORT RIWAYAT LENGKAP → PDF TABEL MULTI-PAGE
-  //    100% IDENTIK DENGAN VERSI WEB (jsPDF + autoTable)
-  // ─────────────────────────────────────────────────────────
   static Future<bool> exportRiwayatToPdf(
     List<PerhitunganModel> history, {
     String filename = 'Riwayat-BMI-FitLife.pdf',
@@ -539,10 +530,7 @@ class KartuKesehatanExportService {
     );
   }
 
-  // ─────────────────────────────────────────────────────────
   // HELPER WIDGET PDF
-  // ─────────────────────────────────────────────────────────
-
   static pw.Widget _infoChip(String label, String value) {
     return pw.Expanded(
       child: pw.Container(
