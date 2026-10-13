@@ -763,24 +763,25 @@ class _BmiPageState extends State<BmiPage> {
               const SizedBox(height: 32),
 
               // ── Hidden widget untuk capture PNG (0x0 space) ──
-              SizedBox(
-                width: 0,
-                height: 0,
-                child: OverflowBox(
-                  alignment: Alignment.topLeft,
-                  minWidth: 860,
-                  maxWidth: 860,
-                  minHeight: 0,
-                  maxHeight: double.infinity,
-                  child: Transform.translate(
-                    offset: const Offset(-10000, 0),
-                    child: RepaintBoundary(
-                      key: _riwayatPngKey,
-                      child: RiwayatHealthCard(history: _exportHistoryList),
+              if (_isLoggedIn)
+                SizedBox(
+                  width: 0,
+                  height: 0,
+                  child: OverflowBox(
+                    alignment: Alignment.topLeft,
+                    minWidth: 860,
+                    maxWidth: 860,
+                    minHeight: 0,
+                    maxHeight: double.infinity,
+                    child: Transform.translate(
+                      offset: const Offset(-10000, 0),
+                      child: RepaintBoundary(
+                        key: _riwayatPngKey,
+                        child: RiwayatHealthCard(history: _exportHistoryList),
+                      ),
                     ),
                   ),
                 ),
-              ),
             ],
           ),
         ),
@@ -1877,9 +1878,11 @@ class _BmiPageState extends State<BmiPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Export Buttons (PNG & PDF)
-        _buildExportButtons(),
-        const SizedBox(height: 16),
+        // Export Buttons (PNG & PDF) - hanya tampil jika pengguna sudah log in
+        if (_isLoggedIn) ...[
+          _buildExportButtons(),
+          const SizedBox(height: 16),
+        ],
 
         if (!_isLoggedIn) ...[
           _buildGuestHistoryCard(),
@@ -2889,6 +2892,8 @@ class _BmiPageState extends State<BmiPage> {
   // ── RIWAYAT & EKSPOR LAPORAN ──
   // ════════════════════════════════════════════════════════════════════
   Widget _buildExportButtons() {
+    if (!_isLoggedIn) return const SizedBox.shrink();
+
     final bool isExporting = _isExportingPng || _isExportingPdf;
 
     return Row(

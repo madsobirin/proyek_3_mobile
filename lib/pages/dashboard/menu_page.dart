@@ -172,7 +172,7 @@ class _MenuPageState extends State<MenuPage> {
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.1),
+                        color: Colors.grey.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -198,8 +198,8 @@ class _MenuPageState extends State<MenuPage> {
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: _sortBy != 'terbaru'
-                            ? _green.withOpacity(0.12)
-                            : Colors.grey.withOpacity(0.1),
+                            ? _green.withValues(alpha: 0.12)
+                            : Colors.grey.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Icon(
@@ -380,7 +380,9 @@ class _MenuPageState extends State<MenuPage> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? statusColor.withOpacity(0.15) : Colors.grey[50],
+          color: isActive
+              ? statusColor.withValues(alpha: 0.15)
+              : Colors.grey[50],
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isActive ? statusColor : Colors.grey[200]!,
@@ -433,7 +435,7 @@ class _MenuPageState extends State<MenuPage> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.035),
+              color: Colors.black.withValues(alpha: 0.035),
               blurRadius: 12,
               offset: const Offset(0, 3),
             ),
@@ -467,7 +469,7 @@ class _MenuPageState extends State<MenuPage> {
                       vertical: 3,
                     ),
                     decoration: BoxDecoration(
-                      color: statusColor.withOpacity(0.9),
+                      color: statusColor.withValues(alpha: 0.9),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
