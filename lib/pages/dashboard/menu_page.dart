@@ -16,6 +16,7 @@ class _MenuPageState extends State<MenuPage> {
   List<MenuModel> _allMenus = [];
   bool _isLoading = true;
   String _search = '';
+  String _budgetLimit = '';
   String _activeFilter = '';
   String _sortBy = 'terbaru'; // terbaru, kalori_asc, kalori_desc
   static const _green = Color(0xFF1AB673);
@@ -49,6 +50,9 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   List<MenuModel> get _filteredMenus {
+    final budgetText = _budgetLimit.trim();
+    final maxBudget = num.tryParse(budgetText);
+
     var list = _allMenus.where((m) {
       final matchSearch =
           _search.isEmpty ||
@@ -56,7 +60,13 @@ class _MenuPageState extends State<MenuPage> {
           m.deskripsi.toLowerCase().contains(_search.toLowerCase());
       final matchFilter =
           _activeFilter.isEmpty || m.targetStatus == _activeFilter;
-      return matchSearch && matchFilter;
+      final matchBudget =
+          budgetText.isEmpty ||
+          (maxBudget != null &&
+              maxBudget > 0 &&
+              m.biayaPerPorsi != null &&
+              m.biayaPerPorsi! <= maxBudget);
+      return matchSearch && matchFilter && matchBudget;
     }).toList();
     switch (_sortBy) {
       case 'kalori_asc':
@@ -238,6 +248,53 @@ class _MenuPageState extends State<MenuPage> {
                             color: Colors.grey[400],
                             size: 20,
                           ),
+                        )
+                      : null,
+                  filled: true,
+                  fillColor: Colors.grey[50],
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 14,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(color: Colors.grey[200]!),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(color: Colors.grey[200]!),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: const BorderSide(color: _green, width: 1.5),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // ── Low Budget ──
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+              child: TextField(
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: false,
+                ),
+                onChanged: (value) => setState(() => _budgetLimit = value),
+                decoration: InputDecoration(
+                  hintText: 'Budget maks. (Rp/porsi)',
+                  hintStyle: GoogleFonts.poppins(
+                    color: Colors.grey[400],
+                    fontSize: 14,
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.account_balance_wallet_outlined,
+                    color: _green,
+                  ),
+                  suffixIcon: _budgetLimit.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => setState(() => _budgetLimit = ''),
                         )
                       : null,
                   filled: true,
