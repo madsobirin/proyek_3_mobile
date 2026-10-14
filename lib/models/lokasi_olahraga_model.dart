@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 class LokasiOlahraga {
@@ -71,22 +72,64 @@ class LokasiOlahraga {
     }
   }
 
-  Map<String, dynamic> toDisplayMap() {
+  String get bmiLabel {
+    switch (category) {
+      case 'gym':
+        return 'Underweight (Kurus)';
+      case 'lapangan':
+        return 'Normal';
+      case 'low_impact':
+        return 'Overweight / Obesitas';
+      default:
+        return 'Semua BMI';
+    }
+  }
+
+  Map<String, dynamic> toDisplayMap({double? userLat, double? userLng}) {
+    String distanceStr = 'Belum diketahui';
+    double? distMeters;
+
+    if (userLat != null && userLng != null && latitude != 0 && longitude != 0) {
+      // Hitung jarak Haversine (dalam meter)
+      const double earthRadius = 6371000; // meter
+      final dLat = (latitude - userLat) * (3.141592653589793 / 180.0);
+      final dLng = (longitude - userLng) * (3.141592653589793 / 180.0);
+      final sinLat = math.sin(dLat / 2);
+      final sinLng = math.sin(dLng / 2);
+      final a = sinLat * sinLat +
+          math.cos(userLat * 3.141592653589793 / 180.0) *
+              math.cos(latitude * 3.141592653589793 / 180.0) *
+              sinLng *
+              sinLng;
+      final c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+      distMeters = earthRadius * c;
+
+      if (distMeters < 1000) {
+        distanceStr = '${distMeters.round()} m';
+      } else {
+        distanceStr = '${(distMeters / 1000).toStringAsFixed(1)} km';
+      }
+    }
+
     return {
       'id': id,
       'name': name,
       'category': categoryLabel,
+      'rawCategory': category,
+      'bmiLabel': bmiLabel,
       'address': address,
       'latitude': latitude,
       'longitude': longitude,
-      'distance': 'Belum diketahui',
+      'distance': distanceStr,
+      'distanceMeters': distMeters,
       'rating': null,
       'reviews': null,
       'open': null,
-      'hours': 'Jam buka belum tersedia',
+      'hours': 'Jam operasional fleksibel',
       'icon': icon,
       'color': color,
       'mapQuery': '$latitude,$longitude',
     };
   }
 }
+
