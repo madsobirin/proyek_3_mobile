@@ -19,11 +19,11 @@ class _MenuPageState extends State<MenuPage> {
   String _budgetLimit = '';
   String _activeFilter = '';
   String _sortBy = 'terbaru'; // terbaru, kalori_asc, kalori_desc
-  static const _green = Color(0xFF1AB673);
+  static const _green = Color(0xFF20603D);
   static const _statusFilters = ['Kurus', 'Normal', 'Berlebih', 'Obesitas'];
   static const Map<String, Color> _statusColors = {
     'Kurus': Colors.blue,
-    'Normal': Color(0xFF1AB673),
+    'Normal': Color(0xFF20603D),
     'Berlebih': Colors.orange,
     'Obesitas': Colors.red,
   };

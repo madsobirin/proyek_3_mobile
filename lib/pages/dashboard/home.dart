@@ -107,14 +107,14 @@ class _HomeState extends State<Home> {
                 height: 38,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF00FF66), Color(0xFF00CC52)],
+                    colors: [Color(0xFF247447), Color(0xFF20603D)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF00FF66).withValues(alpha: 0.3),
+                      color: const Color(0xFF20603D).withValues(alpha: 0.25),
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -123,7 +123,7 @@ class _HomeState extends State<Home> {
                 child: const Center(
                   child: Icon(
                     Icons.favorite_rounded,
-                    color: Color(0xFF111827),
+                    color: Colors.white,
                     size: 19,
                   ),
                 ),
@@ -155,10 +155,10 @@ class _HomeState extends State<Home> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
             decoration: BoxDecoration(
-              color: const Color(0xFF00FF66).withValues(alpha: 0.12),
+              color: const Color(0xFF20603D).withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: const Color(0xFF00CC52).withValues(alpha: 0.25),
+                color: const Color(0xFF20603D).withValues(alpha: 0.25),
               ),
             ),
             child: Row(
@@ -167,7 +167,7 @@ class _HomeState extends State<Home> {
                 const Icon(
                   Icons.local_fire_department_rounded,
                   size: 14,
-                  color: Color(0xFF00CC52),
+                  color: Color(0xFF20603D),
                 ),
                 const SizedBox(width: 3),
                 Text(
@@ -175,7 +175,7 @@ class _HomeState extends State<Home> {
                   style: GoogleFonts.poppins(
                     fontSize: 10.5,
                     fontWeight: FontWeight.w700,
-                    color: const Color(0xFF15803D),
+                    color: const Color(0xFF20603D),
                   ),
                 ),
               ],
@@ -305,7 +305,7 @@ class _HomeState extends State<Home> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: const Color(0xFF00FF66).withValues(alpha: 0.25),
+            color: const Color(0xFF20603D).withValues(alpha: 0.15),
           ),
           boxShadow: [
             BoxShadow(
@@ -320,12 +320,12 @@ class _HomeState extends State<Home> {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: const Color(0xFF00FF66).withValues(alpha: 0.15),
+                color: const Color(0xFF20603D).withValues(alpha: 0.10),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.lightbulb_rounded,
-                color: Color(0xFF00CC52),
+                color: Color(0xFF20603D),
                 size: 16,
               ),
             ),
@@ -374,7 +374,7 @@ class _HomeState extends State<Home> {
         children: [
           Row(
             children: [
-              Icon(icon, size: 20, color: const Color(0xFF00CC52)),
+              Icon(icon, size: 20, color: const Color(0xFF20603D)),
               const SizedBox(width: 6),
               Text(
                 title,
@@ -391,7 +391,7 @@ class _HomeState extends State<Home> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFF00FF66).withValues(alpha: 0.12),
+                color: const Color(0xFF20603D).withValues(alpha: 0.10),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
@@ -401,14 +401,14 @@ class _HomeState extends State<Home> {
                     style: GoogleFonts.poppins(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: const Color(0xFF15803D),
+                      color: const Color(0xFF20603D),
                     ),
                   ),
                   const SizedBox(width: 2),
                   const Icon(
                     Icons.arrow_forward_ios_rounded,
                     size: 10,
-                    color: Color(0xFF15803D),
+                    color: Color(0xFF20603D),
                   ),
                 ],
               ),
@@ -530,7 +530,7 @@ class _HomeState extends State<Home> {
                           style: GoogleFonts.poppins(
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF00CC52),
+                            color: const Color(0xFF20603D),
                           ),
                         ),
                       ],
@@ -607,8 +607,8 @@ class _HomeState extends State<Home> {
                             ),
                             decoration: BoxDecoration(
                               color: const Color(
-                                0xFF00FF66,
-                              ).withValues(alpha: 0.15),
+                                0xFF20603D,
+                              ).withValues(alpha: 0.10),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -616,7 +616,7 @@ class _HomeState extends State<Home> {
                               style: GoogleFonts.poppins(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF15803D),
+                                color: const Color(0xFF20603D),
                               ),
                             ),
                           ),

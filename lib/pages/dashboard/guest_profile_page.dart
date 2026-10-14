@@ -20,12 +20,12 @@ class GuestProfilePage extends StatelessWidget {
                 height: 120,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF00FF66).withValues(alpha: 0.1),
+                  color: const Color(0xFF20603D).withValues(alpha: 0.10),
                 ),
                 child: const Icon(
                   Icons.person_outline_rounded,
                   size: 60,
-                  color: Color(0xFF00FF66),
+                  color: Color(0xFF20603D),
                 ),
               ),
               const SizedBox(height: 32),
@@ -54,8 +54,8 @@ class GuestProfilePage extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () => Navigator.pushNamed(context, '/login'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00FF66),
-                    foregroundColor: Colors.black,
+                    backgroundColor: const Color(0xFF20603D),
+                    foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -66,7 +66,7 @@ class GuestProfilePage extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -78,7 +78,7 @@ class GuestProfilePage extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: () => Navigator.pushNamed(context, '/register'),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFF00FF66), width: 2),
+                    side: const BorderSide(color: Color(0xFF20603D), width: 1.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
@@ -88,7 +88,7 @@ class GuestProfilePage extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      color: const Color(0xFF00FF66),
+                      color: const Color(0xFF20603D),
                     ),
                   ),
                 ),

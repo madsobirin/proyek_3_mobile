@@ -7,7 +7,7 @@ class MenuDetailPage extends StatelessWidget {
 
   const MenuDetailPage({super.key, required this.menu});
 
-  static const _green = Color(0xFF1AB673);
+  static const _green = Color(0xFF20603D);
 
   Color _getStatusColor(String status) {
     switch (status) {

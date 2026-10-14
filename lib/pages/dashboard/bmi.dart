@@ -48,7 +48,7 @@ class _BmiPageState extends State<BmiPage> {
   Color kategoriColor() {
     if (bmiResult == null) return Colors.grey;
     if (bmiResult! < 18.5) return Colors.blue;
-    if (bmiResult! < 25) return const Color(0xFF1AB673);
+    if (bmiResult! < 25) return const Color(0xFF20603D);
     if (bmiResult! < 30) return Colors.orange;
     return Colors.red;
   }
@@ -94,7 +94,7 @@ class _BmiPageState extends State<BmiPage> {
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
             color: isSelected
-                ? const Color(0xFF1AB673).withValues(alpha: 0.12)
+                ? const Color(0xFF20603D).withValues(alpha: 0.12)
                 : Colors.grey.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(16),
           ),
@@ -103,7 +103,7 @@ class _BmiPageState extends State<BmiPage> {
               label,
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.w600,
-                color: isSelected ? const Color(0xFF1AB673) : Colors.black54,
+                color: isSelected ? const Color(0xFF20603D) : Colors.black54,
               ),
             ),
           ),
@@ -239,7 +239,7 @@ class _BmiPageState extends State<BmiPage> {
                   child: ElevatedButton(
                     onPressed: hitungBMI,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1AB673),
+                      backgroundColor: const Color(0xFF20603D),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18),
@@ -264,7 +264,7 @@ class _BmiPageState extends State<BmiPage> {
             modernCard(
               child: Row(
                 children: [
-                  const Icon(Icons.info_outline, color: Color(0xFF1AB673)),
+                  const Icon(Icons.info_outline, color: Color(0xFF20603D)),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(

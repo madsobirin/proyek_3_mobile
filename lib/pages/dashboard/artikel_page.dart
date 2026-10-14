@@ -17,7 +17,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
   bool _isLoading = true;
   String _search = '';
   String _activeKategori = '';
-  static const _green = Color(0xFF1AB673);
+  static const _green = Color(0xFF20603D);
   @override
   void initState() {
     super.initState();

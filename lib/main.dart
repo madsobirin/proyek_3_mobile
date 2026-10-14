@@ -79,7 +79,7 @@ class _AuthCheckScreenState extends State<AuthCheckScreen> {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: Color(0xFFF8FFFA),
-      body: Center(child: CircularProgressIndicator(color: Color(0xFF00FF66))),
+      body: Center(child: CircularProgressIndicator(color: Color(0xFF20603D))),
     );
   }
 }

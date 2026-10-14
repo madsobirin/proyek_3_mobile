@@ -203,12 +203,12 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF00FF66).withValues(alpha: 0.15),
+                  color: const Color(0xFF20603D).withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.keyboard_rounded,
-                  color: Color(0xFF15803D),
+                  color: Color(0xFF20603D),
                   size: 22,
                 ),
               ),
@@ -252,7 +252,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                   errorText: localError,
                   prefixIcon: const Icon(
                     Icons.qr_code_2_rounded,
-                    color: Color(0xFF15803D),
+                    color: Color(0xFF20603D),
                     size: 20,
                   ),
                   border: OutlineInputBorder(
@@ -266,7 +266,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: const BorderSide(
-                      color: Color(0xFF00FF66),
+                      color: Color(0xFF20603D),
                       width: 1.5,
                     ),
                   ),
@@ -299,8 +299,8 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                 _lookupBarcode(barcode);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF00FF66),
-                foregroundColor: const Color(0xFF111827),
+                backgroundColor: const Color(0xFF20603D),
+                foregroundColor: Colors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
@@ -413,12 +413,12 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                 leading: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF00FF66).withValues(alpha: 0.15),
+                    color: const Color(0xFF20603D).withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     Icons.qr_code_2_rounded,
-                    color: Color(0xFF15803D),
+                    color: Color(0xFF20603D),
                     size: 22,
                   ),
                 ),
@@ -547,7 +547,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
               'Input Manual',
               style: GoogleFonts.inter(
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFF15803D),
+                color: const Color(0xFF20603D),
               ),
             ),
           ),
@@ -562,8 +562,8 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
             },
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              backgroundColor: const Color(0xFF00FF66),
-              foregroundColor: const Color(0xFF111827),
+              backgroundColor: const Color(0xFF20603D),
+              foregroundColor: Colors.white,
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -573,7 +573,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
               'Pindai Lagi',
               style: GoogleFonts.inter(
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFF111827),
+                color: Colors.white,
               ),
             ),
           ),
@@ -608,7 +608,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Icon(
-                        Icons.videocam_off_rounded,
+                         Icons.videocam_off_rounded,
                         color: Colors.white54,
                         size: 48,
                       ),
@@ -626,8 +626,8 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                         icon: const Icon(Icons.refresh_rounded, size: 18),
                         label: const Text('Mulai Ulang Kamera'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF00FF66),
-                          foregroundColor: const Color(0xFF111827),
+                          backgroundColor: const Color(0xFF20603D),
+                          foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -673,7 +673,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                   CustomPaint(
                     size: Size(scanWindowSize, scanWindowSize),
                     painter: _ScannerBorderPainter(
-                      color: const Color(0xFF00FF66),
+                      color: const Color(0xFF247447),
                     ),
                   ),
 
@@ -692,16 +692,16 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                               gradient: const LinearGradient(
                                 colors: [
                                   Colors.transparent,
-                                  Color(0xFF00FF66),
+                                  Color(0xFF247447),
                                   Colors.white,
-                                  Color(0xFF00FF66),
+                                  Color(0xFF247447),
                                   Colors.transparent,
                                 ],
                               ),
                               boxShadow: [
                                 BoxShadow(
                                   color: const Color(
-                                    0xFF00FF66,
+                                    0xFF20603D,
                                   ).withValues(alpha: 0.8),
                                   blurRadius: 10,
                                   spreadRadius: 2,
@@ -725,7 +725,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             const CircularProgressIndicator(
-                              color: Color(0xFF00FF66),
+                              color: Color(0xFF247447),
                               strokeWidth: 3,
                             ),
                             const SizedBox(height: 16),
@@ -768,7 +768,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                     children: [
                       const Icon(
                         Icons.qr_code_2_rounded,
-                        color: Color(0xFF00FF66),
+                        color: Color(0xFF247447),
                         size: 18,
                       ),
                       const SizedBox(width: 8),
@@ -941,16 +941,16 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: isActive ? const Color(0xFF00FF66) : Colors.black54,
+              color: isActive ? const Color(0xFF247447) : Colors.black54,
               shape: BoxShape.circle,
               border: Border.all(
-                color: isActive ? const Color(0xFF00FF66) : Colors.white24,
+                color: isActive ? const Color(0xFF247447) : Colors.white24,
                 width: 1.5,
               ),
             ),
             child: Icon(
               icon,
-              color: isActive ? const Color(0xFF111827) : Colors.white,
+              color: Colors.white,
               size: 24,
             ),
           ),
@@ -984,16 +984,16 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                 height: 100,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF00FF66).withValues(alpha: 0.1),
+                  color: const Color(0xFF20603D).withValues(alpha: 0.15),
                   border: Border.all(
-                    color: const Color(0xFF00FF66).withValues(alpha: 0.3),
+                    color: const Color(0xFF20603D).withValues(alpha: 0.3),
                     width: 2,
                   ),
                 ),
                 child: const Icon(
                   Icons.camera_alt_rounded,
                   size: 48,
-                  color: Color(0xFF00FF66),
+                  color: Color(0xFF247447),
                 ),
               ),
               const SizedBox(height: 32),
@@ -1041,8 +1041,8 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00FF66),
-                    foregroundColor: const Color(0xFF111827),
+                    backgroundColor: const Color(0xFF20603D),
+                    foregroundColor: Colors.white,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
