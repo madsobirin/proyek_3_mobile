@@ -41,7 +41,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage>
   String _searchQuery = '';
 
   // Kategori yang selaras dengan web fitlife.my.id/lokasi
-  final List<Map<String, dynamic>> _categories = [
+  static const List<Map<String, dynamic>> _categories = [
     {
       'id': 'all',
       'label': 'Semua Lokasi',
@@ -53,21 +53,21 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage>
       'label': '🏋️ Fitness Center / Gym',
       'bmiTag': 'Underweight (Kurus)',
       'icon': Icons.fitness_center_rounded,
-      'color': const Color(0xFFF59E0B), // Amber
+      'color': Color(0xFFF59E0B), // Amber
     },
     {
       'id': 'lapangan',
       'label': '🏟️ Lapangan & Komunitas',
       'bmiTag': 'Normal',
       'icon': Icons.sports_soccer_rounded,
-      'color': const Color(0xFF10B981), // Emerald
+      'color': Color(0xFF10B981), // Emerald
     },
     {
       'id': 'low_impact',
       'label': '🏊 Low-Impact (Jogging / Renang)',
       'bmiTag': 'Overweight / Obesitas',
       'icon': Icons.pool_rounded,
-      'color': const Color(0xFF0284C7), // Sky Blue
+      'color': Color(0xFF0284C7), // Sky Blue
     },
   ];
 
