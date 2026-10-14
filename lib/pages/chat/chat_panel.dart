@@ -8,6 +8,7 @@ import '../../services/perhitungan_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
+import '../../theme/app_theme.dart';
 
 class ChatPanel extends StatefulWidget {
   final VoidCallback? onClose;
@@ -27,6 +28,7 @@ class _ChatPanelState extends State<ChatPanel> {
   bool _isLoggedIn = false;
   bool _checkingLogin = true;
   bool _isSending = false;
+  bool _loadingMetrics = false;
 
   UserModel? _currentUser;
   PerhitunganModel? _latestPerhitungan;
@@ -118,24 +120,36 @@ class _ChatPanelState extends State<ChatPanel> {
       } catch (_) {}
     }
 
-    PerhitunganModel? latest;
-    if (token != null && token.isNotEmpty) {
-      try {
-        final history = await PerhitunganService().getHistory();
-        if (history.isNotEmpty) {
-          latest = history.first;
-        }
-      } catch (_) {}
-    }
-
     if (!mounted) return;
 
+    final isLoggedIn = token != null && token.isNotEmpty;
+
+    // Langsung buka tampilan chatbot secara instan dengan profil lokal
     setState(() {
-      _isLoggedIn = token != null && token.isNotEmpty;
+      _isLoggedIn = isLoggedIn;
       _currentUser = user;
-      _latestPerhitungan = latest;
       _checkingLogin = false;
+      _loadingMetrics = isLoggedIn;
     });
+
+    // Ambil data riwayat kalkulasi kesehatan dari server web di latar belakang
+    if (isLoggedIn) {
+      try {
+        final history = await PerhitunganService().getHistory();
+        if (history.isNotEmpty && mounted) {
+          setState(() {
+            _latestPerhitungan = history.first;
+          });
+        }
+      } catch (_) {
+      } finally {
+        if (mounted) {
+          setState(() {
+            _loadingMetrics = false;
+          });
+        }
+      }
+    }
   }
 
   Future<void> _sendMessage([String? prompt]) async {
@@ -219,28 +233,32 @@ class _ChatPanelState extends State<ChatPanel> {
     super.dispose();
   }
 
+  ThemeData get _theme => AppTheme.lightTheme;
+  ColorScheme get _colorScheme => AppTheme.lightColorScheme;
+  TextTheme get _textTheme => _theme.textTheme;
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Material(
-      color: colorScheme.surfaceContainer,
-      elevation: 8,
-      borderRadius: AppRadius.roundedLg,
-      clipBehavior: Clip.antiAlias,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: AppRadius.roundedLg,
-          border: Border.all(color: colorScheme.outlineVariant, width: 1.0),
-        ),
-        child: Column(
-          children: [
-            _buildHeader(),
-            Expanded(child: _buildCurrentTab()),
-            if (_selectedTab == 1 && _isLoggedIn) _buildMessageInput(),
-            _buildBottomNavigation(),
-          ],
+    return Theme(
+      data: _theme,
+      child: Material(
+        color: _colorScheme.surfaceContainer,
+        elevation: 8,
+        borderRadius: AppRadius.roundedLg,
+        clipBehavior: Clip.antiAlias,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: AppRadius.roundedLg,
+            border: Border.all(color: _colorScheme.outlineVariant, width: 1.0),
+          ),
+          child: Column(
+            children: [
+              _buildHeader(),
+              Expanded(child: _buildCurrentTab()),
+              if (_selectedTab == 1 && _isLoggedIn) _buildMessageInput(),
+              _buildBottomNavigation(),
+            ],
+          ),
         ),
       ),
     );
@@ -248,9 +266,8 @@ class _ChatPanelState extends State<ChatPanel> {
 
   // --- Header Panel ---
   Widget _buildHeader() {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
+    final colorScheme = _colorScheme;
+    final textTheme = _textTheme;
 
     return Container(
       padding: EdgeInsets.symmetric(
@@ -377,9 +394,8 @@ class _ChatPanelState extends State<ChatPanel> {
 
   // --- Login Required Banner (Sesuai Web) ---
   Widget _buildLoginRequiredView() {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
+    final colorScheme = _colorScheme;
+    final textTheme = _textTheme;
 
     return Center(
       child: SingleChildScrollView(
@@ -441,9 +457,8 @@ class _ChatPanelState extends State<ChatPanel> {
 
   // --- Tab 0: Home / AI Hub (Sesuai Web) ---
   Widget _buildHomeTab() {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
+    final colorScheme = _colorScheme;
+    final textTheme = _textTheme;
 
     final userName = _currentUser?.name.isNotEmpty == true
         ? _currentUser!.name
@@ -632,7 +647,7 @@ class _ChatPanelState extends State<ChatPanel> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      'Terhubung',
+                      _loadingMetrics ? 'Sinkron...' : 'Terhubung',
                       style: textTheme.labelSmall?.copyWith(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
@@ -667,7 +682,9 @@ class _ChatPanelState extends State<ChatPanel> {
                           Text(
                             _latestPerhitungan != null
                                 ? '${_latestPerhitungan!.bmi.toStringAsFixed(1)} • ${_latestPerhitungan!.status}'
-                                : 'Belum dihitung',
+                                : (_loadingMetrics
+                                    ? 'Memuat data...'
+                                    : 'Belum dihitung'),
                             style: textTheme.labelSmall?.copyWith(
                               fontWeight: FontWeight.w700,
                               color: colorScheme.primary,
@@ -835,9 +852,8 @@ class _ChatPanelState extends State<ChatPanel> {
 
   // --- Tab 1: Pesan / Chat ---
   Widget _buildMessagesTab() {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
+    final colorScheme = _colorScheme;
+    final textTheme = _textTheme;
 
     final showWelcome = _messages.isEmpty;
 
@@ -928,9 +944,8 @@ class _ChatPanelState extends State<ChatPanel> {
 
   // --- Input Box Chat ---
   Widget _buildMessageInput() {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
+    final colorScheme = _colorScheme;
+    final textTheme = _textTheme;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 8, 10, 4),
@@ -1013,9 +1028,8 @@ class _ChatPanelState extends State<ChatPanel> {
 
   // --- Tab 2: Help / Bantuan FAQ ---
   Widget _buildHelpTab() {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
+    final colorScheme = _colorScheme;
+    final textTheme = _textTheme;
 
     return ListView(
       padding: EdgeInsets.all(AppSpacing.sm),
@@ -1116,9 +1130,8 @@ class _ChatPanelState extends State<ChatPanel> {
 
   // --- Bottom Navigation Tab Bar (Sesuai Web) ---
   Widget _buildBottomNavigation() {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
+    final colorScheme = _colorScheme;
+    final textTheme = _textTheme;
 
     final tabs = [
       {'label': 'Beranda', 'icon': Icons.home_rounded},
@@ -1186,9 +1199,8 @@ class _ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
+    final colorScheme = AppTheme.lightColorScheme;
+    final textTheme = AppTheme.lightTheme.textTheme;
 
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,

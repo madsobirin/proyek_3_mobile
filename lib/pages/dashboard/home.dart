@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_colors.dart';
-import '../../theme/app_radius.dart';
-import '../../theme/app_spacing.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../dashboard/bmi_page.dart';
 import '../dashboard/artikel_page.dart';
 import 'package:fitlife/pages/dashboard/profile_page.dart';
@@ -23,7 +21,6 @@ class _HomeState extends State<Home> {
   final List<int> _history = [];
   bool _isLoggedIn = false;
   bool _isChatOpen = false;
-
   @override
   void initState() {
     super.initState();
@@ -68,11 +65,11 @@ class _HomeState extends State<Home> {
       padding: const EdgeInsets.only(bottom: 100),
       children: [
         _buildTopHeader(isSmall),
-        const SizedBox(height: AppSpacing.sm),
+        const SizedBox(height: 12),
         _buildHeroSection(isSmall),
-        const SizedBox(height: AppSpacing.sm),
+        const SizedBox(height: 12),
         _buildDailyTipCard(isSmall),
-        const SizedBox(height: AppSpacing.lg),
+        const SizedBox(height: 24),
         _buildSectionHeader(
           title: "Menu Sehat Populer",
           actionText: "Lihat Semua",
@@ -80,9 +77,9 @@ class _HomeState extends State<Home> {
           onActionTap: () => _onItemTapped(1), // Menu = index 1
           isSmall: isSmall,
         ),
-        const SizedBox(height: AppSpacing.sm + 2),
+        const SizedBox(height: 14),
         _buildLatestMenu(isSmall),
-        const SizedBox(height: AppSpacing.lg + 4),
+        const SizedBox(height: 28),
         _buildSectionHeader(
           title: "Artikel & Tips Sehat",
           actionText: "Lihat Semua",
@@ -90,7 +87,7 @@ class _HomeState extends State<Home> {
           onActionTap: () => _onItemTapped(2), // Artikel = index 2
           isSmall: isSmall,
         ),
-        const SizedBox(height: AppSpacing.sm + 2),
+        const SizedBox(height: 14),
         _buildLatestArtikel(isSmall),
       ],
     );
@@ -98,58 +95,57 @@ class _HomeState extends State<Home> {
 
   // --- 1. Top Header with User Greeting & Brand Badge ---
   Widget _buildTopHeader(bool isSmall) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
     return Padding(
-      padding: EdgeInsets.fromLTRB(
-        isSmall ? AppSpacing.md : AppSpacing.lg,
-        AppSpacing.sm,
-        isSmall ? AppSpacing.md : AppSpacing.lg,
-        0,
-      ),
+      padding: EdgeInsets.fromLTRB(isSmall ? 16 : 20, 12, isSmall ? 16 : 20, 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             children: [
               Container(
-                width: 40,
-                height: 40,
+                width: 38,
+                height: 38,
                 decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: colorScheme.outlineVariant,
-                    width: 1,
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF00FF66), Color(0xFF00CC52)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF00FF66).withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
                 ),
-                child: Center(
+                child: const Center(
                   child: Icon(
                     Icons.favorite_rounded,
-                    color: colorScheme.primary,
-                    size: 20,
+                    color: Color(0xFF111827),
+                    size: 19,
                   ),
                 ),
               ),
-              const SizedBox(width: AppSpacing.xs + 2),
+              const SizedBox(width: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     "Halo, Sahabat FitLife! 👋",
-                    style: textTheme.titleMedium?.copyWith(
-                      fontSize: isSmall ? 14 : 15,
+                    style: GoogleFonts.poppins(
+                      fontSize: isSmall ? 13 : 15,
                       fontWeight: FontWeight.w700,
-                      color: colorScheme.onSurface,
+                      color: const Color(0xFF111827),
                     ),
                   ),
                   Text(
                     "Siap bugar & hidup sehat hari ini?",
-                    style: textTheme.bodySmall?.copyWith(
-                      fontSize: isSmall ? 11 : 12,
-                      color: colorScheme.onSurfaceVariant,
+                    style: GoogleFonts.poppins(
+                      fontSize: isSmall ? 10.5 : 11.5,
+                      color: const Color(0xFF6B7280),
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
                 ],
@@ -157,16 +153,12 @@ class _HomeState extends State<Home> {
             ],
           ),
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.xs + 2,
-              vertical: AppSpacing.xxs + 1,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
             decoration: BoxDecoration(
-              color: colorScheme.primaryContainer,
-              borderRadius: AppRadius.roundedSm,
+              color: const Color(0xFF00FF66).withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: colorScheme.outlineVariant,
-                width: 1,
+                color: const Color(0xFF00CC52).withValues(alpha: 0.25),
               ),
             ),
             child: Row(
@@ -175,14 +167,15 @@ class _HomeState extends State<Home> {
                 const Icon(
                   Icons.local_fire_department_rounded,
                   size: 14,
-                  color: AppColors.accentAmber,
+                  color: Color(0xFF00CC52),
                 ),
-                const SizedBox(width: AppSpacing.xxs),
+                const SizedBox(width: 3),
                 Text(
                   "FitLife.id",
-                  style: textTheme.labelSmall?.copyWith(
+                  style: GoogleFonts.poppins(
+                    fontSize: 10.5,
                     fontWeight: FontWeight.w700,
-                    color: colorScheme.primary,
+                    color: const Color(0xFF15803D),
                   ),
                 ),
               ],
@@ -195,85 +188,106 @@ class _HomeState extends State<Home> {
 
   // --- 2. Hero Section Banner ---
   Widget _buildHeroSection(bool isSmall) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
     return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: isSmall ? AppSpacing.md : AppSpacing.lg,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: isSmall ? 16 : 20),
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.all(isSmall ? AppSpacing.md : AppSpacing.lg - 4),
+        padding: EdgeInsets.all(isSmall ? 16 : 18),
         decoration: BoxDecoration(
-          color: colorScheme.surfaceContainer,
-          borderRadius: AppRadius.roundedLg,
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFEBF3ED), Color(0xFFDCECE0)],
+          ),
+          borderRadius: BorderRadius.circular(22),
           border: Border.all(
-            color: colorScheme.outlineVariant,
-            width: 1.0,
+            color: const Color(0xFF20603D).withValues(alpha: 0.20),
+            width: 1.2,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+              color: const Color(0xFF20603D).withValues(alpha: 0.06),
+              blurRadius: 18,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.xs + 2,
-                vertical: AppSpacing.xxs,
-              ),
-              decoration: BoxDecoration(
-                color: colorScheme.primaryContainer,
-                borderRadius: AppRadius.roundedSm,
-                border: Border.all(
-                  color: colorScheme.outlineVariant,
-                  width: 1,
+            Positioned(
+              right: -15,
+              top: -15,
+              child: Container(
+                width: 90,
+                height: 90,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF20603D).withValues(alpha: 0.08),
                 ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.verified_rounded,
-                    size: 13,
-                    color: colorScheme.primary,
-                  ),
-                  const SizedBox(width: AppSpacing.xxs),
-                  Text(
-                    "Asisten Hidup Sehat",
-                    style: textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: colorScheme.primary,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.04),
+                            blurRadius: 6,
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.verified_rounded,
+                            size: 13,
+                            color: Color(0xFF20603D),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            "Asisten Hidup Sehat",
+                            style: GoogleFonts.poppins(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF20603D),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "Capai Tubuh Ideal & Bugar Bersama FitLife",
+                  style: GoogleFonts.poppins(
+                    fontSize: isSmall ? 15 : 17,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF111827),
+                    height: 1.25,
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              "Capai Tubuh Ideal & Bugar Bersama FitLife",
-              style: textTheme.titleLarge?.copyWith(
-                fontSize: isSmall ? 16 : 18,
-                fontWeight: FontWeight.w800,
-                color: colorScheme.onSurface,
-                height: 1.25,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xxs + 1),
-            Text(
-              "Temukan inspirasi makanan sehat dan mulai kebiasaan hidup lebih aktif bersama FitLife.",
-              style: textTheme.bodySmall?.copyWith(
-                fontSize: isSmall ? 11.5 : 12.5,
-                height: 1.4,
-                color: colorScheme.onSurfaceVariant,
-              ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Temukan inspirasi makanan sehat dan mulai kebiasaan hidup lebih aktif bersama FitLife.",
+                  style: GoogleFonts.poppins(
+                    fontSize: isSmall ? 11 : 11.5,
+                    height: 1.35,
+                    color: const Color(0xFF4B5563),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -283,30 +297,20 @@ class _HomeState extends State<Home> {
 
   // --- 3. Daily Tip Card (Slim) ---
   Widget _buildDailyTipCard(bool isSmall) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
     return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: isSmall ? AppSpacing.md : AppSpacing.lg,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: isSmall ? 16 : 20),
       child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm,
-          vertical: AppSpacing.xs + 2,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
         decoration: BoxDecoration(
-          color: colorScheme.surfaceContainer,
-          borderRadius: AppRadius.roundedMd,
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: colorScheme.outlineVariant,
-            width: 1,
+            color: const Color(0xFF00FF66).withValues(alpha: 0.25),
           ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 6,
+              blurRadius: 8,
               offset: const Offset(0, 2),
             ),
           ],
@@ -314,30 +318,31 @@ class _HomeState extends State<Home> {
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(AppSpacing.xs - 2),
+              padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: colorScheme.primaryContainer,
+                color: const Color(0xFF00FF66).withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.lightbulb_rounded,
-                color: colorScheme.primary,
+                color: Color(0xFF00CC52),
                 size: 16,
               ),
             ),
-            const SizedBox(width: AppSpacing.sm - 2),
+            const SizedBox(width: 10),
             Expanded(
               child: RichText(
                 text: TextSpan(
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: const Color(0xFF4B5563),
                   ),
                   children: [
                     TextSpan(
                       text: "Tips Hari Ini: ",
-                      style: textTheme.bodySmall?.copyWith(
+                      style: GoogleFonts.poppins(
                         fontWeight: FontWeight.w700,
-                        color: colorScheme.onSurface,
+                        color: const Color(0xFF111827),
                       ),
                     ),
                     const TextSpan(
@@ -362,75 +367,50 @@ class _HomeState extends State<Home> {
     required VoidCallback onActionTap,
     required bool isSmall,
   }) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
     return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: isSmall ? AppSpacing.md : AppSpacing.lg,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: isSmall ? 16 : 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             children: [
-              Icon(icon, size: 20, color: colorScheme.primary),
-              const SizedBox(width: AppSpacing.xs - 2),
+              Icon(icon, size: 20, color: const Color(0xFF00CC52)),
+              const SizedBox(width: 6),
               Text(
                 title,
-                style: textTheme.titleLarge?.copyWith(
+                style: GoogleFonts.poppins(
                   fontSize: isSmall ? 16 : 18,
-                  fontWeight: FontWeight.w700,
-                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF111827),
                 ),
               ),
             ],
           ),
-          Material(
-            color: Colors.transparent,
-            borderRadius: AppRadius.roundedSm,
-            child: InkWell(
-              onTap: onActionTap,
-              borderRadius: AppRadius.roundedSm,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  minHeight: 48,
-                  minWidth: 48,
-                ),
-                child: Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.sm - 2,
-                    vertical: AppSpacing.xs,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primaryContainer.withValues(alpha: 0.6),
-                    borderRadius: AppRadius.roundedSm,
-                    border: Border.all(
-                      color: colorScheme.outlineVariant,
-                      width: 1,
+          GestureDetector(
+            onTap: onActionTap,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFF00FF66).withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    actionText,
+                    style: GoogleFonts.poppins(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF15803D),
                     ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        actionText,
-                        style: textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.xxs),
-                      Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        size: 10,
-                        color: colorScheme.primary,
-                      ),
-                    ],
+                  const SizedBox(width: 2),
+                  const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 10,
+                    color: Color(0xFF15803D),
                   ),
-                ),
+                ],
               ),
             ),
           ),
@@ -441,10 +421,6 @@ class _HomeState extends State<Home> {
 
   // --- 6. Latest Menu Carousel ---
   Widget _buildLatestMenu(bool isSmall) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
     final titles = [
       "Salad Buah Segar",
       "Oatmeal Berries",
@@ -460,110 +436,107 @@ class _HomeState extends State<Home> {
     return SizedBox(
       height: 195,
       child: ListView.separated(
-        padding: EdgeInsets.symmetric(
-          horizontal: isSmall ? AppSpacing.md : AppSpacing.lg,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: isSmall ? 16 : 20),
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         itemCount: 3,
-        separatorBuilder: (context, index) =>
-            const SizedBox(width: AppSpacing.sm + 2),
+        separatorBuilder: (context, index) => const SizedBox(width: 14),
         itemBuilder: (context, index) {
-          return Material(
-            color: colorScheme.surfaceContainer,
-            borderRadius: AppRadius.roundedLg,
-            child: InkWell(
-              onTap: () => _onItemTapped(1), // Menu = index 1
-              borderRadius: AppRadius.roundedLg,
-              child: Container(
-                width: 160,
-                decoration: BoxDecoration(
-                  borderRadius: AppRadius.roundedLg,
-                  border: Border.all(
-                    color: colorScheme.outlineVariant,
-                    width: 1.0,
+          return GestureDetector(
+            onTap: () => _onItemTapped(1), // Menu = index 1
+            child: Container(
+              width: 160,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 14,
+                    offset: const Offset(0, 5),
                   ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(AppRadius.lg),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(22),
+                        ),
+                        child: Image.network(
+                          images[index],
+                          height: 105,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
                           ),
-                          child: Image.network(
-                            images[index],
-                            height: 105,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.65),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.local_fire_department_rounded,
+                                size: 12,
+                                color: Colors.orangeAccent,
+                              ),
+                              const SizedBox(width: 3),
+                              Text(
+                                cals[index],
+                                style: GoogleFonts.poppins(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.xs,
-                              vertical: AppSpacing.xxs - 1,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: 0.65),
-                              borderRadius: AppRadius.roundedSm,
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.local_fire_department_rounded,
-                                  size: 12,
-                                  color: AppColors.accentAmber,
-                                ),
-                                const SizedBox(width: 3),
-                                Text(
-                                  cals[index],
-                                  style: textTheme.labelSmall?.copyWith(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          titles[index],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF111827),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          tags[index],
+                          style: GoogleFonts.poppins(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF00CC52),
                           ),
                         ),
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(AppSpacing.xs + 2),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            titles[index],
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: textTheme.titleSmall?.copyWith(
-                              fontSize: 12.5,
-                              fontWeight: FontWeight.w700,
-                              color: colorScheme.onSurface,
-                            ),
-                          ),
-                          const SizedBox(height: AppSpacing.xxs),
-                          Text(
-                            tags[index],
-                            style: textTheme.labelSmall?.copyWith(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w600,
-                              color: colorScheme.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           );
@@ -574,10 +547,6 @@ class _HomeState extends State<Home> {
 
   // --- 7. Latest Articles List ---
   Widget _buildLatestArtikel(bool isSmall) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
     final titles = [
       "Cara Mulai Diet Sehat untuk Pemula Tanpa Menyiksa",
       "Pentingnya Hidrasi Tubuh Saat Berolahraga",
@@ -591,91 +560,92 @@ class _HomeState extends State<Home> {
       "https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=400&auto=format&fit=crop",
     ];
     return ListView.separated(
-      padding: EdgeInsets.symmetric(
-        horizontal: isSmall ? AppSpacing.md : AppSpacing.lg,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: isSmall ? 16 : 20),
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: 3,
-      separatorBuilder: (context, index) =>
-          const SizedBox(height: AppSpacing.sm),
+      separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
-        return Material(
-          color: colorScheme.surfaceContainer,
-          borderRadius: AppRadius.roundedLg,
-          child: InkWell(
-            onTap: () => _onItemTapped(2), // Artikel = index 2
-            borderRadius: AppRadius.roundedLg,
-            child: Container(
-              padding: const EdgeInsets.all(AppSpacing.sm),
-              decoration: BoxDecoration(
-                borderRadius: AppRadius.roundedLg,
-                border: Border.all(
-                  color: colorScheme.outlineVariant,
-                  width: 1.0,
+        return GestureDetector(
+          onTap: () => _onItemTapped(2), // Artikel = index 2
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 14,
+                  offset: const Offset(0, 4),
                 ),
-              ),
-              child: Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: AppRadius.roundedMd,
-                    child: Image.network(
-                      images[index],
-                      width: 82,
-                      height: 82,
-                      fit: BoxFit.cover,
-                    ),
+              ],
+            ),
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.network(
+                    images[index],
+                    width: 82,
+                    height: 82,
+                    fit: BoxFit.cover,
                   ),
-                  const SizedBox(width: AppSpacing.md - 2),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: AppSpacing.xs,
-                                vertical: AppSpacing.xxs - 1,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colorScheme.primaryContainer,
-                                borderRadius: AppRadius.roundedSm,
-                              ),
-                              child: Text(
-                                categories[index],
-                                style: textTheme.labelSmall?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  color: colorScheme.primary,
-                                ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFF00FF66,
+                              ).withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              categories[index],
+                              style: GoogleFonts.poppins(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF15803D),
                               ),
                             ),
-                            const SizedBox(width: AppSpacing.xs),
-                            Text(
-                              readTimes[index],
-                              style: textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: AppSpacing.xs - 2),
-                        Text(
-                          titles[index],
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: textTheme.titleSmall?.copyWith(
-                            fontSize: 13.5,
-                            fontWeight: FontWeight.w700,
-                            color: colorScheme.onSurface,
-                            height: 1.3,
                           ),
+                          const SizedBox(width: 8),
+                          Text(
+                            readTimes[index],
+                            style: GoogleFonts.poppins(
+                              fontSize: 10,
+                              color: const Color(0xFF9CA3AF),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        titles[index],
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF111827),
+                          height: 1.3,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );
@@ -686,11 +656,8 @@ class _HomeState extends State<Home> {
   // ================= BUILD =================
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: const Color(0xFFF8FAFC),
       body: Stack(
         children: [
           SafeArea(
@@ -711,14 +678,14 @@ class _HomeState extends State<Home> {
           if (_isChatOpen)
             Positioned(
               right: 12,
-              bottom: 84,
+              bottom: 76,
               child: SizedBox(
                 width: MediaQuery.sizeOf(context).width >= 420
                     ? 380
                     : MediaQuery.sizeOf(context).width - 24,
-                height: (MediaQuery.sizeOf(context).height * 0.72).clamp(
-                  360.0,
-                  640.0,
+                height: (MediaQuery.sizeOf(context).height * 0.65).clamp(
+                  320.0,
+                  620.0,
                 ),
                 child: ChatPanel(
                   onClose: () {
@@ -733,7 +700,7 @@ class _HomeState extends State<Home> {
       ),
       bottomNavigationBar: _buildBottomNav(),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: colorScheme.primary,
+        backgroundColor: const Color(0xFF247447),
         onPressed: () {
           setState(() {
             _isChatOpen = !_isChatOpen;
@@ -754,26 +721,15 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildBottomNav() {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(AppRadius.lg),
-        ),
-        border: Border(
-          top: BorderSide(
-            color: colorScheme.outlineVariant,
-            width: 1.0,
-          ),
-        ),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
+            color: Color(0x12000000),
+            blurRadius: 20,
+            offset: Offset(0, -4),
           ),
         ],
       ),
@@ -810,59 +766,54 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildScanNavItem() {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const ScanBarcodeScreen()),
-          );
-        },
-        customBorder: const CircleBorder(),
-        child: Transform.translate(
-          offset: const Offset(0, -10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: colorScheme.primary,
-                  boxShadow: [
-                    BoxShadow(
-                      color: colorScheme.primary.withValues(alpha: 0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                  border: Border.all(
-                    color: colorScheme.surfaceContainer,
-                    width: 3,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ScanBarcodeScreen()),
+        );
+      },
+      child: Transform.translate(
+        offset: const Offset(0, -10),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 58,
+              height: 58,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF247447), Color(0xFF20603D)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF20603D).withValues(alpha: 0.35),
+                    blurRadius: 12,
+                    spreadRadius: 1,
+                    offset: const Offset(0, 4),
                   ),
-                ),
-                child: const Icon(
-                  Icons.qr_code_scanner_rounded,
-                  color: Colors.white,
-                  size: 26,
-                ),
+                ],
+                border: Border.all(color: Colors.white, width: 3),
               ),
-              const SizedBox(height: 4),
-              Text(
-                'Scan',
-                style: textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: colorScheme.primary,
-                ),
+              child: const Icon(
+                Icons.qr_code_scanner_rounded,
+                color: Colors.white,
+                size: 26,
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Scan',
+              style: GoogleFonts.poppins(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF20603D),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -873,55 +824,41 @@ class _HomeState extends State<Home> {
     required IconData icon,
     required String label,
   }) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
     final isActive = _selectedIndex == index;
-
-    return Material(
-      color: Colors.transparent,
-      borderRadius: AppRadius.roundedSm,
-      child: InkWell(
-        onTap: () => _onItemTapped(index),
-        borderRadius: AppRadius.roundedSm,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minWidth: 48,
-            minHeight: 48,
-          ),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
+    return GestureDetector(
+      onTap: () => _onItemTapped(index),
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        decoration: BoxDecoration(
+          color: isActive
+              ? const Color(0xFF20603D).withValues(alpha: 0.10)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 22,
               color: isActive
-                  ? colorScheme.primaryContainer
-                  : Colors.transparent,
-              borderRadius: AppRadius.roundedSm,
+                  ? const Color(0xFF20603D)
+                  : const Color(0xFF9CA3AF),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  icon,
-                  size: 22,
-                  color: isActive
-                      ? colorScheme.primary
-                      : colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  label,
-                  style: textTheme.labelSmall?.copyWith(
-                    fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                    color: isActive
-                        ? colorScheme.primary
-                        : colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
+            const SizedBox(height: 3),
+            Text(
+              label,
+              style: GoogleFonts.poppins(
+                fontSize: 10,
+                fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                color: isActive
+                    ? const Color(0xFF20603D)
+                    : const Color(0xFF9CA3AF),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
