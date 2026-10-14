@@ -17,6 +17,7 @@ import '../lokasi/lokasi_olahraga_page.dart';
 import 'widgets/riwayat_health_card.dart';
 import '../../services/kartu_kesehatan_export_service.dart';
 import '../../services/download_notification_service.dart';
+import '../../services/lokasi_olahraga_service.dart';
 
 class BmiPage extends StatefulWidget {
   final VoidCallback onBack;
@@ -39,6 +40,10 @@ class _BmiPageState extends State<BmiPage> {
   final GlobalKey _riwayatPngKey = GlobalKey();
   bool _isExportingPng = false;
   bool _isExportingPdf = false;
+  final LokasiOlahragaService _lokasiOlahragaService =
+      LokasiOlahragaService.instance;
+  List<Map<String, dynamic>> _sportsLocations = [];
+  bool _isLoadingSportsLocations = false;
 
   // ── Tab & UI States ──
   int _selectedMainTab = 0; // 0: Kalkulator, 1: Riwayat & Tren
@@ -191,6 +196,7 @@ class _BmiPageState extends State<BmiPage> {
     super.initState();
     _checkAuthAndLoadHistory();
     DownloadNotificationService().initialize();
+    _fetchSportsLocations();
   }
 
   Future<void> _checkAuthAndLoadHistory() async {
@@ -293,6 +299,7 @@ class _BmiPageState extends State<BmiPage> {
 
     // Ambil menu rekomendasi
     _fetchRecommendedMenus(hasil.status);
+    _fetchSportsLocations();
 
     // Kirim data ke backend untuk disimpan ke riwayat HANYA jika user sudah login
     if (_isLoggedIn) {
@@ -319,6 +326,24 @@ class _BmiPageState extends State<BmiPage> {
       }
     } catch (e) {
       if (mounted) setState(() => _isLoadingMenus = false);
+    }
+  }
+
+  Future<void> _fetchSportsLocations() async {
+    if (_sportsLocations.isNotEmpty) return;
+    setState(() => _isLoadingSportsLocations = true);
+    try {
+      final results = await _lokasiOlahragaService.fetchAll();
+      if (mounted) {
+        setState(() {
+          _sportsLocations = results.map((l) => l.toDisplayMap()).toList();
+          _isLoadingSportsLocations = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _isLoadingSportsLocations = false);
+      }
     }
   }
 
@@ -946,6 +971,7 @@ class _BmiPageState extends State<BmiPage> {
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
+                  color: Colors.green.shade900,
                 ),
               ),
               if (_hasil != null)
@@ -1192,8 +1218,8 @@ class _BmiPageState extends State<BmiPage> {
                       'Tinggi: ${_hasil!.tinggiBadan.toInt()} cm • Berat: ${_hasil!.beratBadan.toInt()} kg',
                       style: GoogleFonts.poppins(
                         fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[700],
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF374151),
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -1201,7 +1227,8 @@ class _BmiPageState extends State<BmiPage> {
                       'Kisaran Sehat: ${_hasil!.kisaranBeratDisplay}',
                       style: GoogleFonts.poppins(
                         fontSize: 11,
-                        color: Colors.grey[500],
+                        color: const Color(0xFF4B5563),
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
@@ -1250,14 +1277,15 @@ class _BmiPageState extends State<BmiPage> {
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
-                          color: Colors.black87,
+                          color: const Color(0xFF111827),
                         ),
                       ),
                       Text(
                         'kkal/hari',
                         style: GoogleFonts.poppins(
                           fontSize: 9.5,
-                          color: Colors.grey[500],
+                          color: const Color(0xFF4B5563),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -1307,7 +1335,8 @@ class _BmiPageState extends State<BmiPage> {
                         'kkal/hari',
                         style: GoogleFonts.poppins(
                           fontSize: 9.5,
-                          color: Colors.grey[500],
+                          color: const Color(0xFF4B5563),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -1405,8 +1434,8 @@ class _BmiPageState extends State<BmiPage> {
                   tab['label'] as String,
                   style: GoogleFonts.poppins(
                     fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                    color: isSelected ? Colors.white : Colors.grey[700],
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                    color: isSelected ? Colors.white : const Color(0xFF374151),
                   ),
                 ),
               ),
@@ -1455,6 +1484,7 @@ class _BmiPageState extends State<BmiPage> {
                       style: GoogleFonts.poppins(
                         fontWeight: FontWeight.bold,
                         fontSize: 13.5,
+                        color: Colors.green.shade900,
                       ),
                     ),
                   ),
@@ -1510,6 +1540,7 @@ class _BmiPageState extends State<BmiPage> {
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.bold,
                   fontSize: 13.5,
+                  color: Colors.green.shade900,
                 ),
               ),
               const SizedBox(height: 12),
@@ -1569,6 +1600,7 @@ class _BmiPageState extends State<BmiPage> {
                       style: GoogleFonts.poppins(
                         fontWeight: FontWeight.bold,
                         fontSize: 13.5,
+                        color: Colors.green.shade900,
                       ),
                     ),
                   ),
@@ -1674,6 +1706,7 @@ class _BmiPageState extends State<BmiPage> {
                     style: GoogleFonts.poppins(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
+                      color: Colors.green.shade900,
                     ),
                   ),
                   Text(
@@ -1767,7 +1800,11 @@ class _BmiPageState extends State<BmiPage> {
       children: [
         Text(
           'Panduan Kategori BMI',
-          style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.bold),
+          style: GoogleFonts.poppins(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF111827),
+          ),
         ),
         const SizedBox(height: 10),
         GridView.builder(
@@ -1850,7 +1887,8 @@ class _BmiPageState extends State<BmiPage> {
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.w700,
-                      fontSize: 12.5,
+                      fontSize: 13,
+                      color: const Color(0xFF111827),
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -1858,7 +1896,7 @@ class _BmiPageState extends State<BmiPage> {
                     cat['range'] as String,
                     style: GoogleFonts.poppins(
                       fontSize: 10.5,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       color: color,
                     ),
                   ),
@@ -1866,9 +1904,10 @@ class _BmiPageState extends State<BmiPage> {
                   Text(
                     cat['desc'] as String,
                     style: GoogleFonts.poppins(
-                      fontSize: 10,
-                      color: Colors.grey[500],
-                      height: 1.35,
+                      fontSize: 10.5,
+                      color: const Color(0xFF374151),
+                      height: 1.4,
+                      fontWeight: FontWeight.w500,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -1892,10 +1931,7 @@ class _BmiPageState extends State<BmiPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Export Buttons (PNG & PDF) - hanya tampil jika pengguna sudah log in
-        if (_isLoggedIn) ...[
-          _buildExportButtons(),
-          const SizedBox(height: 16),
-        ],
+        if (_isLoggedIn) ...[_buildExportButtons(), const SizedBox(height: 16)],
 
         if (!_isLoggedIn) ...[
           _buildGuestHistoryCard(),
@@ -1983,7 +2019,6 @@ class _BmiPageState extends State<BmiPage> {
     final String initialMapCat;
     final String mapsQuery;
     final List<String> quickTags;
-    final List<Map<String, dynamic>> places;
 
     if (isLowImpact) {
       categoryTitle = 'Fasilitas Low-Impact';
@@ -1992,44 +2027,9 @@ class _BmiPageState extends State<BmiPage> {
           'Berdasarkan status BMI Anda (${_hasil!.statusLabel}), olahraga low-impact seperti berenang atau jalan santai di lintasan jogging sangat dianjurkan untuk membakar lemak secara aman tanpa membebani persendian lutut.';
       accentColor = const Color(0xFF0284C7);
       mainIcon = Icons.pool_rounded;
-      initialMapCat = 'Kolam Renang';
-      mapsQuery = 'kolam renang terdekat';
+      initialMapCat = 'Aktivitas Ringan';
+      mapsQuery = 'jalur jogging kolam renang terdekat';
       quickTags = ['🏊 Kolam Renang', '🏃 Jogging Track', '🌿 Jalur Santai'];
-      places = [
-        {
-          'name': 'Kolam Renang Senayan',
-          'category': 'Kolam Renang',
-          'address': 'Komplek GBK, Senayan, Jakarta Selatan',
-          'distance': '1.5 km',
-          'rating': 4.6,
-          'hours': '06.00 – 18.00',
-          'icon': Icons.pool_rounded,
-          'color': Colors.blue,
-          'mapQuery': 'Kolam+Renang+Senayan+Jakarta',
-        },
-        {
-          'name': 'Hutan Kota Srengseng',
-          'category': 'Jogging Track',
-          'address': 'Jl. Srengseng Raya, Jakarta Barat',
-          'distance': '3.4 km',
-          'rating': 4.5,
-          'hours': '05.00 – 18.00',
-          'icon': Icons.nature_people_rounded,
-          'color': const Color(0xFF20603D),
-          'mapQuery': 'Hutan+Kota+Srengseng+Jakarta',
-        },
-        {
-          'name': 'Rooftop Jogging Track SCBD',
-          'category': 'Jogging Track',
-          'address': 'Jl. Jend. Sudirman Kav.52, Jakarta Selatan',
-          'distance': '1.9 km',
-          'rating': 4.4,
-          'hours': '05.30 – 20.00',
-          'icon': Icons.directions_run_rounded,
-          'color': Colors.teal,
-          'mapQuery': 'Jogging+Track+SCBD+Jakarta',
-        },
-      ];
     } else if (isUnderweight) {
       categoryTitle = 'Fitness Center & Gym';
       sportSubtitle = 'Latihan Beban & Massa Otot';
@@ -2043,30 +2043,6 @@ class _BmiPageState extends State<BmiPage> {
         '🏋️ Fitness Center',
         '💪 Free Weight Gym',
         '🔥 Mesin Beban',
-      ];
-      places = [
-        {
-          'name': 'FitFirst Fitness Center',
-          'category': 'Gym',
-          'address': 'Jl. Sudirman No.45, Jakarta Pusat',
-          'distance': '0.8 km',
-          'rating': 4.7,
-          'hours': '06.00 – 22.00',
-          'icon': Icons.fitness_center_rounded,
-          'color': Colors.purple,
-          'mapQuery': 'FitFirst Fitness Center Sudirman Jakarta',
-        },
-        {
-          'name': "Gold's Gym Kelapa Gading",
-          'category': 'Gym',
-          'address': 'Mal Kelapa Gading Lt.3, Jakarta Utara',
-          'distance': '4.0 km',
-          'rating': 4.9,
-          'hours': '06.00 – 23.00',
-          'icon': Icons.fitness_center_rounded,
-          'color': Colors.deepOrange,
-          'mapQuery': "Gold's Gym Kelapa Gading Jakarta",
-        },
       ];
     } else {
       categoryTitle = 'Lapangan & Komunitas Olahraga';
@@ -2082,41 +2058,47 @@ class _BmiPageState extends State<BmiPage> {
         '⚽ Sepak Bola',
         '🏟️ Stadion Kompleks',
       ];
-      places = [
-        {
-          'name': 'Gelora Bung Karno Sport Complex',
-          'category': 'Stadion',
-          'address': 'Jl. Pintu Satu Senayan, Jakarta Pusat',
-          'distance': '1.2 km',
-          'rating': 4.8,
-          'hours': '05.00 – 21.00',
-          'icon': Icons.stadium_rounded,
-          'color': Colors.red,
-          'mapQuery': 'Gelora Bung Karno Jakarta',
-        },
-        {
-          'name': 'Lapangan Badminton Gor Ciracas',
-          'category': 'Lapangan',
-          'address': 'Jl. Raya Bogor No.1, Jakarta Timur',
-          'distance': '2.1 km',
-          'rating': 4.3,
-          'hours': '07.00 – 23.00',
-          'icon': Icons.sports_tennis_rounded,
-          'color': Colors.orange,
-          'mapQuery': 'Lapangan Badminton Gor Ciracas Jakarta',
-        },
-        {
-          'name': 'Lapangan Sepak Bola Ragunan',
-          'category': 'Lapangan',
-          'address': 'Jl. Harsono RM, Ragunan, Jakarta Selatan',
-          'distance': '5.2 km',
-          'rating': 4.2,
-          'hours': '07.00 – 18.00',
-          'icon': Icons.sports_soccer_rounded,
-          'color': Colors.green,
-          'mapQuery': 'Lapangan Sepak Bola Ragunan Jakarta',
-        },
-      ];
+    }
+
+    // Filter dynamic places dari API Lokasi Olahraga
+    List<Map<String, dynamic>> dynamicPlaces = [];
+    if (_sportsLocations.isNotEmpty) {
+      if (isLowImpact) {
+        dynamicPlaces = _sportsLocations.where((loc) {
+          final cat = (loc['category'] ?? '').toString().toLowerCase();
+          final name = (loc['name'] ?? '').toString().toLowerCase();
+          return cat.contains('ringan') ||
+              cat.contains('low') ||
+              name.contains('jogging') ||
+              name.contains('renang') ||
+              name.contains('taman');
+        }).toList();
+      } else if (isUnderweight) {
+        dynamicPlaces = _sportsLocations.where((loc) {
+          final cat = (loc['category'] ?? '').toString().toLowerCase();
+          final name = (loc['name'] ?? '').toString().toLowerCase();
+          return cat.contains('gym') ||
+              cat.contains('fitness') ||
+              name.contains('gym') ||
+              name.contains('fitness');
+        }).toList();
+      } else {
+        dynamicPlaces = _sportsLocations.where((loc) {
+          final cat = (loc['category'] ?? '').toString().toLowerCase();
+          final name = (loc['name'] ?? '').toString().toLowerCase();
+          return cat.contains('lapangan') ||
+              cat.contains('stadion') ||
+              cat.contains('komunitas') ||
+              name.contains('lapangan') ||
+              name.contains('gor') ||
+              name.contains('center');
+        }).toList();
+      }
+
+      // Jika kategori spesifik tidak cukup, ambil lokasi lainnya
+      if (dynamicPlaces.isEmpty) {
+        dynamicPlaces = _sportsLocations.take(3).toList();
+      }
     }
 
     return Column(
@@ -2169,6 +2151,7 @@ class _BmiPageState extends State<BmiPage> {
                       initialCategory: initialMapCat,
                       bmiCategory: _hasil!.status,
                       bmiRecommendationReason: reasonText,
+                      preloadedLocations: _sportsLocations,
                     ),
                   ),
                 );
@@ -2342,8 +2325,60 @@ class _BmiPageState extends State<BmiPage> {
 
         const SizedBox(height: 14),
 
-        // List fasilitas olahraga yang cocok
-        ...places.map((place) => _buildSportLocationCard(place, accentColor)),
+        // List fasilitas olahraga dari API
+        if (_isLoadingSportsLocations)
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            alignment: Alignment.center,
+            child: Column(
+              children: [
+                const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.4,
+                    color: _green,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Memuat rekomendasi lokasi olahraga...',
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          )
+        else if (dynamicPlaces.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(16),
+            margin: const EdgeInsets.only(bottom: 10),
+            decoration: BoxDecoration(
+              color: Colors.grey.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.info_outline, color: Colors.grey[600], size: 18),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Belum ada lokasi spesifik untuk kategori ini di database.',
+                    style: GoogleFonts.poppins(
+                      fontSize: 11.5,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          ...dynamicPlaces.map(
+            (place) => _buildSportLocationCard(place, accentColor),
+          ),
 
         const SizedBox(height: 8),
 
@@ -2362,6 +2397,7 @@ class _BmiPageState extends State<BmiPage> {
                         initialCategory: initialMapCat,
                         bmiCategory: _hasil!.status,
                         bmiRecommendationReason: reasonText,
+                        preloadedLocations: _sportsLocations,
                       ),
                     ),
                   );
@@ -2424,6 +2460,12 @@ class _BmiPageState extends State<BmiPage> {
 
   Widget _buildSportLocationCard(Map<String, dynamic> loc, Color accentColor) {
     final placeColor = loc['color'] as Color? ?? accentColor;
+    final mapQuery = (loc['mapQuery'] ?? loc['name'] ?? '').toString();
+    final String distanceStr = (loc['distance'] ?? 'Belum diketahui')
+        .toString();
+    final ratingVal = loc['rating'];
+    final String hoursStr = (loc['hours'] ?? 'Jam operasional di Maps')
+        .toString();
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -2444,7 +2486,7 @@ class _BmiPageState extends State<BmiPage> {
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () => _openMapsQuery(loc['mapQuery'] as String),
+          onTap: () => _openMapsQuery(mapQuery),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Row(
@@ -2473,7 +2515,7 @@ class _BmiPageState extends State<BmiPage> {
                         children: [
                           Expanded(
                             child: Text(
-                              loc['name'] as String,
+                              loc['name']?.toString() ?? '',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.poppins(
@@ -2494,7 +2536,7 @@ class _BmiPageState extends State<BmiPage> {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
-                              loc['category'] as String,
+                              loc['category']?.toString() ?? '',
                               style: GoogleFonts.poppins(
                                 fontSize: 9.5,
                                 fontWeight: FontWeight.w600,
@@ -2506,7 +2548,7 @@ class _BmiPageState extends State<BmiPage> {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        loc['address'] as String,
+                        loc['address']?.toString() ?? '',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.poppins(
@@ -2524,32 +2566,34 @@ class _BmiPageState extends State<BmiPage> {
                           ),
                           const SizedBox(width: 2),
                           Text(
-                            loc['distance'] as String,
+                            distanceStr,
                             style: GoogleFonts.poppins(
                               fontSize: 10.5,
                               fontWeight: FontWeight.w600,
                               color: Colors.black87,
                             ),
                           ),
-                          const SizedBox(width: 10),
-                          const Icon(
-                            Icons.star_rounded,
-                            size: 13,
-                            color: Colors.amber,
-                          ),
-                          const SizedBox(width: 2),
-                          Text(
-                            '${loc['rating']}',
-                            style: GoogleFonts.poppins(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black87,
+                          if (ratingVal != null) ...[
+                            const SizedBox(width: 10),
+                            const Icon(
+                              Icons.star_rounded,
+                              size: 13,
+                              color: Colors.amber,
                             ),
-                          ),
+                            const SizedBox(width: 2),
+                            Text(
+                              '$ratingVal',
+                              style: GoogleFonts.poppins(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              '🕒 ${loc['hours']}',
+                              '🕒 $hoursStr',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.poppins(
@@ -3926,6 +3970,7 @@ class _BmiPageState extends State<BmiPage> {
             style: GoogleFonts.poppins(
               fontWeight: FontWeight.bold,
               fontSize: 14,
+              color: Colors.green.shade900,
             ),
           ),
           const SizedBox(height: 4),
@@ -4002,6 +4047,7 @@ class _BmiPageState extends State<BmiPage> {
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.bold,
                 fontSize: 13.5,
+                color: Colors.green.shade900,
               ),
             ),
             const SizedBox(height: 4),

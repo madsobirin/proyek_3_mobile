@@ -10,8 +10,15 @@ class LokasiOlahragaService {
   static final LokasiOlahragaService instance = LokasiOlahragaService._();
 
   static const String _baseUrl = 'https://fitlife.my.id/api/lokasi-olahraga';
+  List<LokasiOlahraga>? _cachedLocations;
 
-  Future<List<LokasiOlahraga>> fetchAll() async {
+  List<LokasiOlahraga>? get cachedLocations => _cachedLocations;
+
+  Future<List<LokasiOlahraga>> fetchAll({bool forceRefresh = false}) async {
+    if (!forceRefresh && _cachedLocations != null && _cachedLocations!.isNotEmpty) {
+      return _cachedLocations!;
+    }
+
     final response = await http
         .get(Uri.parse(_baseUrl), headers: const {'Accept': 'application/json'})
         .timeout(const Duration(seconds: 20));
@@ -30,10 +37,12 @@ class LokasiOlahragaService {
       );
     }
 
-    return decoded
+    final list = decoded
         .whereType<Map<String, dynamic>>()
         .map(LokasiOlahraga.fromJson)
         .toList();
+    _cachedLocations = list;
+    return list;
   }
 
   Future<List<LokasiOlahraga>> fetchFiltered({

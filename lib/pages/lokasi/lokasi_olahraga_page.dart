@@ -9,12 +9,14 @@ class LocationOlahragaPage extends StatefulWidget {
   final String? initialCategory;
   final String? bmiCategory;
   final String? bmiRecommendationReason;
+  final List<Map<String, dynamic>>? preloadedLocations;
   const LocationOlahragaPage({
     super.key,
     required this.onBack,
     this.initialCategory,
     this.bmiCategory,
     this.bmiRecommendationReason,
+    this.preloadedLocations,
   });
   @override
   State<LocationOlahragaPage> createState() => _LocationOlahragaPageState();
@@ -37,6 +39,32 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
   String? _locationError;
 
   Future<void> _loadLocations() async {
+    // 1. Cek apakah ada data preloaded dari pemanggil (misal BmiPage)
+    if (widget.preloadedLocations != null &&
+        widget.preloadedLocations!.isNotEmpty) {
+      if (mounted) {
+        setState(() {
+          _locations = widget.preloadedLocations!;
+          _isLoadingLocations = false;
+          _locationError = null;
+        });
+      }
+      return;
+    }
+
+    // 2. Cek apakah cache di service sudah ada data (seperti saat buka tab sebelumnya)
+    final cached = _lokasiService.cachedLocations;
+    if (cached != null && cached.isNotEmpty) {
+      if (mounted) {
+        setState(() {
+          _locations = cached.map((l) => l.toDisplayMap()).toList();
+          _isLoadingLocations = false;
+          _locationError = null;
+        });
+      }
+      return;
+    }
+
     if (mounted) {
       setState(() {
         _isLoadingLocations = true;
@@ -146,7 +174,40 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
       }
       if (idx != -1) _selectedCategory = idx;
     }
+
+    if (widget.preloadedLocations != null &&
+        widget.preloadedLocations!.isNotEmpty) {
+      _locations = widget.preloadedLocations!;
+      _isLoadingLocations = false;
+    } else {
+      final cached = _lokasiService.cachedLocations;
+      if (cached != null && cached.isNotEmpty) {
+        _locations = cached.map((l) => l.toDisplayMap()).toList();
+        _isLoadingLocations = false;
+      }
+    }
+
     _loadLocations();
+  }
+
+  @override
+  void didUpdateWidget(covariant LocationOlahragaPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialCategory != oldWidget.initialCategory &&
+        widget.initialCategory != null) {
+      final requested = widget.initialCategory!.toLowerCase();
+      var idx = _categories.indexWhere((c) => c.toLowerCase() == requested);
+      if (idx == -1 &&
+          (requested.contains('jogging') ||
+              requested.contains('renang') ||
+              requested.contains('low_impact') ||
+              requested.contains('aktivitas ringan'))) {
+        idx = _categories.indexOf('Aktivitas Ringan');
+      }
+      if (idx != -1 && idx != _selectedCategory) {
+        setState(() => _selectedCategory = idx);
+      }
+    }
   }
 
   @override

@@ -130,6 +130,7 @@ class MenuDetailPage extends StatelessWidget {
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       height: 1.3,
+                      color: const Color(0xFF111827),
                     ),
                   ),
 
@@ -206,6 +207,7 @@ class MenuDetailPage extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: const Color(0xFF111827),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -213,7 +215,7 @@ class MenuDetailPage extends StatelessWidget {
                     menu['deskripsi'] ?? '',
                     style: GoogleFonts.poppins(
                       fontSize: 15,
-                      color: Colors.black87,
+                      color: const Color(0xFF1F2937),
                       height: 1.7,
                     ),
                   ),
@@ -226,6 +228,7 @@ class MenuDetailPage extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: const Color(0xFF111827),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -233,7 +236,7 @@ class MenuDetailPage extends StatelessWidget {
                     'Ikuti langkah-langkah sehat untuk menyajikan menu ini. Pastikan bahan yang digunakan segar dan porsi sesuai dengan kebutuhan kalori harian Anda.',
                     style: GoogleFonts.poppins(
                       fontSize: 14,
-                      color: Colors.black54,
+                      color: const Color(0xFF374151),
                       height: 1.7,
                     ),
                   ),
@@ -261,7 +264,7 @@ class MenuDetailPage extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
             fontSize: 11,
-            color: Colors.black54,
+            color: const Color(0xFF374151),
           ),
         ),
       ],
