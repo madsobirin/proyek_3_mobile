@@ -232,20 +232,20 @@ class _MenuPageState extends State<MenuPage> {
                 decoration: InputDecoration(
                   hintText: 'Cari resep atau bahan makanan...',
                   hintStyle: GoogleFonts.poppins(
-                    color: Colors.grey[400],
+                    color: const Color(0xFF6B7280),
                     fontSize: 14,
                   ),
-                  prefixIcon: Icon(
+                  prefixIcon: const Icon(
                     Icons.search,
-                    color: Colors.grey[400],
+                    color: Color(0xFF6B7280),
                     size: 22,
                   ),
                   suffixIcon: _search.isNotEmpty
                       ? GestureDetector(
                           onTap: () => setState(() => _search = ''),
-                          child: Icon(
+                          child: const Icon(
                             Icons.close,
-                            color: Colors.grey[400],
+                            color: Color(0xFF6B7280),
                             size: 20,
                           ),
                         )
@@ -557,8 +557,9 @@ class _MenuPageState extends State<MenuPage> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                         fontSize: 15,
+                        color: const Color(0xFF111827),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -568,7 +569,8 @@ class _MenuPageState extends State<MenuPage> {
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.poppins(
                         fontSize: 12,
-                        color: Colors.grey[500],
+                        color: const Color(0xFF4B5563),
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -577,37 +579,37 @@ class _MenuPageState extends State<MenuPage> {
                         Icon(
                           Icons.local_fire_department,
                           size: 14,
-                          color: Colors.orange[400],
+                          color: Colors.orange[600],
                         ),
                         const SizedBox(width: 4),
                         Text(
                           '${menu.kalori} kal',
                           style: GoogleFonts.poppins(
-                            color: Colors.grey[600],
+                            color: const Color(0xFF374151),
                             fontSize: 12,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                         const SizedBox(width: 14),
                         Icon(
                           Icons.access_time,
                           size: 14,
-                          color: Colors.blue[300],
+                          color: Colors.blue[600],
                         ),
                         const SizedBox(width: 4),
                         Text(
                           '${menu.waktuMemasak} mnt',
                           style: GoogleFonts.poppins(
-                            color: Colors.grey[600],
+                            color: const Color(0xFF374151),
                             fontSize: 12,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                         const Spacer(),
-                        Icon(
+                        const Icon(
                           Icons.chevron_right,
                           size: 20,
-                          color: Colors.grey[400],
+                          color: Color(0xFF9CA3AF),
                         ),
                       ],
                     ),

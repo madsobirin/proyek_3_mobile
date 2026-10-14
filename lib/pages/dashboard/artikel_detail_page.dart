@@ -242,7 +242,8 @@ class _ArtikelDetailPageState extends State<ArtikelDetailPage> {
                                 _formatDate(artikel.createdAt),
                                 style: GoogleFonts.poppins(
                                   fontSize: 11,
-                                  color: Colors.grey[500],
+                                  color: const Color(0xFF6B7280),
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
@@ -260,10 +261,10 @@ class _ArtikelDetailPageState extends State<ArtikelDetailPage> {
                           ),
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.visibility_outlined,
                                 size: 14,
-                                color: Colors.grey[500],
+                                color: Color(0xFF6B7280),
                               ),
                               const SizedBox(width: 4),
                               Text(
@@ -271,7 +272,7 @@ class _ArtikelDetailPageState extends State<ArtikelDetailPage> {
                                 style: GoogleFonts.poppins(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.grey[600],
+                                  color: const Color(0xFF374151),
                                 ),
                               ),
                             ],
@@ -290,7 +291,7 @@ class _ArtikelDetailPageState extends State<ArtikelDetailPage> {
                     artikel.isi,
                     textStyle: GoogleFonts.poppins(
                       fontSize: 15,
-                      color: Colors.black87,
+                      color: const Color(0xFF1F2937),
                       height: 1.7,
                     ),
                     customStylesBuilder: (element) {
@@ -322,9 +323,9 @@ class _ArtikelDetailPageState extends State<ArtikelDetailPage> {
                       // Styling untuk blockquote kutipan teks
                       if (element.localName == 'blockquote') {
                         return {
-                          'border-left': '3px solid #1AB673',
+                          'border-left': '3px solid #20603D',
                           'padding-left': '12px',
-                          'color': '#6B7280',
+                          'color': '#4B5563',
                           'font-style': 'italic',
                           'margin': '12px 0',
                         };
@@ -332,8 +333,9 @@ class _ArtikelDetailPageState extends State<ArtikelDetailPage> {
                       // Styling untuk link a href
                       if (element.localName == 'a') {
                         return {
-                          'color': '#1AB673',
+                          'color': '#20603D',
                           'text-decoration': 'underline',
+                          'font-weight': '600',
                         };
                       }
                       return null;

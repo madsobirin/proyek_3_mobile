@@ -143,20 +143,20 @@ class _ArtikelPageState extends State<ArtikelPage> {
                 decoration: InputDecoration(
                   hintText: 'Cari artikel atau kategori...',
                   hintStyle: GoogleFonts.poppins(
-                    color: Colors.grey[400],
+                    color: const Color(0xFF6B7280),
                     fontSize: 14,
                   ),
-                  prefixIcon: Icon(
+                  prefixIcon: const Icon(
                     Icons.search,
-                    color: Colors.grey[400],
+                    color: Color(0xFF6B7280),
                     size: 22,
                   ),
                   suffixIcon: _search.isNotEmpty
                       ? GestureDetector(
                           onTap: () => setState(() => _search = ''),
-                          child: Icon(
+                          child: const Icon(
                             Icons.close,
-                            color: Colors.grey[400],
+                            color: Color(0xFF6B7280),
                             size: 20,
                           ),
                         )
@@ -255,31 +255,33 @@ class _ArtikelPageState extends State<ArtikelPage> {
                           const SizedBox(height: 6),
                           Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.access_time,
-                                size: 12,
-                                color: Colors.white70,
+                                size: 13,
+                                color: Color(0xFFF3F4F6),
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 _formatDate(featured.createdAt),
                                 style: GoogleFonts.poppins(
-                                  color: Colors.white70,
+                                  color: const Color(0xFFF3F4F6),
                                   fontSize: 11,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                               const SizedBox(width: 14),
-                              Icon(
+                              const Icon(
                                 Icons.visibility,
-                                size: 12,
-                                color: Colors.white70,
+                                size: 13,
+                                color: Color(0xFFF3F4F6),
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 '${featured.dibaca} views',
                                 style: GoogleFonts.poppins(
-                                  color: Colors.white70,
+                                  color: const Color(0xFFF3F4F6),
                                   fontSize: 11,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
@@ -526,38 +528,41 @@ class _ArtikelPageState extends State<ArtikelPage> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                         fontSize: 14,
+                        color: const Color(0xFF111827),
                       ),
                     ),
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.person_outline,
-                          size: 12,
-                          color: Colors.grey[400],
+                          size: 13,
+                          color: Color(0xFF6B7280),
                         ),
                         const SizedBox(width: 4),
                         Text(
                           artikel.penulis,
                           style: GoogleFonts.poppins(
                             fontSize: 11,
-                            color: Colors.grey[500],
+                            color: const Color(0xFF6B7280),
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                         const SizedBox(width: 10),
-                        Icon(
+                        const Icon(
                           Icons.visibility_outlined,
-                          size: 12,
-                          color: Colors.grey[400],
+                          size: 13,
+                          color: Color(0xFF6B7280),
                         ),
                         const SizedBox(width: 4),
                         Text(
                           '${artikel.dibaca}',
                           style: GoogleFonts.poppins(
                             fontSize: 11,
-                            color: Colors.grey[500],
+                            color: const Color(0xFF6B7280),
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
@@ -566,12 +571,12 @@ class _ArtikelPageState extends State<ArtikelPage> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 14),
+            const Padding(
+              padding: EdgeInsets.only(right: 14),
               child: Icon(
                 Icons.chevron_right,
                 size: 20,
-                color: Colors.grey[400],
+                color: Color(0xFF9CA3AF),
               ),
             ),
           ],
