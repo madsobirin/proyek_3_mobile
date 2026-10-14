@@ -711,16 +711,22 @@ class _HomeState extends State<Home> {
           if (_isChatOpen)
             Positioned(
               right: 12,
-              bottom: 12,
+              bottom: 84,
               child: SizedBox(
                 width: MediaQuery.sizeOf(context).width >= 420
                     ? 380
                     : MediaQuery.sizeOf(context).width - 24,
-                height: (MediaQuery.sizeOf(context).height * 0.65).clamp(
-                  320.0,
-                  620.0,
+                height: (MediaQuery.sizeOf(context).height * 0.72).clamp(
+                  360.0,
+                  640.0,
                 ),
-                child: const ChatPanel(),
+                child: ChatPanel(
+                  onClose: () {
+                    setState(() {
+                      _isChatOpen = false;
+                    });
+                  },
+                ),
               ),
             ),
         ],
