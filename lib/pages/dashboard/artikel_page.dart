@@ -128,6 +128,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
                     style: GoogleFonts.poppins(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
+                      color: Colors.green.shade900,
                     ),
                   ),
                 ],

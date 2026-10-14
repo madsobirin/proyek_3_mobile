@@ -620,6 +620,7 @@ class _BmiPageState extends State<BmiPage> {
                           style: GoogleFonts.poppins(
                             fontSize: 19,
                             fontWeight: FontWeight.bold,
+                            color: Colors.green.shade900,
                           ),
                         ),
                         Text(
