@@ -125,4 +125,45 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('BmiPage tapping Katalog triggers onOpenMenu callback', (
+    WidgetTester tester,
+  ) async {
+    bool menuOpened = false;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: BmiPage(
+            onBack: () {},
+            onOpenMenu: () => menuOpened = true,
+          ),
+        ),
+      ),
+    );
+
+    final hitungBtn = find.text('Hitung Analisis Kesehatan');
+    await tester.enterText(find.byType(TextField).at(0), '170');
+    await tester.enterText(find.byType(TextField).at(1), '65');
+    await tester.enterText(find.byType(TextField).at(2), '25');
+    await tester.ensureVisible(find.text('Moderate'));
+    await tester.tap(find.text('Moderate'));
+    await tester.pump();
+    await tester.ensureVisible(hitungBtn);
+    await tester.tap(hitungBtn);
+    await tester.pump();
+    final menuTab = find.text('🥗 Rekomendasi Menu');
+    await tester.ensureVisible(menuTab);
+    await tester.tap(menuTab);
+    await tester.pumpAndSettle();
+
+    final katalogBtn = find.text('Katalog');
+    expect(katalogBtn, findsOneWidget);
+
+    await tester.ensureVisible(katalogBtn);
+    await tester.tap(katalogBtn);
+    await tester.pump();
+
+    expect(menuOpened, isTrue);
+  });
 }

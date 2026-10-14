@@ -670,7 +670,10 @@ class _HomeState extends State<Home> {
                 _isLoggedIn
                     ? const ProfilePage()
                     : const GuestProfilePage(), // 3 - Profil
-                BmiPage(onBack: _goBack), // 4 - Kalkulator BMI
+                BmiPage(
+                  onBack: _goBack,
+                  onOpenMenu: () => _onItemTapped(1),
+                ), // 4 - Kalkulator BMI
                 LocationOlahragaPage(onBack: _goBack), // 5 - Lokasi Olahraga
               ],
             ),
