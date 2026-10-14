@@ -137,12 +137,12 @@ class _ManualFoodInputModalState extends State<ManualFoodInputModal> {
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF00FF66).withValues(alpha: 0.15),
+                    color: const Color(0xFF20603D).withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     Icons.camera_alt_rounded,
-                    color: Color(0xFF15803D),
+                    color: Color(0xFF20603D),
                     size: 20,
                   ),
                 ),
@@ -331,12 +331,12 @@ class _ManualFoodInputModalState extends State<ManualFoodInputModal> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF00FF66).withValues(alpha: 0.12),
+                color: const Color(0xFF20603D).withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.bookmark_added_rounded,
-                color: Color(0xFF15803D),
+                color: Color(0xFF20603D),
                 size: 32,
               ),
             ),
@@ -392,8 +392,8 @@ class _ManualFoodInputModalState extends State<ManualFoodInputModal> {
                       Navigator.pushNamed(context, '/login');
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00FF66),
-                      foregroundColor: const Color(0xFF111827),
+                      backgroundColor: const Color(0xFF20603D),
+                      foregroundColor: Colors.white,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
@@ -453,12 +453,12 @@ class _ManualFoodInputModalState extends State<ManualFoodInputModal> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF00FF66).withValues(alpha: 0.15),
+                      color: const Color(0xFF20603D).withValues(alpha: 0.12),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
                       Icons.edit_note_rounded,
-                      color: Color(0xFF15803D),
+                      color: Color(0xFF20603D),
                       size: 24,
                     ),
                   ),
@@ -837,8 +837,8 @@ class _ManualFoodInputModalState extends State<ManualFoodInputModal> {
                     child: ElevatedButton(
                       onPressed: _isSaving ? null : _submitForm,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00FF66),
-                        foregroundColor: const Color(0xFF111827),
+                        backgroundColor: const Color(0xFF20603D),
+                        foregroundColor: Colors.white,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -851,7 +851,7 @@ class _ManualFoodInputModalState extends State<ManualFoodInputModal> {
                               width: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2.5,
-                                color: Color(0xFF111827),
+                                color: Colors.white,
                               ),
                             )
                           : Row(
@@ -909,7 +909,7 @@ class _ManualFoodInputModalState extends State<ManualFoodInputModal> {
       ),
       prefixIcon: Icon(
         icon,
-        color: iconColor ?? const Color(0xFF15803D),
+        color: iconColor ?? const Color(0xFF20603D),
         size: 18,
       ),
       filled: true,
@@ -926,7 +926,7 @@ class _ManualFoodInputModalState extends State<ManualFoodInputModal> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: Color(0xFF00FF66), width: 1.5),
+        borderSide: const BorderSide(color: Color(0xFF20603D), width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),

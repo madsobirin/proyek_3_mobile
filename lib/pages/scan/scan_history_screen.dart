@@ -164,7 +164,7 @@ class _ScanHistoryScreenState extends State<ScanHistoryScreen> {
   Widget _buildBody() {
     if (_isLoading) {
       return const Center(
-        child: CircularProgressIndicator(color: Color(0xFF00FF66)),
+        child: CircularProgressIndicator(color: Color(0xFF20603D)),
       );
     }
 
@@ -201,8 +201,8 @@ class _ScanHistoryScreenState extends State<ScanHistoryScreen> {
               ElevatedButton(
                 onPressed: _loadHistory,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF00FF66),
-                  foregroundColor: const Color(0xFF111827),
+                  backgroundColor: const Color(0xFF20603D),
+                  foregroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -226,12 +226,12 @@ class _ScanHistoryScreenState extends State<ScanHistoryScreen> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF00FF66).withValues(alpha: 0.12),
+                  color: const Color(0xFF20603D).withValues(alpha: 0.10),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.qr_code_scanner_rounded,
-                  color: Color(0xFF15803D),
+                  color: Color(0xFF20603D),
                   size: 48,
                 ),
               ),
@@ -260,8 +260,8 @@ class _ScanHistoryScreenState extends State<ScanHistoryScreen> {
                 icon: const Icon(Icons.camera_alt_rounded, size: 18),
                 label: const Text('Mulai Scan Sekarang'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF00FF66),
-                  foregroundColor: const Color(0xFF111827),
+                  backgroundColor: const Color(0xFF20603D),
+                  foregroundColor: Colors.white,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
@@ -279,7 +279,7 @@ class _ScanHistoryScreenState extends State<ScanHistoryScreen> {
     }
 
     return RefreshIndicator(
-      color: const Color(0xFF00FF66),
+      color: const Color(0xFF20603D),
       onRefresh: _loadHistory,
       child: ListView.separated(
         padding: const EdgeInsets.all(20),

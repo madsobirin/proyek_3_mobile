@@ -152,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 260,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF00FF66).withValues(alpha: 0.1),
+                color: const Color(0xFF20603D).withValues(alpha: 0.08),
               ),
             ),
           ),
@@ -357,7 +357,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFF00FF66), width: 2),
+          borderSide: const BorderSide(color: Color(0xFF20603D), width: 1.5),
         ),
       ),
     );
@@ -409,7 +409,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFF00FF66), width: 2),
+          borderSide: const BorderSide(color: Color(0xFF20603D), width: 1.5),
         ),
       ),
     );
@@ -422,10 +422,10 @@ class _LoginScreenState extends State<LoginScreen> {
       child: ElevatedButton(
         onPressed: _isLoading ? null : _handleLogin,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF00FF66),
-          foregroundColor: Colors.black,
+          backgroundColor: const Color(0xFF20603D),
+          foregroundColor: Colors.white,
           elevation: 0,
-          shadowColor: const Color(0x4D00FF66),
+          shadowColor: const Color(0x3320603D),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -436,7 +436,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 24,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.5,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               )
             : Row(
@@ -447,7 +447,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: GoogleFonts.inter(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black,
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(width: 8),

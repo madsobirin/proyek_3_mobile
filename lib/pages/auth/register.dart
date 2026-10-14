@@ -54,7 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       case 1:
       case 2:
       case 3:
-        return const Color(0xFF00FF66);
+        return const Color(0xFF20603D);
       default:
         return const Color(0xFFE5E7EB);
     }
@@ -63,11 +63,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Color get _strengthLabelColor {
     switch (_passwordStrength) {
       case 1:
-        return const Color(0xFF00CC52);
+        return const Color(0xFF20603D);
       case 2:
         return const Color(0xFFF59E0B);
       case 3:
-        return const Color(0xFF10B981);
+        return const Color(0xFF20603D);
       default:
         return const Color(0xFF9CA3AF);
     }
@@ -141,12 +141,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       height: 72,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: const Color(0xFF00FF66).withValues(alpha: 0.15),
+                        color: const Color(0xFF20603D).withValues(alpha: 0.12),
                       ),
                       child: const Center(
                         child: Icon(
                           Icons.check_circle_rounded,
-                          color: Color(0xFF00FF66),
+                          color: Color(0xFF20603D),
                           size: 48,
                         ),
                       ),
@@ -182,8 +182,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Navigator.pushReplacementNamed(context, '/login');
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00FF66),
-                        foregroundColor: Colors.black,
+                        backgroundColor: const Color(0xFF20603D),
+                        foregroundColor: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
@@ -197,14 +197,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: GoogleFonts.inter(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
-                              color: Colors.black,
+                              color: Colors.white,
                             ),
                           ),
                           const SizedBox(width: 6),
                           const Icon(
                             Icons.arrow_forward_rounded,
                             size: 18,
-                            color: Colors.black,
+                            color: Colors.white,
                           ),
                         ],
                       ),
@@ -333,7 +333,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               height: 260,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF00FF66).withValues(alpha: 0.1),
+                color: const Color(0xFF20603D).withValues(alpha: 0.08),
               ),
             ),
           ),
@@ -500,7 +500,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFF00FF66), width: 2),
+          borderSide: const BorderSide(color: Color(0xFF20603D), width: 1.5),
         ),
       ),
     );
@@ -553,7 +553,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFF00FF66), width: 2),
+          borderSide: const BorderSide(color: Color(0xFF20603D), width: 1.5),
         ),
       ),
     );
@@ -612,8 +612,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               borderRadius: BorderRadius.circular(6),
             ),
             side: const BorderSide(color: Color(0xFFD1D5DB), width: 1.5),
-            activeColor: const Color(0xFF00FF66),
-            checkColor: Colors.black,
+            activeColor: const Color(0xFF20603D),
+            checkColor: Colors.white,
           ),
         ),
         const SizedBox(width: 10),
@@ -663,10 +663,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       child: ElevatedButton(
         onPressed: _isLoading ? null : _handleRegister,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF00FF66),
-          foregroundColor: Colors.black,
+          backgroundColor: const Color(0xFF20603D),
+          foregroundColor: Colors.white,
           elevation: 0,
-          shadowColor: const Color(0x4D00FF66),
+          shadowColor: const Color(0x3320603D),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -677,7 +677,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 height: 24,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.5,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               )
             : Row(
@@ -688,7 +688,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style: GoogleFonts.inter(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black,
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(width: 8),

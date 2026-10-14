@@ -50,8 +50,8 @@ class _ProfilePageState extends State<ProfilePage>
   };
 
   static const Color _bg = Color(0xFFF8FFFA);
-  static const Color _primary = Color(0xFF00FF66);
-  static const Color _primaryDark = Color(0xFF15803D);
+  static const Color _primary = Color(0xFF20603D);
+  static const Color _primaryDark = Color(0xFF247447);
   static const Color _cardBg = Colors.white;
   static const Color _textDark = Color(0xFF111827);
   static const Color _textMuted = Color(0xFF6B7280);
@@ -237,8 +237,8 @@ class _ProfilePageState extends State<ProfilePage>
       builder: (ctx, child) => Theme(
         data: ThemeData.light().copyWith(
           colorScheme: const ColorScheme.light(
-            primary: Color(0xFF00FF66),
-            onPrimary: Colors.black,
+            primary: Color(0xFF20603D),
+            onPrimary: Colors.white,
           ),
         ),
         child: child!,
@@ -598,7 +598,7 @@ class _ProfilePageState extends State<ProfilePage>
         border: Border.all(color: _border),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00FF66).withValues(alpha: 0.06),
+            color: const Color(0xFF20603D).withValues(alpha: 0.06),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -614,10 +614,10 @@ class _ProfilePageState extends State<ProfilePage>
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF00FF66).withValues(alpha: 0.15),
+                    color: const Color(0xFF20603D).withValues(alpha: 0.10),
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
-                      color: const Color(0xFF00FF66).withValues(alpha: 0.4),
+                      color: const Color(0xFF20603D).withValues(alpha: 0.25),
                       width: 1.5,
                     ),
                     image: _user?.photo != null
@@ -1224,8 +1224,8 @@ class _ProfilePageState extends State<ProfilePage>
                             }
                           },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00FF66),
-                      foregroundColor: Colors.black,
+                      backgroundColor: const Color(0xFF20603D),
+                      foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -1237,7 +1237,7 @@ class _ProfilePageState extends State<ProfilePage>
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Colors.black,
+                              color: Colors.white,
                             ),
                           )
                         : Text(
@@ -1245,7 +1245,7 @@ class _ProfilePageState extends State<ProfilePage>
                             style: GoogleFonts.inter(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
-                              color: Colors.black,
+                              color: Colors.white,
                             ),
                           ),
                   ),
@@ -1307,7 +1307,7 @@ class _ProfilePageState extends State<ProfilePage>
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Color(0xFF00FF66), width: 2),
+              borderSide: const BorderSide(color: Color(0xFF20603D), width: 1.5),
             ),
           ),
         ),

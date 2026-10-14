@@ -109,7 +109,7 @@ class _ScanResultModalState extends State<ScanResultModal> {
           margin: const EdgeInsets.all(16),
           action: SnackBarAction(
             label: 'Simpan Offline',
-            textColor: const Color(0xFF00FF66),
+            textColor: const Color(0xFF20603D),
             onPressed: () async {
               await _scanService.saveOfflineScan(widget.result);
               if (mounted) {
@@ -143,12 +143,12 @@ class _ScanResultModalState extends State<ScanResultModal> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF00FF66).withValues(alpha: 0.12),
+                color: const Color(0xFF20603D).withValues(alpha: 0.10),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.bookmark_added_rounded,
-                color: Color(0xFF15803D),
+                color: Color(0xFF20603D),
                 size: 32,
               ),
             ),
@@ -205,8 +205,8 @@ class _ScanResultModalState extends State<ScanResultModal> {
                       Navigator.pushNamed(context, '/login');
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00FF66),
-                      foregroundColor: const Color(0xFF111827),
+                      backgroundColor: const Color(0xFF20603D),
+                      foregroundColor: Colors.white,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
@@ -215,7 +215,10 @@ class _ScanResultModalState extends State<ScanResultModal> {
                     ),
                     child: Text(
                       'Masuk',
-                      style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -320,8 +323,8 @@ class _ScanResultModalState extends State<ScanResultModal> {
                                     ),
                                     decoration: BoxDecoration(
                                       color: const Color(
-                                        0xFF00FF66,
-                                      ).withValues(alpha: 0.12),
+                                        0xFF20603D,
+                                      ).withValues(alpha: 0.10),
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: Text(
@@ -329,7 +332,7 @@ class _ScanResultModalState extends State<ScanResultModal> {
                                       style: GoogleFonts.inter(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w700,
-                                        color: const Color(0xFF15803D),
+                                        color: const Color(0xFF20603D),
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
@@ -410,13 +413,13 @@ class _ScanResultModalState extends State<ScanResultModal> {
                       ),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFFE6FFF3), Color(0xFFCFFFEA)],
+                          colors: [Color(0xFFEBF3ED), Color(0xFFDCECE0)],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: const Color(0xFF00FF66).withValues(alpha: 0.3),
+                          color: const Color(0xFF20603D).withValues(alpha: 0.20),
                         ),
                       ),
                       child: Row(
@@ -568,11 +571,11 @@ class _ScanResultModalState extends State<ScanResultModal> {
                               style: GoogleFonts.inter(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF15803D),
+                                color: const Color(0xFF20603D),
                               ),
                             ),
                             style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Color(0xFF00FF66)),
+                              side: const BorderSide(color: Color(0xFF20603D)),
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
@@ -582,8 +585,8 @@ class _ScanResultModalState extends State<ScanResultModal> {
                         : ElevatedButton(
                             onPressed: _isSaving ? null : _handleSave,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF00FF66),
-                              foregroundColor: const Color(0xFF111827),
+                              backgroundColor: const Color(0xFF20603D),
+                              foregroundColor: Colors.white,
                               elevation: 0,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
@@ -596,7 +599,7 @@ class _ScanResultModalState extends State<ScanResultModal> {
                                     width: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2.5,
-                                      color: Color(0xFF111827),
+                                      color: Colors.white,
                                     ),
                                   )
                                 : Row(
@@ -605,6 +608,7 @@ class _ScanResultModalState extends State<ScanResultModal> {
                                       const Icon(
                                         Icons.bookmark_add_rounded,
                                         size: 18,
+                                        color: Colors.white,
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
@@ -612,6 +616,7 @@ class _ScanResultModalState extends State<ScanResultModal> {
                                         style: GoogleFonts.inter(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w700,
+                                          color: Colors.white,
                                         ),
                                       ),
                                     ],

@@ -15,7 +15,7 @@ class ArtikelDetailPage extends StatefulWidget {
 }
 
 class _ArtikelDetailPageState extends State<ArtikelDetailPage> {
-  static const _green = Color(0xFF1AB673);
+  static const _green = Color(0xFF20603D);
   static const _textDark = Color(
     0xFF1F2937,
   ); // Sesuaikan dengan warna teks admin (#1f2937)

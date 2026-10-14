@@ -65,7 +65,7 @@ class LokasiOlahraga {
       case 'lapangan':
         return Colors.blue;
       case 'low_impact':
-        return const Color(0xFF22C55E);
+        return const Color(0xFF20603D);
       default:
         return Colors.grey;
     }

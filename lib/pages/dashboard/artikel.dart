@@ -30,7 +30,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF1AB673)
+              ? const Color(0xFF20603D)
               : Colors.grey.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(20),
         ),
@@ -87,7 +87,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
                   style: GoogleFonts.poppins(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1AB673),
+                    color: const Color(0xFF20603D),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -223,7 +223,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
               Text(
                 "Lihat Semua",
                 style: GoogleFonts.poppins(
-                  color: const Color(0xFF1AB673),
+                  color: const Color(0xFF20603D),
                   fontWeight: FontWeight.w500,
                 ),
               ),

@@ -116,7 +116,7 @@ class _BmiPageState extends State<BmiPage> {
 
   List<PerhitunganModel> get _exportHistoryList => _displayHistoryList;
 
-  static const _green = Color(0xFF1AB673);
+  static const _green = Color(0xFF20603D);
 
   // ── BMI Category Config ──
   static const _bmiCategories = [
@@ -133,7 +133,7 @@ class _BmiPageState extends State<BmiPage> {
       'status': 'Normal',
       'range': 'BMI 18.5 – 24.9',
       'desc': 'Pertahankan gaya hidup aktif & seimbang.',
-      'color': Color(0xFF1AB673),
+      'color': Color(0xFF20603D),
       'icon': Icons.check_circle_outline,
     },
     {
@@ -1489,7 +1489,7 @@ class _BmiPageState extends State<BmiPage> {
                       title: 'KARBOHIDRAT',
                       gram: '${_hasil!.karbohidratDisplay}g',
                       note: 'Sisa Kalori',
-                      color: const Color(0xFF10B981),
+                      color: const Color(0xFF20603D),
                     ),
                   ),
                 ],
@@ -2015,7 +2015,7 @@ class _BmiPageState extends State<BmiPage> {
           'rating': 4.5,
           'hours': '05.00 – 18.00',
           'icon': Icons.nature_people_rounded,
-          'color': const Color(0xFF00CC52),
+          'color': const Color(0xFF20603D),
           'mapQuery': 'Hutan+Kota+Srengseng+Jakarta',
         },
         {
@@ -3036,7 +3036,7 @@ class _BmiPageState extends State<BmiPage> {
                                 ),
                               ],
                             ),
-                            backgroundColor: const Color(0xFF1AB673),
+                            backgroundColor: const Color(0xFF20603D),
                             duration: const Duration(seconds: 4),
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(
@@ -3226,7 +3226,7 @@ class _BmiPageState extends State<BmiPage> {
                                 ),
                               ],
                             ),
-                            backgroundColor: const Color(0xFF1AB673),
+                            backgroundColor: const Color(0xFF20603D),
                             duration: const Duration(seconds: 4),
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(
@@ -3298,13 +3298,13 @@ class _BmiPageState extends State<BmiPage> {
       case 'kurus':
         return Colors.blue;
       case 'normal':
-        return const Color(0xFF1AB673);
+        return const Color(0xFF20603D);
       case 'berlebih':
         return Colors.orange;
       case 'obesitas':
         return Colors.red;
       default:
-        return const Color(0xFF1AB673);
+        return const Color(0xFF20603D);
     }
   }
 

@@ -104,7 +104,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF00FF66).withOpacity(0.12),
+                color: const Color(0xFF20603D).withOpacity(0.08),
               ),
             ),
           ),
@@ -116,7 +116,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               height: 280,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF00FF66).withOpacity(0.06),
+                color: const Color(0xFF20603D).withOpacity(0.04),
               ),
             ),
           ),
@@ -227,10 +227,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF00FF66).withOpacity(0.1),
+                      color: const Color(0xFF20603D).withOpacity(0.10),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: const Color(0xFF00FF66).withOpacity(0.2),
+                        color: const Color(0xFF20603D).withOpacity(0.25),
                       ),
                     ),
                     child: Row(
@@ -239,7 +239,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         Icon(
                           data.badgeIcon,
                           size: 14,
-                          color: const Color(0xFF00CC52),
+                          color: const Color(0xFF20603D),
                         ),
                         const SizedBox(width: 6),
                         Text(
@@ -247,7 +247,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           style: GoogleFonts.inter(
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
-                            color: const Color(0xFF00CC52),
+                            color: const Color(0xFF20603D),
                             letterSpacing: 1.5,
                           ),
                         ),
@@ -272,7 +272,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           style: GoogleFonts.manrope(
                             fontSize: 34,
                             fontWeight: FontWeight.w800,
-                            color: const Color(0xFF00FF66),
+                            color: const Color(0xFF20603D),
                             height: 1.15,
                           ),
                         ),
@@ -324,7 +324,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00FF66).withOpacity(0.15),
+            color: const Color(0xFF20603D).withOpacity(0.12),
             blurRadius: 40,
             offset: const Offset(0, 20),
           ),
@@ -366,12 +366,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(3),
                   color: isActive
-                      ? const Color(0xFF00FF66)
+                      ? const Color(0xFF20603D)
                       : const Color(0xFFD1D5DB),
                   boxShadow: isActive
                       ? [
                           BoxShadow(
-                            color: const Color(0xFF00FF66).withOpacity(0.4),
+                            color: const Color(0xFF20603D).withOpacity(0.3),
                             blurRadius: 8,
                           ),
                         ]
@@ -445,10 +445,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: ElevatedButton(
                 onPressed: _nextPage,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF00FF66),
-                  foregroundColor: Colors.black,
+                  backgroundColor: const Color(0xFF20603D),
+                  foregroundColor: Colors.white,
                   elevation: 0,
-                  shadowColor: const Color(0xFF00FF66).withOpacity(0.3),
+                  shadowColor: const Color(0xFF20603D).withOpacity(0.3),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -461,10 +461,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       style: GoogleFonts.inter(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
+                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Icon(Icons.arrow_forward_rounded, size: 20),
+                    const Icon(Icons.arrow_forward_rounded, size: 20, color: Colors.white),
                   ],
                 ),
               ),

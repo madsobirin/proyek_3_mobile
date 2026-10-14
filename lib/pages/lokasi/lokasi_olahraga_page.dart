@@ -155,9 +155,9 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
     super.dispose();
   }
 
-  Widget _buildBmiRecommendationAlert() {
+    Widget _buildBmiRecommendationAlert() {
     if (widget.bmiCategory == null) return const SizedBox.shrink();
-    Color badgeColor = const Color(0xFF1AB673);
+    Color badgeColor = const Color(0xFF20603D);
     IconData badgeIcon = Icons.health_and_safety_rounded;
     if (widget.bmiCategory!.toLowerCase().contains('kurus')) {
       badgeColor = Colors.blue;
@@ -298,7 +298,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF22C55E).withValues(alpha: 0.12),
+                        color: const Color(0xFF20603D).withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
@@ -306,7 +306,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                         style: GoogleFonts.inter(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
-                          color: const Color(0xFF15803D),
+                          color: const Color(0xFF20603D),
                         ),
                       ),
                     ),
@@ -323,7 +323,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                     child: Column(
                       children: [
                         const CircularProgressIndicator(
-                          color: Color(0xFF22C55E),
+                          color: Color(0xFF20603D),
                         ),
                         const SizedBox(height: 12),
                         Text(
@@ -364,7 +364,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                         icon: const Icon(Icons.refresh_rounded),
                         label: const Text('Coba Lagi'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF22C55E),
+                          backgroundColor: const Color(0xFF20603D),
                           foregroundColor: Colors.white,
                         ),
                       ),
@@ -534,20 +534,20 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                     ),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? const Color(0xFF22C55E)
+                          ? const Color(0xFF20603D)
                           : Colors.white,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: isSelected
-                            ? const Color(0xFF22C55E)
+                            ? const Color(0xFF20603D)
                             : const Color(0xFFE5E7EB),
                       ),
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
                                 color: const Color(
-                                  0xFF22C55E,
-                                ).withValues(alpha: 0.3),
+                                  0xFF20603D,
+                                ).withValues(alpha: 0.25),
                                 blurRadius: 8,
                                 offset: const Offset(0, 3),
                               ),
@@ -560,7 +560,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: isSelected
-                            ? const Color(0xFF111827)
+                            ? Colors.white
                             : const Color(0xFF6B7280),
                       ),
                     ),
@@ -608,7 +608,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                   height: 130,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFF22C55E).withValues(alpha: 0.08),
+                    color: const Color(0xFF247447).withValues(alpha: 0.12),
                   ),
                 ),
               ),
@@ -641,8 +641,8 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                             ),
                             decoration: BoxDecoration(
                               color: const Color(
-                                0xFF22C55E,
-                              ).withValues(alpha: 0.15),
+                                0xFF247447,
+                              ).withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Text(
@@ -650,7 +650,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                               style: GoogleFonts.inter(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF22C55E),
+                                color: const Color(0xFF34D399),
                                 letterSpacing: 1,
                               ),
                             ),
@@ -670,7 +670,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                             children: [
                               const Icon(
                                 Icons.open_in_new_rounded,
-                                color: Color(0xFF22C55E),
+                                color: Color(0xFF34D399),
                                 size: 14,
                               ),
                               const SizedBox(width: 4),
@@ -679,7 +679,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                                 style: GoogleFonts.inter(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF22C55E),
+                                  color: const Color(0xFF34D399),
                                 ),
                               ),
                             ],
@@ -691,15 +691,15 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                       width: 70,
                       height: 70,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF22C55E).withValues(alpha: 0.15),
+                        color: const Color(0xFF247447).withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: const Color(0xFF22C55E).withValues(alpha: 0.3),
+                          color: const Color(0xFF247447).withValues(alpha: 0.4),
                         ),
                       ),
                       child: const Icon(
                         Icons.map_rounded,
-                        color: Color(0xFF22C55E),
+                        color: Color(0xFF34D399),
                         size: 36,
                       ),
                     ),
@@ -715,7 +715,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
 
   Widget _buildLocationCard(Map<String, dynamic> loc) {
     final bool? isOpen = loc['open'] as bool?;
-    final Color catColor = loc['color'] as Color? ?? const Color(0xFF22C55E);
+    final Color catColor = loc['color'] as Color? ?? const Color(0xFF20603D);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -800,7 +800,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                                     ).withValues(alpha: 0.12)
                                   : isOpen
                                   ? const Color(
-                                      0xFF22C55E,
+                                      0xFF20603D,
                                     ).withValues(alpha: 0.12)
                                   : Colors.red.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(6),
@@ -815,7 +815,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                                 color: isOpen == null
                                     ? const Color(0xFF6B7280)
                                     : (isOpen
-                                          ? const Color(0xFF15803D)
+                                          ? const Color(0xFF20603D)
                                           : Colors.redAccent),
                               ),
                             ),
@@ -959,13 +959,13 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: const Color(0xFF22C55E).withValues(alpha: 0.1),
+              color: const Color(0xFF20603D).withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.location_off_rounded,
               size: 48,
-              color: Color(0xFF15803D),
+              color: Color(0xFF20603D),
             ),
           ),
           const SizedBox(height: 16),
