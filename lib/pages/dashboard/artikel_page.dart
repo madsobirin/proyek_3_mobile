@@ -140,6 +140,10 @@ class _ArtikelPageState extends State<ArtikelPage> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
               child: TextField(
+                style: GoogleFonts.poppins(
+                  color: const Color(0xFF111827),
+                  fontSize: 14,
+                ),
                 onChanged: (v) => setState(() => _search = v),
                 decoration: InputDecoration(
                   hintText: 'Cari artikel atau kategori...',
@@ -340,6 +344,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
                       style: GoogleFonts.poppins(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
+                        color: Colors.green.shade900,
                       ),
                     ),
                   ),

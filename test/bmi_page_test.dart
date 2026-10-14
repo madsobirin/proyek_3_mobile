@@ -6,9 +6,16 @@ void main() {
   testWidgets('BmiPage renders form inputs and calculates 3 sections', (
     WidgetTester tester,
   ) async {
+    bool menuOpened = false;
+
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(body: BmiPage(onBack: () {})),
+        home: Scaffold(
+          body: BmiPage(
+            onBack: () {},
+            onOpenMenu: () => menuOpened = true,
+          ),
+        ),
       ),
     );
 
@@ -94,6 +101,14 @@ void main() {
     await tester.tap(sarapanTab);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
+
+    // Test tap tombol Katalog
+    final katalogBtn = find.text('Katalog');
+    expect(katalogBtn, findsOneWidget);
+    await tester.ensureVisible(katalogBtn);
+    await tester.tap(katalogBtn);
+    await tester.pump();
+    expect(menuOpened, isTrue);
   });
 
   testWidgets(
@@ -101,7 +116,10 @@ void main() {
     (WidgetTester tester) async {
       tester.view.physicalSize = const Size(320, 568);
       tester.view.devicePixelRatio = 1.0;
-      addTearDown(() => tester.view.resetPhysicalSize());
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
 
       await tester.pumpWidget(
         MaterialApp(

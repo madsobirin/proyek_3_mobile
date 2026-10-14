@@ -21,7 +21,8 @@ import '../../services/lokasi_olahraga_service.dart';
 
 class BmiPage extends StatefulWidget {
   final VoidCallback onBack;
-  const BmiPage({super.key, required this.onBack});
+  final VoidCallback? onOpenMenu;
+  const BmiPage({super.key, required this.onBack, this.onOpenMenu});
 
   @override
   State<BmiPage> createState() => _BmiPageState();
@@ -1262,12 +1263,16 @@ class _BmiPageState extends State<BmiPage> {
                             color: Colors.orange,
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            'BMR (Istirahat)',
-                            style: GoogleFonts.poppins(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.orange[800],
+                          Expanded(
+                            child: Text(
+                              'BMR (Istirahat)',
+                              style: GoogleFonts.poppins(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.orange[800],
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -1313,12 +1318,16 @@ class _BmiPageState extends State<BmiPage> {
                             color: _green,
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            'TDEE (Kebutuhan)',
-                            style: GoogleFonts.poppins(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.bold,
-                              color: _green,
+                          Expanded(
+                            child: Text(
+                              'TDEE (Kebutuhan)',
+                              style: GoogleFonts.poppins(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.bold,
+                                color: _green,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -1722,13 +1731,21 @@ class _BmiPageState extends State<BmiPage> {
             ),
             GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        MenuPage(onBack: () => Navigator.pop(context)),
-                  ),
-                );
+                if (widget.onOpenMenu != null) {
+                  widget.onOpenMenu!();
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => Scaffold(
+                        backgroundColor: const Color(0xFFF8FAFC),
+                        body: SafeArea(
+                          child: MenuPage(onBack: () => Navigator.pop(context)),
+                        ),
+                      ),
+                    ),
+                  );
+                }
               },
               child: Padding(
                 padding: const EdgeInsets.only(top: 2),

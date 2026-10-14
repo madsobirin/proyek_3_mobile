@@ -216,7 +216,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
     super.dispose();
   }
 
-    Widget _buildBmiRecommendationAlert() {
+  Widget _buildBmiRecommendationAlert() {
     if (widget.bmiCategory == null) return const SizedBox.shrink();
     Color badgeColor = const Color(0xFF20603D);
     IconData badgeIcon = Icons.health_and_safety_rounded;
@@ -544,6 +544,8 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                 color: const Color(0xFF111827),
               ),
               decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
                 hintText: 'Cari nama tempat atau alamat...',
                 hintStyle: GoogleFonts.inter(
                   fontSize: 14,
@@ -646,15 +648,16 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
             gradient: const LinearGradient(
-              colors: [Color(0xFF1A1A2E), Color(0xFF16213E), Color(0xFF0F3460)],
+              colors: [Color(0xFFF0FDF4), Color(0xFFE7F5EC), Color(0xFFDCECE2)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
+            border: Border.all(color: const Color(0xFFD8E8DD)),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF0F3460).withValues(alpha: 0.4),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+                color: const Color(0xFF20603D).withValues(alpha: 0.08),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
               ),
             ],
           ),
@@ -669,7 +672,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                   height: 130,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFF247447).withValues(alpha: 0.12),
+                    color: const Color(0xFF20603D).withValues(alpha: 0.06),
                   ),
                 ),
               ),
@@ -681,7 +684,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                   height: 80,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withValues(alpha: 0.04),
+                    color: Colors.white.withValues(alpha: 0.45),
                   ),
                 ),
               ),
@@ -701,9 +704,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(
-                                0xFF247447,
-                              ).withValues(alpha: 0.2),
+                              color: const Color(0xFFD6F0DF),
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Text(
@@ -711,7 +712,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                               style: GoogleFonts.inter(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF34D399),
+                                color: const Color(0xFF20603D),
                                 letterSpacing: 1,
                               ),
                             ),
@@ -722,7 +723,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                             style: GoogleFonts.manrope(
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
-                              color: Colors.white,
+                              color: const Color(0xFF111827),
                               height: 1.2,
                             ),
                           ),
@@ -731,7 +732,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                             children: [
                               const Icon(
                                 Icons.open_in_new_rounded,
-                                color: Color(0xFF34D399),
+                                color: Color(0xFF20603D),
                                 size: 14,
                               ),
                               const SizedBox(width: 4),
@@ -739,8 +740,8 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                                 'Buka di Google Maps',
                                 style: GoogleFonts.inter(
                                   fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF34D399),
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF20603D),
                                 ),
                               ),
                             ],
@@ -748,19 +749,18 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                         ],
                       ),
                     ),
+                    const SizedBox(width: 12),
                     Container(
                       width: 70,
                       height: 70,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF247447).withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: const Color(0xFF247447).withValues(alpha: 0.4),
-                        ),
+                        color: const Color(0xFFD6F0DF),
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: const Color(0xFFB9DDC7)),
                       ),
                       child: const Icon(
                         Icons.map_rounded,
-                        color: Color(0xFF34D399),
+                        color: Color(0xFF20603D),
                         size: 36,
                       ),
                     ),
@@ -777,6 +777,59 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
   Widget _buildLocationCard(Map<String, dynamic> loc) {
     final bool? isOpen = loc['open'] as bool?;
     final Color catColor = loc['color'] as Color? ?? const Color(0xFF20603D);
+    final String name = (loc['name'] ?? 'Lokasi olahraga').toString();
+    final String category = (loc['category'] ?? 'Olahraga').toString();
+    final String distance = (loc['distance'] ?? 'Belum diketahui').toString();
+    final String address = (loc['address'] ?? 'Alamat belum tersedia')
+        .toString();
+    final String hours = (loc['hours'] ?? 'Jam buka belum tersedia').toString();
+    final String ratingText = loc['rating'] == null
+        ? 'Rating belum tersedia'
+        : '${loc['rating']} (${loc['reviews'] ?? 0} ulasan)';
+
+    final Color statusBackground = isOpen == null
+        ? const Color(0xFFF3F4F6)
+        : isOpen
+        ? const Color(0xFFE8F5EC)
+        : const Color(0xFFFEECEC);
+    final Color statusForeground = isOpen == null
+        ? const Color(0xFF6B7280)
+        : isOpen
+        ? const Color(0xFF20603D)
+        : const Color(0xFFDC2626);
+
+    Widget pill({
+      required String label,
+      required Color background,
+      required Color foreground,
+      IconData? icon,
+    }) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 11, color: foreground),
+              const SizedBox(width: 4),
+            ],
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: foreground,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -784,7 +837,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
         border: Border.all(color: const Color(0xFFE5E7EB)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withValues(alpha: 0.035),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -796,8 +849,8 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Icon
                 Container(
                   width: 48,
                   height: 48,
@@ -812,133 +865,65 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                // Name & Category
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        loc['name'],
+                        name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.manrope(
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF111827),
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 3),
-                      Row(
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: catColor.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              loc['category'],
-                              style: GoogleFonts.inter(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                                color: catColor,
-                              ),
-                            ),
+                          pill(
+                            label: category,
+                            background: catColor.withValues(alpha: 0.10),
+                            foreground: catColor,
                           ),
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isOpen == null
-                                  ? const Color(
-                                      0xFF9CA3AF,
-                                    ).withValues(alpha: 0.12)
-                                  : isOpen
-                                  ? const Color(
-                                      0xFF20603D,
-                                    ).withValues(alpha: 0.12)
-                                  : Colors.red.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              isOpen == null
-                                  ? 'Belum diketahui'
-                                  : (isOpen ? 'Buka' : 'Tutup'),
-                              style: GoogleFonts.inter(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                                color: isOpen == null
-                                    ? const Color(0xFF6B7280)
-                                    : (isOpen
-                                          ? const Color(0xFF20603D)
-                                          : Colors.redAccent),
-                              ),
-                            ),
+                          pill(
+                            label: isOpen == null
+                                ? 'Belum diketahui'
+                                : (isOpen ? 'Buka' : 'Tutup'),
+                            background: statusBackground,
+                            foreground: statusForeground,
+                          ),
+                          pill(
+                            label: distance,
+                            background: const Color(0xFFF3F4F6),
+                            foreground: const Color(0xFF374151),
+                            icon: Icons.near_me_rounded,
                           ),
                         ],
                       ),
                     ],
                   ),
                 ),
-                // Distance badge
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF3F4F6),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.near_me_rounded,
-                            size: 13,
-                            color: Color(0xFF6B7280),
-                          ),
-                          const SizedBox(width: 3),
-                          Text(
-                            loc['distance'] ?? 'Belum diketahui',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFF374151),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             const Divider(height: 1, color: Color(0xFFF3F4F6)),
             const SizedBox(height: 12),
-            // Address
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Icon(
                   Icons.location_on_outlined,
-                  size: 15,
+                  size: 16,
                   color: Color(0xFF9CA3AF),
                 ),
-                const SizedBox(width: 5),
+                const SizedBox(width: 6),
                 Expanded(
                   child: Text(
-                    loc['address'],
+                    address,
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       color: const Color(0xFF6B7280),
@@ -948,44 +933,53 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 6),
-            // Hours & Rating
+            const SizedBox(height: 8),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Icon(
                   Icons.schedule_rounded,
-                  size: 14,
+                  size: 15,
                   color: Color(0xFF9CA3AF),
                 ),
-                const SizedBox(width: 5),
-                Text(
-                  loc['hours'] ?? 'Jam buka belum tersedia',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: const Color(0xFF6B7280),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    hours,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: const Color(0xFF6B7280),
+                    ),
                   ),
                 ),
-                const SizedBox(width: 16),
-                const Icon(Icons.star_rounded, size: 14, color: Colors.amber),
-                const SizedBox(width: 3),
-                Text(
-                  loc['rating'] == null
-                      ? 'Rating belum tersedia'
-                      : '${loc['rating']} (${loc['reviews'] ?? 0} ulasan)',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: const Color(0xFF6B7280),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                const Icon(Icons.star_rounded, size: 15, color: Colors.amber),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    ratingText,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: const Color(0xFF6B7280),
+                    ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 14),
-            // Open in Maps Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () =>
-                    _openMaps((loc['mapQuery'] ?? loc['name']).toString()),
+                    _openMaps((loc['mapQuery'] ?? name).toString()),
                 icon: const Icon(Icons.map_rounded, size: 16),
                 label: Text(
                   'Buka di Google Maps',
@@ -995,10 +989,10 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF111827),
+                  backgroundColor: const Color(0xFF20603D),
                   foregroundColor: Colors.white,
                   elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 13),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),

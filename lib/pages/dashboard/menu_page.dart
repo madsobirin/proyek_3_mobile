@@ -94,6 +94,8 @@ class _MenuPageState extends State<MenuPage> {
   void _showSortSheet() {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.white, // Tambahkan ini
+      // surfaceTintColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -121,6 +123,7 @@ class _MenuPageState extends State<MenuPage> {
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
+                    color: const Color(0xFF111827),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -229,6 +232,10 @@ class _MenuPageState extends State<MenuPage> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
               child: TextField(
+                style: GoogleFonts.poppins(
+                  color: const Color(0xFF111827),
+                  fontSize: 14,
+                ),
                 onChanged: (v) => setState(() => _search = v),
                 decoration: InputDecoration(
                   hintText: 'Cari resep atau bahan makanan...',
@@ -278,6 +285,10 @@ class _MenuPageState extends State<MenuPage> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
               child: TextField(
+                style: GoogleFonts.poppins(
+                  color: const Color(0xFF111827),
+                  fontSize: 14,
+                ),
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: false,
                 ),
