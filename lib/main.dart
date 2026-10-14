@@ -1,6 +1,7 @@
 // import 'dart:convert';
 import 'package:fitlife/pages/dashboard/home.dart';
 import 'package:flutter/material.dart';
+import 'theme/app_theme.dart';
 import 'pages/auth/login.dart';
 import 'pages/auth/register.dart';
 import 'pages/dashboard/profile_page.dart';
@@ -23,6 +24,9 @@ class FitLifeApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'FitLife.id',
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
       initialRoute: '/check',
       routes: {
         '/check': (context) => const AuthCheckScreen(),

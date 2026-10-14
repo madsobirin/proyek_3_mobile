@@ -197,16 +197,16 @@ class _HomeState extends State<Home> {
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFFE8FDF2), Color(0xFFD1FAE5)],
+            colors: [Color(0xFFEBF3ED), Color(0xFFDCECE0)],
           ),
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
-            color: const Color(0xFF00FF66).withValues(alpha: 0.4),
+            color: const Color(0xFF20603D).withValues(alpha: 0.20),
             width: 1.2,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF00FF66).withValues(alpha: 0.12),
+              color: const Color(0xFF20603D).withValues(alpha: 0.06),
               blurRadius: 18,
               offset: const Offset(0, 6),
             ),
@@ -222,7 +222,7 @@ class _HomeState extends State<Home> {
                 height: 90,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF00FF66).withValues(alpha: 0.12),
+                  color: const Color(0xFF20603D).withValues(alpha: 0.08),
                 ),
               ),
             ),
@@ -252,7 +252,7 @@ class _HomeState extends State<Home> {
                           const Icon(
                             Icons.verified_rounded,
                             size: 13,
-                            color: Color(0xFF00CC52),
+                            color: Color(0xFF20603D),
                           ),
                           const SizedBox(width: 4),
                           Text(
@@ -260,7 +260,7 @@ class _HomeState extends State<Home> {
                             style: GoogleFonts.poppins(
                               fontSize: 10,
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFF15803D),
+                              color: const Color(0xFF20603D),
                             ),
                           ),
                         ],
@@ -678,7 +678,7 @@ class _HomeState extends State<Home> {
           if (_isChatOpen)
             Positioned(
               right: 12,
-              bottom: 12,
+              bottom: 76,
               child: SizedBox(
                 width: MediaQuery.sizeOf(context).width >= 420
                     ? 380
@@ -687,7 +687,13 @@ class _HomeState extends State<Home> {
                   320.0,
                   620.0,
                 ),
-                child: const ChatPanel(),
+                child: ChatPanel(
+                  onClose: () {
+                    setState(() {
+                      _isChatOpen = false;
+                    });
+                  },
+                ),
               ),
             ),
         ],
@@ -778,14 +784,14 @@ class _HomeState extends State<Home> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF00FF66), Color(0xFF00CC52)],
+                  colors: [Color(0xFF247447), Color(0xFF20603D)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF00FF66).withValues(alpha: 0.45),
-                    blurRadius: 16,
+                    color: const Color(0xFF20603D).withValues(alpha: 0.35),
+                    blurRadius: 12,
                     spreadRadius: 1,
                     offset: const Offset(0, 4),
                   ),
@@ -794,7 +800,7 @@ class _HomeState extends State<Home> {
               ),
               child: const Icon(
                 Icons.qr_code_scanner_rounded,
-                color: Color(0xFF111827),
+                color: Colors.white,
                 size: 26,
               ),
             ),
@@ -804,7 +810,7 @@ class _HomeState extends State<Home> {
               style: GoogleFonts.poppins(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFF00CC52),
+                color: const Color(0xFF20603D),
               ),
             ),
           ],
@@ -827,7 +833,7 @@ class _HomeState extends State<Home> {
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
         decoration: BoxDecoration(
           color: isActive
-              ? const Color(0xFF00FF66).withValues(alpha: 0.12)
+              ? const Color(0xFF20603D).withValues(alpha: 0.10)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(14),
         ),
@@ -838,7 +844,7 @@ class _HomeState extends State<Home> {
               icon,
               size: 22,
               color: isActive
-                  ? const Color(0xFF00CC52)
+                  ? const Color(0xFF20603D)
                   : const Color(0xFF9CA3AF),
             ),
             const SizedBox(height: 3),
@@ -848,7 +854,7 @@ class _HomeState extends State<Home> {
                 fontSize: 10,
                 fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
                 color: isActive
-                    ? const Color(0xFF00CC52)
+                    ? const Color(0xFF20603D)
                     : const Color(0xFF9CA3AF),
               ),
             ),
