@@ -22,7 +22,19 @@ import '../../services/lokasi_olahraga_service.dart';
 class BmiPage extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback? onOpenMenu;
-  const BmiPage({super.key, required this.onBack, this.onOpenMenu});
+  final void Function({
+    String? category,
+    String? bmiCategory,
+    String? bmiRecommendationReason,
+    List<Map<String, dynamic>>? preloadedLocations,
+  })? onOpenMaps;
+
+  const BmiPage({
+    super.key,
+    required this.onBack,
+    this.onOpenMenu,
+    this.onOpenMaps,
+  });
 
   @override
   State<BmiPage> createState() => _BmiPageState();
@@ -2161,18 +2173,27 @@ class _BmiPageState extends State<BmiPage> {
             const SizedBox(width: 8),
             GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => LocationOlahragaPage(
-                      onBack: () => Navigator.pop(context),
-                      initialCategory: initialMapCat,
-                      bmiCategory: _hasil!.status,
-                      bmiRecommendationReason: reasonText,
-                      preloadedLocations: _sportsLocations,
+                if (widget.onOpenMaps != null) {
+                  widget.onOpenMaps!(
+                    category: initialMapCat,
+                    bmiCategory: _hasil!.status,
+                    bmiRecommendationReason: reasonText,
+                    preloadedLocations: _sportsLocations,
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LocationOlahragaPage(
+                        onBack: () => Navigator.pop(context),
+                        initialCategory: initialMapCat,
+                        bmiCategory: _hasil!.status,
+                        bmiRecommendationReason: reasonText,
+                        preloadedLocations: _sportsLocations,
+                      ),
                     ),
-                  ),
-                );
+                  );
+                }
               },
               child: Padding(
                 padding: const EdgeInsets.only(top: 2),
@@ -2407,18 +2428,27 @@ class _BmiPageState extends State<BmiPage> {
               flex: 3,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => LocationOlahragaPage(
-                        onBack: () => Navigator.pop(context),
-                        initialCategory: initialMapCat,
-                        bmiCategory: _hasil!.status,
-                        bmiRecommendationReason: reasonText,
-                        preloadedLocations: _sportsLocations,
+                  if (widget.onOpenMaps != null) {
+                    widget.onOpenMaps!(
+                      category: initialMapCat,
+                      bmiCategory: _hasil!.status,
+                      bmiRecommendationReason: reasonText,
+                      preloadedLocations: _sportsLocations,
+                    );
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => LocationOlahragaPage(
+                          onBack: () => Navigator.pop(context),
+                          initialCategory: initialMapCat,
+                          bmiCategory: _hasil!.status,
+                          bmiRecommendationReason: reasonText,
+                          preloadedLocations: _sportsLocations,
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  }
                 },
                 icon: const Icon(
                   Icons.explore_rounded,

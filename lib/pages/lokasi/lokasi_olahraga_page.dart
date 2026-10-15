@@ -10,6 +10,7 @@ class LocationOlahragaPage extends StatefulWidget {
   final String? bmiCategory;
   final String? bmiRecommendationReason;
   final List<Map<String, dynamic>>? preloadedLocations;
+  final int? navEpoch;
   const LocationOlahragaPage({
     super.key,
     required this.onBack,
@@ -17,6 +18,7 @@ class LocationOlahragaPage extends StatefulWidget {
     this.bmiCategory,
     this.bmiRecommendationReason,
     this.preloadedLocations,
+    this.navEpoch,
   });
   @override
   State<LocationOlahragaPage> createState() => _LocationOlahragaPageState();
@@ -193,7 +195,8 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
   @override
   void didUpdateWidget(covariant LocationOlahragaPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.initialCategory != oldWidget.initialCategory &&
+    if ((widget.initialCategory != oldWidget.initialCategory ||
+            widget.navEpoch != oldWidget.navEpoch) &&
         widget.initialCategory != null) {
       final requested = widget.initialCategory!.toLowerCase();
       var idx = _categories.indexWhere((c) => c.toLowerCase() == requested);
@@ -207,6 +210,16 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
       if (idx != -1 && idx != _selectedCategory) {
         setState(() => _selectedCategory = idx);
       }
+    }
+
+    if (widget.preloadedLocations != oldWidget.preloadedLocations &&
+        widget.preloadedLocations != null &&
+        widget.preloadedLocations!.isNotEmpty) {
+      setState(() {
+        _locations = widget.preloadedLocations!;
+        _isLoadingLocations = false;
+        _locationError = null;
+      });
     }
   }
 
@@ -457,17 +470,12 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 16, 20, 0),
+      margin: const EdgeInsets.only(bottom: 20),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           GestureDetector(
-            onTap: () {
-              if (Navigator.canPop(context)) {
-                Navigator.pop(context);
-              } else {
-                widget.onBack();
-              }
-            },
+            onTap: widget.onBack,
             child: Container(
               width: 42,
               height: 42,
@@ -513,7 +521,6 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage> {
           ),
         ],
       ),
-      margin: const EdgeInsets.only(bottom: 20),
     );
   }
 
