@@ -23,6 +23,7 @@ class LocationOlahragaPage extends StatefulWidget {
     this.bmiCategory,
     this.bmiRecommendationReason,
     this.preloadedLocations,
+    this.navEpoch,
   });
 
   @override
@@ -273,6 +274,7 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage>
           _isLoadingLocations = false;
           _locationError = null;
         });
+        _recalculateDistances();
       }
       return;
     }

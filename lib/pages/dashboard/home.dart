@@ -21,6 +21,27 @@ class _HomeState extends State<Home> {
   final List<int> _history = [];
   bool _isLoggedIn = false;
   bool _isChatOpen = false;
+  String? _lokasiInitialCategory;
+  String? _lokasiBmiCategory;
+  String? _lokasiBmiRecommendationReason;
+  List<Map<String, dynamic>>? _lokasiPreloadedLocations;
+  int _lokasiNavEpoch = 0;
+
+  void _openLokasiFromBmi({
+    String? category,
+    String? bmiCategory,
+    String? bmiRecommendationReason,
+    List<Map<String, dynamic>>? preloadedLocations,
+  }) {
+    setState(() {
+      _lokasiInitialCategory = category;
+      _lokasiBmiCategory = bmiCategory;
+      _lokasiBmiRecommendationReason = bmiRecommendationReason;
+      _lokasiPreloadedLocations = preloadedLocations;
+      _lokasiNavEpoch++;
+    });
+    _onItemTapped(5);
+  }
   @override
   void initState() {
     super.initState();
@@ -673,8 +694,16 @@ class _HomeState extends State<Home> {
                 BmiPage(
                   onBack: _goBack,
                   onOpenMenu: () => _onItemTapped(1),
+                  onOpenMaps: _openLokasiFromBmi,
                 ), // 4 - Kalkulator BMI
-                LocationOlahragaPage(onBack: _goBack), // 5 - Lokasi Olahraga
+                LocationOlahragaPage(
+                  onBack: _goBack,
+                  initialCategory: _lokasiInitialCategory,
+                  bmiCategory: _lokasiBmiCategory,
+                  bmiRecommendationReason: _lokasiBmiRecommendationReason,
+                  preloadedLocations: _lokasiPreloadedLocations,
+                  navEpoch: _lokasiNavEpoch,
+                ), // 5 - Lokasi Olahraga
               ],
             ),
           ),
