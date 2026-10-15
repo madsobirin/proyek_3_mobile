@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_colors.dart';
 import '../../services/artikel_service.dart';
 import '../../models/artikel_model.dart';
 import 'artikel_detail_page.dart';
@@ -17,7 +18,26 @@ class _ArtikelPageState extends State<ArtikelPage> {
   bool _isLoading = true;
   String _search = '';
   String _activeKategori = '';
-  static const _green = Color(0xFF20603D);
+  static const _green = AppColors.primaryLight;
+  static const ColorScheme _lightScheme = ColorScheme(
+    brightness: Brightness.light,
+    primary: AppColors.primaryLight,
+    onPrimary: AppColors.onPrimaryLight,
+    primaryContainer: AppColors.primaryContainerLight,
+    onPrimaryContainer: AppColors.onPrimaryContainerLight,
+    secondary: AppColors.secondaryLight,
+    onSecondary: AppColors.onSecondaryLight,
+    secondaryContainer: AppColors.secondaryContainerLight,
+    onSecondaryContainer: AppColors.onSecondaryContainerLight,
+    error: AppColors.error,
+    onError: AppColors.onError,
+    surface: AppColors.surfaceLight,
+    onSurface: AppColors.onSurfaceLight,
+    surfaceContainer: AppColors.surfaceContainerLight,
+    onSurfaceVariant: AppColors.onSurfaceVariantLight,
+    outline: AppColors.outlineLight,
+    outlineVariant: AppColors.outlineVariantLight,
+  );
   @override
   void initState() {
     super.initState();
@@ -84,328 +104,374 @@ class _ArtikelPageState extends State<ArtikelPage> {
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 
+  Widget _buildFixedHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      decoration: BoxDecoration(
+        color: _lightScheme.surfaceContainer,
+        border: Border(bottom: BorderSide(color: _lightScheme.outlineVariant)),
+      ),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: widget.onBack,
+            child: Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: _lightScheme.surface,
+                shape: BoxShape.circle,
+                border: Border.all(color: _lightScheme.outline),
+              ),
+              alignment: Alignment.center,
+              child: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                size: 18,
+                color: _lightScheme.onSurface,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Artikel',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: _lightScheme.primary,
+              ),
+            ),
+          ),
+          Icon(Icons.article_outlined, color: _lightScheme.primary, size: 24),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: _green));
-    }
     final filtered = _filteredArtikels;
     final featured = _featuredArtikel;
     final showFeatured =
         featured != null && _search.isEmpty && _activeKategori.isEmpty;
-    return RefreshIndicator(
-      color: _green,
-      onRefresh: () async {
-        setState(() => _isLoading = true);
-        await _loadArtikels();
-      },
-      child: CustomScrollView(
-        slivers: [
-          // ── Header ──
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: widget.onBack,
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.arrow_back_ios_new,
-                        size: 18,
-                        color: Colors.black87,
-                      ),
+    return SafeArea(
+      child: Column(
+        children: [
+          _buildFixedHeader(),
+          Expanded(
+            child: _isLoading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: _lightScheme.primary,
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Artikel & Tips',
-                    style: GoogleFonts.poppins(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green.shade900,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // ── Search Bar ──
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              child: TextField(
-                style: GoogleFonts.poppins(
-                  color: const Color(0xFF111827),
-                  fontSize: 14,
-                ),
-                onChanged: (v) => setState(() => _search = v),
-                decoration: InputDecoration(
-                  hintText: 'Cari artikel atau kategori...',
-                  hintStyle: GoogleFonts.poppins(
-                    color: const Color(0xFF6B7280),
-                    fontSize: 14,
-                  ),
-                  prefixIcon: const Icon(
-                    Icons.search,
-                    color: Color(0xFF6B7280),
-                    size: 22,
-                  ),
-                  suffixIcon: _search.isNotEmpty
-                      ? GestureDetector(
-                          onTap: () => setState(() => _search = ''),
-                          child: const Icon(
-                            Icons.close,
-                            color: Color(0xFF6B7280),
-                            size: 20,
-                          ),
-                        )
-                      : null,
-                  filled: true,
-                  fillColor: Colors.grey[50],
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 14,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: Colors.grey[200]!),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: Colors.grey[200]!),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: const BorderSide(color: _green, width: 1.5),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          // ── Featured Article ──
-          if (showFeatured)
-            SliverToBoxAdapter(
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ArtikelDetailPage(artikel: featured),
-                    ),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                  child: Container(
-                    height: 180,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(18),
-                      image: DecorationImage(
-                        image: NetworkImage(featured.gambar),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    child: Container(
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(18),
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.black.withValues(alpha: 0.65),
-                            Colors.transparent,
-                          ],
-                          begin: Alignment.bottomLeft,
-                          end: Alignment.topRight,
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _green,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              '⭐ UNGGULAN',
+                  )
+                : RefreshIndicator(
+                    color: _lightScheme.primary,
+                    onRefresh: () async {
+                      setState(() => _isLoading = true);
+                      await _loadArtikels();
+                    },
+                    child: CustomScrollView(
+                      slivers: [
+                        // ── Search Bar ──
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                            child: TextField(
                               style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
+                                color: _lightScheme.onSurface,
+                                fontSize: 14,
+                              ),
+                              onChanged: (v) => setState(() => _search = v),
+                              decoration: InputDecoration(
+                                hintText: 'Cari artikel atau kategori...',
+                                hintStyle: GoogleFonts.poppins(
+                                  color: _lightScheme.onSurfaceVariant,
+                                  fontSize: 14,
+                                ),
+                                prefixIcon: const Icon(
+                                  Icons.search,
+                                  color: Color(0xFF6B7280),
+                                  size: 22,
+                                ),
+                                suffixIcon: _search.isNotEmpty
+                                    ? GestureDetector(
+                                        onTap: () =>
+                                            setState(() => _search = ''),
+                                        child: const Icon(
+                                          Icons.close,
+                                          color: Color(0xFF6B7280),
+                                          size: 20,
+                                        ),
+                                      )
+                                    : null,
+                                filled: true,
+                                fillColor: _lightScheme.surface,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 14,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: BorderSide(
+                                    color: _lightScheme.outlineVariant,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: BorderSide(
+                                    color: _lightScheme.outlineVariant,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: BorderSide(
+                                    color: _lightScheme.primary,
+                                    width: 1.5,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            featured.judul,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.access_time,
-                                size: 13,
-                                color: Color(0xFFF3F4F6),
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                _formatDate(featured.createdAt),
-                                style: GoogleFonts.poppins(
-                                  color: const Color(0xFFF3F4F6),
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const SizedBox(width: 14),
-                              const Icon(
-                                Icons.visibility,
-                                size: 13,
-                                color: Color(0xFFF3F4F6),
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${featured.dibaca} views',
-                                style: GoogleFonts.poppins(
-                                  color: const Color(0xFFF3F4F6),
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          // ── Kategori Filter ──
-          if (_kategoris.isNotEmpty)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  child: Row(
-                    children: [
-                      _kategoriChip('Semua', ''),
-                      const SizedBox(width: 8),
-                      ..._kategoris.map(
-                        (k) => Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: _kategoriChip(k, k),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          // ── Section Title ──
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
-              child: Row(
-                children: [
-                  Container(
-                    width: 4,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: _green,
-                      borderRadius: BorderRadius.circular(2),
+                        // ── Featured Article ──
+                        if (showFeatured)
+                          SliverToBoxAdapter(
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        ArtikelDetailPage(artikel: featured),
+                                  ),
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  20,
+                                  16,
+                                  20,
+                                  0,
+                                ),
+                                child: Container(
+                                  height: 180,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(18),
+                                    image: DecorationImage(
+                                      image: NetworkImage(featured.gambar),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(18),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(18),
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Colors.black.withValues(alpha: 0.65),
+                                          Colors.transparent,
+                                        ],
+                                        begin: Alignment.bottomLeft,
+                                        end: Alignment.topRight,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: _lightScheme.primary,
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            '⭐ UNGGULAN',
+                                            style: GoogleFonts.poppins(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          featured.judul,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: GoogleFonts.poppins(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.access_time,
+                                              size: 13,
+                                              color: Color(0xFFF3F4F6),
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              _formatDate(featured.createdAt),
+                                              style: GoogleFonts.poppins(
+                                                color: const Color(0xFFF3F4F6),
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 14),
+                                            const Icon(
+                                              Icons.visibility,
+                                              size: 13,
+                                              color: Color(0xFFF3F4F6),
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              '${featured.dibaca} views',
+                                              style: GoogleFonts.poppins(
+                                                color: const Color(0xFFF3F4F6),
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        // ── Kategori Filter ──
+                        if (_kategoris.isNotEmpty)
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                physics: const BouncingScrollPhysics(),
+                                child: Row(
+                                  children: [
+                                    _kategoriChip('Semua', ''),
+                                    const SizedBox(width: 8),
+                                    ..._kategoris.map(
+                                      (k) => Padding(
+                                        padding: const EdgeInsets.only(
+                                          right: 8,
+                                        ),
+                                        child: _kategoriChip(k, k),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        // ── Section Title ──
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 4,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    color: _lightScheme.primary,
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    _activeKategori.isNotEmpty ||
+                                            _search.isNotEmpty
+                                        ? 'Hasil Pencarian'
+                                        : 'Artikel Terbaru',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: _lightScheme.primary,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  '(${filtered.length})',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    color: _lightScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // ── Article List ──
+                        if (filtered.isEmpty)
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 50),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.article_outlined,
+                                    size: 48,
+                                    color: _lightScheme.outlineVariant,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    'Tidak ada artikel yang cocok.',
+                                    style: GoogleFonts.poppins(
+                                      color: _lightScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _activeKategori = '';
+                                        _search = '';
+                                      });
+                                    },
+                                    child: Text(
+                                      'Reset pencarian',
+                                      style: GoogleFonts.poppins(
+                                        color: _lightScheme.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        else
+                          SliverPadding(
+                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
+                            sliver: SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) =>
+                                    _articleCard(filtered[index]),
+                                childCount: filtered.length,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      _activeKategori.isNotEmpty || _search.isNotEmpty
-                          ? 'Hasil Pencarian'
-                          : 'Artikel Terbaru',
-                      style: GoogleFonts.poppins(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green.shade900,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    '(${filtered.length})',
-                    style: GoogleFonts.poppins(
-                      fontSize: 13,
-                      color: Colors.grey[500],
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
-          // ── Article List ──
-          if (filtered.isEmpty)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 50),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.article_outlined,
-                      size: 48,
-                      color: Colors.grey[300],
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Tidak ada artikel yang cocok.',
-                      style: GoogleFonts.poppins(color: Colors.grey[500]),
-                    ),
-                    const SizedBox(height: 8),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _activeKategori = '';
-                          _search = '';
-                        });
-                      },
-                      child: Text(
-                        'Reset pencarian',
-                        style: GoogleFonts.poppins(
-                          color: _green,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          else
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => _articleCard(filtered[index]),
-                  childCount: filtered.length,
-                ),
-              ),
-            ),
         ],
       ),
     );
@@ -419,17 +485,19 @@ class _ArtikelPageState extends State<ArtikelPage> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? _green : Colors.grey[50],
+          color: isActive ? _green : _lightScheme.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isActive ? _green : Colors.grey[200]!,
+            color: isActive ? _green : _lightScheme.outlineVariant,
             width: isActive ? 1.5 : 1,
           ),
         ),
         child: Text(
           label,
           style: GoogleFonts.poppins(
-            color: isActive ? Colors.white : Colors.grey[600],
+            color: isActive
+                ? _lightScheme.surface
+                : _lightScheme.onSurfaceVariant,
             fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
             fontSize: 13,
           ),
@@ -451,7 +519,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: _lightScheme.surface,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -491,7 +559,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: _green,
+                        color: _lightScheme.primary,
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text('⭐', style: GoogleFonts.poppins(fontSize: 8)),
@@ -524,7 +592,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
                         style: GoogleFonts.poppins(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
-                          color: _green,
+                          color: _lightScheme.primary,
                         ),
                       ),
                     ),
@@ -536,7 +604,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
                       style: GoogleFonts.poppins(
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
-                        color: const Color(0xFF111827),
+                        color: _lightScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -552,7 +620,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
                           artikel.penulis,
                           style: GoogleFonts.poppins(
                             fontSize: 11,
-                            color: const Color(0xFF6B7280),
+                            color: _lightScheme.onSurfaceVariant,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -567,7 +635,7 @@ class _ArtikelPageState extends State<ArtikelPage> {
                           '${artikel.dibaca}',
                           style: GoogleFonts.poppins(
                             fontSize: 11,
-                            color: const Color(0xFF6B7280),
+                            color: _lightScheme.onSurfaceVariant,
                             fontWeight: FontWeight.w500,
                           ),
                         ),

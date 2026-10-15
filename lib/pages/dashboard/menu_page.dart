@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_colors.dart';
 import '../../services/menu_service.dart';
 import '../../models/menu_model.dart';
 import 'menu_detail.dart';
@@ -19,7 +20,26 @@ class _MenuPageState extends State<MenuPage> {
   String _budgetLimit = '';
   String _activeFilter = '';
   String _sortBy = 'terbaru'; // terbaru, kalori_asc, kalori_desc
-  static const _green = Color(0xFF20603D);
+  static const _green = AppColors.primaryLight;
+  static const ColorScheme _lightScheme = ColorScheme(
+    brightness: Brightness.light,
+    primary: AppColors.primaryLight,
+    onPrimary: AppColors.onPrimaryLight,
+    primaryContainer: AppColors.primaryContainerLight,
+    onPrimaryContainer: AppColors.onPrimaryContainerLight,
+    secondary: AppColors.secondaryLight,
+    onSecondary: AppColors.onSecondaryLight,
+    secondaryContainer: AppColors.secondaryContainerLight,
+    onSecondaryContainer: AppColors.onSecondaryContainerLight,
+    error: AppColors.error,
+    onError: AppColors.onError,
+    surface: AppColors.surfaceLight,
+    onSurface: AppColors.onSurfaceLight,
+    surfaceContainer: AppColors.surfaceContainerLight,
+    onSurfaceVariant: AppColors.onSurfaceVariantLight,
+    outline: AppColors.outlineLight,
+    outlineVariant: AppColors.outlineVariantLight,
+  );
   static const _statusFilters = ['Kurus', 'Normal', 'Berlebih', 'Obesitas'];
   static const Map<String, Color> _statusColors = {
     'Kurus': Colors.blue,
@@ -94,8 +114,8 @@ class _MenuPageState extends State<MenuPage> {
   void _showSortSheet() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white, // Tambahkan ini
-      // surfaceTintColor: Colors.white,
+      backgroundColor: _lightScheme.surface, // Tambahkan ini
+      // surfaceTintColor: _lightScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -112,7 +132,7 @@ class _MenuPageState extends State<MenuPage> {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: Colors.grey[300],
+                      color: _lightScheme.outlineVariant,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -123,7 +143,7 @@ class _MenuPageState extends State<MenuPage> {
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF111827),
+                    color: _lightScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -153,288 +173,328 @@ class _MenuPageState extends State<MenuPage> {
         label,
         style: GoogleFonts.poppins(
           fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-          color: isActive ? _green : Colors.black87,
+          color: isActive ? _green : _lightScheme.onSurface,
         ),
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     );
   }
 
+  Widget _buildFixedHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      decoration: BoxDecoration(
+        color: _lightScheme.surfaceContainer,
+        border: Border(bottom: BorderSide(color: _lightScheme.outlineVariant)),
+      ),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: widget.onBack,
+            child: Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: _lightScheme.surface,
+                shape: BoxShape.circle,
+                border: Border.all(color: _lightScheme.outline),
+              ),
+              alignment: Alignment.center,
+              child: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                size: 18,
+                color: _lightScheme.onSurface,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Menu',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: _lightScheme.primary,
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: _showSortSheet,
+            child: Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: _sortBy != 'terbaru'
+                    ? _lightScheme.primaryContainer
+                    : _lightScheme.surface,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: _lightScheme.outline),
+              ),
+              alignment: Alignment.center,
+              child: Icon(Icons.sort, size: 20, color: _lightScheme.primary),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: _green));
-    }
     final filtered = _filteredMenus;
-    return RefreshIndicator(
-      color: _green,
-      onRefresh: () async {
-        setState(() => _isLoading = true);
-        await _loadMenus();
-      },
-      child: CustomScrollView(
-        slivers: [
-          // ── Header ──
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: widget.onBack,
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.arrow_back_ios_new,
-                        size: 18,
-                        color: Colors.black87,
-                      ),
+    return SafeArea(
+      child: Column(
+        children: [
+          _buildFixedHeader(),
+          Expanded(
+            child: _isLoading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: _lightScheme.primary,
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Menu Sehat',
-                      style: GoogleFonts.poppins(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green.shade900,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: _showSortSheet,
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: _sortBy != 'terbaru'
-                            ? _green.withValues(alpha: 0.12)
-                            : Colors.grey.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Icon(
-                        Icons.sort,
-                        size: 20,
-                        color: _sortBy != 'terbaru' ? _green : Colors.black54,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // ── Search Bar ──
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              child: TextField(
-                style: GoogleFonts.poppins(
-                  color: const Color(0xFF111827),
-                  fontSize: 14,
-                ),
-                onChanged: (v) => setState(() => _search = v),
-                decoration: InputDecoration(
-                  hintText: 'Cari resep atau bahan makanan...',
-                  hintStyle: GoogleFonts.poppins(
-                    color: const Color(0xFF6B7280),
-                    fontSize: 14,
-                  ),
-                  prefixIcon: const Icon(
-                    Icons.search,
-                    color: Color(0xFF6B7280),
-                    size: 22,
-                  ),
-                  suffixIcon: _search.isNotEmpty
-                      ? GestureDetector(
-                          onTap: () => setState(() => _search = ''),
-                          child: const Icon(
-                            Icons.close,
-                            color: Color(0xFF6B7280),
-                            size: 20,
+                  )
+                : RefreshIndicator(
+                    color: _lightScheme.primary,
+                    onRefresh: () async {
+                      setState(() => _isLoading = true);
+                      await _loadMenus();
+                    },
+                    child: CustomScrollView(
+                      slivers: [
+                        // ── Search Bar ──
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                            child: TextField(
+                              style: GoogleFonts.poppins(
+                                color: _lightScheme.onSurface,
+                                fontSize: 14,
+                              ),
+                              onChanged: (v) => setState(() => _search = v),
+                              decoration: InputDecoration(
+                                hintText: 'Cari resep atau bahan makanan...',
+                                hintStyle: GoogleFonts.poppins(
+                                  color: _lightScheme.onSurfaceVariant,
+                                  fontSize: 14,
+                                ),
+                                prefixIcon: const Icon(
+                                  Icons.search,
+                                  color: Color(0xFF6B7280),
+                                  size: 22,
+                                ),
+                                suffixIcon: _search.isNotEmpty
+                                    ? GestureDetector(
+                                        onTap: () =>
+                                            setState(() => _search = ''),
+                                        child: const Icon(
+                                          Icons.close,
+                                          color: Color(0xFF6B7280),
+                                          size: 20,
+                                        ),
+                                      )
+                                    : null,
+                                filled: true,
+                                fillColor: _lightScheme.surface,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 14,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                    color: _lightScheme.outlineVariant,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                    color: _lightScheme.outlineVariant,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                    color: _lightScheme.primary,
+                                    width: 1.5,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
-                        )
-                      : null,
-                  filled: true,
-                  fillColor: Colors.grey[50],
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 14,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(color: Colors.grey[200]!),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(color: Colors.grey[200]!),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(color: _green, width: 1.5),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          // ── Low Budget ──
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-              child: TextField(
-                style: GoogleFonts.poppins(
-                  color: const Color(0xFF111827),
-                  fontSize: 14,
-                ),
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: false,
-                ),
-                onChanged: (value) => setState(() => _budgetLimit = value),
-                decoration: InputDecoration(
-                  hintText: 'Budget maks. (Rp/porsi)',
-                  hintStyle: GoogleFonts.poppins(
-                    color: Colors.grey[400],
-                    fontSize: 14,
-                  ),
-                  prefixIcon: const Icon(
-                    Icons.account_balance_wallet_outlined,
-                    color: _green,
-                  ),
-                  suffixIcon: _budgetLimit.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () => setState(() => _budgetLimit = ''),
-                        )
-                      : null,
-                  filled: true,
-                  fillColor: Colors.grey[50],
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 14,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(color: Colors.grey[200]!),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(color: Colors.grey[200]!),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(color: _green, width: 1.5),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          // ── Filter Chips ──
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                child: Row(
-                  children: [
-                    _filterChip('Semua', ''),
-                    const SizedBox(width: 8),
-                    ..._statusFilters.map(
-                      (s) => Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: _filterChip(s, s),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          // ── Count + Sort Label ──
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${filtered.length} menu ditemukan',
-                    style: GoogleFonts.poppins(
-                      fontSize: 13,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  if (_activeFilter.isNotEmpty || _search.isNotEmpty)
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _activeFilter = '';
-                          _search = '';
-                        });
-                      },
-                      child: Text(
-                        'Reset filter',
-                        style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          color: _green,
-                          fontWeight: FontWeight.w600,
                         ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-          // ── Menu List ──
-          if (filtered.isEmpty)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 60),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.restaurant_menu,
-                      size: 48,
-                      color: Colors.grey[300],
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Menu tidak ditemukan',
-                      style: GoogleFonts.poppins(color: Colors.grey[500]),
-                    ),
-                    const SizedBox(height: 8),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _activeFilter = '';
-                          _search = '';
-                        });
-                      },
-                      child: Text(
-                        'Reset filter',
-                        style: GoogleFonts.poppins(
-                          color: _green,
-                          fontWeight: FontWeight.w600,
+                        // ── Low Budget ──
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                            child: TextField(
+                              style: GoogleFonts.poppins(
+                                color: _lightScheme.onSurface,
+                                fontSize: 14,
+                              ),
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                    decimal: false,
+                                  ),
+                              onChanged: (value) =>
+                                  setState(() => _budgetLimit = value),
+                              decoration: InputDecoration(
+                                hintText: 'Budget maks. (Rp/porsi)',
+                                hintStyle: GoogleFonts.poppins(
+                                  color: _lightScheme.onSurfaceVariant,
+                                  fontSize: 14,
+                                ),
+                                prefixIcon: Icon(
+                                  Icons.account_balance_wallet_outlined,
+                                  color: _lightScheme.primary,
+                                ),
+                                suffixIcon: _budgetLimit.isNotEmpty
+                                    ? IconButton(
+                                        icon: const Icon(Icons.close),
+                                        onPressed: () =>
+                                            setState(() => _budgetLimit = ''),
+                                      )
+                                    : null,
+                                filled: true,
+                                fillColor: _lightScheme.surface,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 14,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                    color: _lightScheme.outlineVariant,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                    color: _lightScheme.outlineVariant,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                    color: _lightScheme.primary,
+                                    width: 1.5,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                        // ── Filter Chips ──
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              physics: const BouncingScrollPhysics(),
+                              child: Row(
+                                children: [
+                                  _filterChip('Semua', ''),
+                                  const SizedBox(width: 8),
+                                  ..._statusFilters.map(
+                                    (s) => Padding(
+                                      padding: const EdgeInsets.only(right: 8),
+                                      child: _filterChip(s, s),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        // ── Count + Sort Label ──
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '${filtered.length} menu ditemukan',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    color: _lightScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                                if (_activeFilter.isNotEmpty ||
+                                    _search.isNotEmpty)
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _activeFilter = '';
+                                        _search = '';
+                                      });
+                                    },
+                                    child: Text(
+                                      'Reset filter',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 13,
+                                        color: _lightScheme.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // ── Menu List ──
+                        if (filtered.isEmpty)
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 60),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.restaurant_menu,
+                                    size: 48,
+                                    color: _lightScheme.outlineVariant,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    'Menu tidak ditemukan',
+                                    style: GoogleFonts.poppins(
+                                      color: _lightScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _activeFilter = '';
+                                        _search = '';
+                                      });
+                                    },
+                                    child: Text(
+                                      'Reset filter',
+                                      style: GoogleFonts.poppins(
+                                        color: _lightScheme.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        else
+                          SliverPadding(
+                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
+                            sliver: SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) => _menuCard(filtered[index]),
+                                childCount: filtered.length,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            )
-          else
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => _menuCard(filtered[index]),
-                  childCount: filtered.length,
-                ),
-              ),
-            ),
+                  ),
+          ),
         ],
       ),
     );
@@ -451,10 +511,10 @@ class _MenuPageState extends State<MenuPage> {
         decoration: BoxDecoration(
           color: isActive
               ? statusColor.withValues(alpha: 0.15)
-              : Colors.grey[50],
+              : _lightScheme.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isActive ? statusColor : Colors.grey[200]!,
+            color: isActive ? statusColor : _lightScheme.outlineVariant,
             width: isActive ? 1.5 : 1,
           ),
         ),
@@ -475,7 +535,7 @@ class _MenuPageState extends State<MenuPage> {
             Text(
               label,
               style: GoogleFonts.poppins(
-                color: isActive ? statusColor : Colors.grey[600],
+                color: isActive ? statusColor : _lightScheme.onSurfaceVariant,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
                 fontSize: 13,
               ),
@@ -500,7 +560,7 @@ class _MenuPageState extends State<MenuPage> {
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: _lightScheme.surface,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -571,7 +631,7 @@ class _MenuPageState extends State<MenuPage> {
                       style: GoogleFonts.poppins(
                         fontWeight: FontWeight.w700,
                         fontSize: 15,
-                        color: const Color(0xFF111827),
+                        color: _lightScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -581,7 +641,7 @@ class _MenuPageState extends State<MenuPage> {
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.poppins(
                         fontSize: 12,
-                        color: const Color(0xFF4B5563),
+                        color: _lightScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -597,7 +657,7 @@ class _MenuPageState extends State<MenuPage> {
                         Text(
                           '${menu.kalori} kal',
                           style: GoogleFonts.poppins(
-                            color: const Color(0xFF374151),
+                            color: _lightScheme.onSurface,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
@@ -612,7 +672,7 @@ class _MenuPageState extends State<MenuPage> {
                         Text(
                           '${menu.waktuMemasak} mnt',
                           style: GoogleFonts.poppins(
-                            color: const Color(0xFF374151),
+                            color: _lightScheme.onSurface,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
