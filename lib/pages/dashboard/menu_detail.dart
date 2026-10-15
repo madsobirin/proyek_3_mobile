@@ -221,27 +221,6 @@ class MenuDetailPage extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 30),
-
-                  // Cara Membuat
-                  Text(
-                    'Cara Membuat',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF111827),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Ikuti langkah-langkah sehat untuk menyajikan menu ini. Pastikan bahan yang digunakan segar dan porsi sesuai dengan kebutuhan kalori harian Anda.',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: const Color(0xFF374151),
-                      height: 1.7,
-                    ),
-                  ),
-
-                  const SizedBox(height: 40),
                 ],
               ),
             ),

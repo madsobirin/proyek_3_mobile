@@ -18,6 +18,7 @@ import 'widgets/riwayat_health_card.dart';
 import '../../services/kartu_kesehatan_export_service.dart';
 import '../../services/download_notification_service.dart';
 import '../../services/lokasi_olahraga_service.dart';
+import '../../theme/app_colors.dart';
 
 class BmiPage extends StatefulWidget {
   final VoidCallback onBack;
@@ -27,7 +28,8 @@ class BmiPage extends StatefulWidget {
     String? bmiCategory,
     String? bmiRecommendationReason,
     List<Map<String, dynamic>>? preloadedLocations,
-  })? onOpenMaps;
+  })?
+  onOpenMaps;
 
   const BmiPage({
     super.key,
@@ -38,6 +40,42 @@ class BmiPage extends StatefulWidget {
 
   @override
   State<BmiPage> createState() => _BmiPageState();
+}
+
+class _CalculatorLightColors {
+  const _CalculatorLightColors();
+
+  // Menggunakan ColorScheme Light yang sama dengan tema utama FitLife.
+  static const ColorScheme lightColorScheme = ColorScheme(
+    brightness: Brightness.light,
+    primary: AppColors.primaryLight,
+    onPrimary: AppColors.onPrimaryLight,
+    primaryContainer: AppColors.primaryContainerLight,
+    onPrimaryContainer: AppColors.onPrimaryContainerLight,
+    secondary: AppColors.secondaryLight,
+    onSecondary: AppColors.onSecondaryLight,
+    secondaryContainer: AppColors.secondaryContainerLight,
+    onSecondaryContainer: AppColors.onSecondaryContainerLight,
+    error: AppColors.error,
+    onError: AppColors.onError,
+    surface: AppColors.surfaceLight,
+    onSurface: AppColors.onSurfaceLight,
+    surfaceContainer: AppColors.surfaceContainerLight,
+    onSurfaceVariant: AppColors.onSurfaceVariantLight,
+    outline: AppColors.outlineLight,
+    outlineVariant: AppColors.outlineVariantLight,
+  );
+
+  Color get surfaceContainer => lightColorScheme.surfaceContainer;
+  Color get outlineVariant => lightColorScheme.outlineVariant;
+  Color get surface => lightColorScheme.surface;
+  Color get outline => lightColorScheme.outline;
+  Color get onSurface => lightColorScheme.onSurface;
+  Color get onSurfaceVariant => lightColorScheme.onSurfaceVariant;
+  Color get surfaceContainerHighest => lightColorScheme.surfaceContainerHighest;
+  Color get primaryContainer => lightColorScheme.primaryContainer;
+  Color get onPrimaryContainer => lightColorScheme.onPrimaryContainer;
+  Color get primary => lightColorScheme.primary;
 }
 
 class _BmiPageState extends State<BmiPage> {
@@ -587,250 +625,310 @@ class _BmiPageState extends State<BmiPage> {
     );
   }
 
+  Widget _buildCalculatorHeader(BuildContext context) {
+    const colors = _CalculatorLightColors();
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainer,
+        border: Border(bottom: BorderSide(color: colors.outlineVariant)),
+      ),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () {
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              } else {
+                widget.onBack();
+              }
+            },
+            child: Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: colors.surface,
+                shape: BoxShape.circle,
+                border: Border.all(color: colors.outline),
+              ),
+              alignment: Alignment.center,
+              child: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                size: 18,
+                color: colors.onSurface,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 9,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.primaryContainer,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.calculate_rounded,
+                        size: 13,
+                        color: colors.onPrimaryContainer,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        'Analisis Tubuh, Energi & Nutrisi',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0,
+                          color: colors.onPrimaryContainer,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  'Kalkulator Kesehatan',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Icon(Icons.monitor_heart_rounded, color: colors.primary, size: 25),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    const colors = _CalculatorLightColors();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ── Header ──
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      if (Navigator.canPop(context)) {
-                        Navigator.pop(context);
-                      } else {
-                        widget.onBack();
-                      }
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.arrow_back_ios_new,
-                        size: 18,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Kalkulator Kesehatan',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
-                            fontSize: 19,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green.shade900,
-                          ),
-                        ),
-                        Text(
-                          'Analisis Tubuh, Energi & Nutrisi',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
-                            fontSize: 13,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // ── Top Main Tab Switcher (Kalkulator vs Riwayat) ──
-              Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.grey.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(16),
+        child: Column(
+          children: [
+            // Header tetap berada di atas saat konten di-scroll.
+            _buildCalculatorHeader(context),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 16,
                 ),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _selectedMainTab = 0),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 220),
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          decoration: BoxDecoration(
-                            color: _selectedMainTab == 0
-                                ? Colors.white
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: _selectedMainTab == 0
-                                ? [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(
-                                        alpha: 0.05,
-                                      ),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
+                    // ── Top Main Tab Switcher (Kalkulator vs Riwayat) ──
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: colors.surfaceContainerHighest.withValues(
+                          alpha: 0.55,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => setState(() => _selectedMainTab = 0),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 220),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: _selectedMainTab == 0
+                                      ? colors.surface
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: _selectedMainTab == 0
+                                      ? [
+                                          BoxShadow(
+                                            color: Colors.black.withValues(
+                                              alpha: 0.05,
+                                            ),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ]
+                                      : null,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.calculate_outlined,
+                                      size: 18,
+                                      color: _selectedMainTab == 0
+                                          ? colors.primary
+                                          : colors.onSurfaceVariant,
                                     ),
-                                  ]
-                                : null,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.calculate_outlined,
-                                size: 18,
-                                color: _selectedMainTab == 0
-                                    ? _green
-                                    : Colors.grey[600],
-                              ),
-                              const SizedBox(width: 6),
-                              Flexible(
-                                child: Text(
-                                  'Kalkulator BMI',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 13,
-                                    fontWeight: _selectedMainTab == 0
-                                        ? FontWeight.bold
-                                        : FontWeight.w500,
-                                    color: _selectedMainTab == 0
-                                        ? _green
-                                        : Colors.grey[600],
-                                  ),
+                                    const SizedBox(width: 6),
+                                    Flexible(
+                                      child: Text(
+                                        'Kalkulator BMI',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 13,
+                                          fontWeight: _selectedMainTab == 0
+                                              ? FontWeight.bold
+                                              : FontWeight.w500,
+                                          color: _selectedMainTab == 0
+                                              ? colors.primary
+                                              : colors.onSurfaceVariant,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => setState(() => _selectedMainTab = 1),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 220),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: _selectedMainTab == 1
+                                      ? colors.surface
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: _selectedMainTab == 1
+                                      ? [
+                                          BoxShadow(
+                                            color: Colors.black.withValues(
+                                              alpha: 0.05,
+                                            ),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ]
+                                      : null,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.show_chart_rounded,
+                                      size: 18,
+                                      color: _selectedMainTab == 1
+                                          ? colors.primary
+                                          : colors.onSurfaceVariant,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Flexible(
+                                      child: Text(
+                                        'Riwayat & Tren',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 13,
+                                          fontWeight: _selectedMainTab == 1
+                                              ? FontWeight.bold
+                                              : FontWeight.w500,
+                                          color: _selectedMainTab == 1
+                                              ? colors.primary
+                                              : colors.onSurfaceVariant,
+                                        ),
+                                      ),
+                                    ),
+                                    if (_displayHistoryList.isNotEmpty) ...[
+                                      const SizedBox(width: 6),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 1,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: _selectedMainTab == 1
+                                              ? _green
+                                              : Colors.grey[400],
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          '${_displayHistoryList.length}',
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 18),
+
+                    // ── TAB CONTENT ──
+                    if (_selectedMainTab == 0)
+                      _buildKalkulatorTabContent()
+                    else
+                      _buildRiwayatTabContent(),
+
+                    const SizedBox(height: 32),
+
+                    // ── Hidden widget untuk capture PNG (0x0 space) ──
+                    if (_isLoggedIn)
+                      SizedBox(
+                        width: 0,
+                        height: 0,
+                        child: OverflowBox(
+                          alignment: Alignment.topLeft,
+                          minWidth: 860,
+                          maxWidth: 860,
+                          minHeight: 0,
+                          maxHeight: double.infinity,
+                          child: Transform.translate(
+                            offset: const Offset(-10000, 0),
+                            child: RepaintBoundary(
+                              key: _riwayatPngKey,
+                              child: RiwayatHealthCard(
+                                history: _exportHistoryList,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _selectedMainTab = 1),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 220),
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          decoration: BoxDecoration(
-                            color: _selectedMainTab == 1
-                                ? Colors.white
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: _selectedMainTab == 1
-                                ? [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(
-                                        alpha: 0.05,
-                                      ),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ]
-                                : null,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.show_chart_rounded,
-                                size: 18,
-                                color: _selectedMainTab == 1
-                                    ? _green
-                                    : Colors.grey[600],
-                              ),
-                              const SizedBox(width: 6),
-                              Flexible(
-                                child: Text(
-                                  'Riwayat & Tren',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 13,
-                                    fontWeight: _selectedMainTab == 1
-                                        ? FontWeight.bold
-                                        : FontWeight.w500,
-                                    color: _selectedMainTab == 1
-                                        ? _green
-                                        : Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                              if (_displayHistoryList.isNotEmpty) ...[
-                                const SizedBox(width: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 1,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: _selectedMainTab == 1
-                                        ? _green
-                                        : Colors.grey[400],
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Text(
-                                    '${_displayHistoryList.length}',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
-
-              const SizedBox(height: 18),
-
-              // ── TAB CONTENT ──
-              if (_selectedMainTab == 0)
-                _buildKalkulatorTabContent()
-              else
-                _buildRiwayatTabContent(),
-
-              const SizedBox(height: 32),
-
-              // ── Hidden widget untuk capture PNG (0x0 space) ──
-              if (_isLoggedIn)
-                SizedBox(
-                  width: 0,
-                  height: 0,
-                  child: OverflowBox(
-                    alignment: Alignment.topLeft,
-                    minWidth: 860,
-                    maxWidth: 860,
-                    minHeight: 0,
-                    maxHeight: double.infinity,
-                    child: Transform.translate(
-                      offset: const Offset(-10000, 0),
-                      child: RepaintBoundary(
-                        key: _riwayatPngKey,
-                        child: RiwayatHealthCard(history: _exportHistoryList),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
