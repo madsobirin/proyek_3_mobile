@@ -71,11 +71,13 @@ class LokasiOlahraga {
     }
   }
 
-  Map<String, dynamic> toDisplayMap() {
+  Map<String, dynamic> toDisplayMap({double? userLat, double? userLng}) {
     return {
       'id': id,
       'name': name,
       'category': categoryLabel,
+      'rawCategory': category,
+      'bmiLabel': categoryLabel,
       'address': address,
       'latitude': latitude,
       'longitude': longitude,
