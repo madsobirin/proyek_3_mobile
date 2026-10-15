@@ -15,7 +15,6 @@ class LocationOlahragaPage extends StatefulWidget {
   final String? bmiCategory;
   final String? bmiRecommendationReason;
   final List<Map<String, dynamic>>? preloadedLocations;
-  final int? navEpoch;
 
   const LocationOlahragaPage({
     super.key,
@@ -128,20 +127,8 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage>
   void didUpdateWidget(covariant LocationOlahragaPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.initialCategory != oldWidget.initialCategory ||
-        widget.bmiCategory != oldWidget.bmiCategory ||
-        widget.navEpoch != oldWidget.navEpoch) {
+        widget.bmiCategory != oldWidget.bmiCategory) {
       _applyInitialCategory();
-    }
-
-    if (widget.preloadedLocations != oldWidget.preloadedLocations &&
-        widget.preloadedLocations != null &&
-        widget.preloadedLocations!.isNotEmpty) {
-      setState(() {
-        _locations = widget.preloadedLocations!;
-        _isLoadingLocations = false;
-        _locationError = null;
-      });
-      _recalculateDistances();
     }
   }
 
@@ -558,7 +545,13 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage>
         children: [
           // Tombol Kembali
           GestureDetector(
-            onTap: widget.onBack,
+            onTap: () {
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              } else {
+                widget.onBack();
+              }
+            },
             child: Container(
               width: 40,
               height: 40,
@@ -1551,8 +1544,8 @@ class _LocationOlahragaPageState extends State<LocationOlahragaPage>
           boxShadow: [
             BoxShadow(
               color: isSelected
-                ? const Color(0xFF20603D).withValues(alpha: 0.15)
-                : Colors.black.withValues(alpha: 0.04),
+                  ? const Color(0xFF20603D).withValues(alpha: 0.15)
+                  : Colors.black.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
