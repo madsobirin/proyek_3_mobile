@@ -15,6 +15,7 @@ class LocationOlahragaPage extends StatefulWidget {
   final String? bmiCategory;
   final String? bmiRecommendationReason;
   final List<Map<String, dynamic>>? preloadedLocations;
+  final int? navEpoch;
 
   const LocationOlahragaPage({
     super.key,
