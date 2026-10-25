@@ -779,7 +779,10 @@ class _HomeState extends State<Home> {
                 icon: Icons.monitor_weight_rounded,
                 label: "Kalkulator",
               ),
-              _buildScanNavItem(),
+              Transform.translate(
+                offset: const Offset(-10, 0),
+                child: _buildScanNavItem(),
+              ),
               _buildNavItem(
                 index: 5,
                 icon: Icons.place_rounded,
@@ -862,7 +865,7 @@ class _HomeState extends State<Home> {
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 7),
         decoration: BoxDecoration(
           color: isActive
               ? const Color(0xFF20603D).withValues(alpha: 0.10)
@@ -874,7 +877,7 @@ class _HomeState extends State<Home> {
           children: [
             Icon(
               icon,
-              size: 22,
+              size: 24,
               color: isActive
                   ? const Color(0xFF20603D)
                   : const Color(0xFF9CA3AF),
@@ -883,7 +886,7 @@ class _HomeState extends State<Home> {
             Text(
               label,
               style: GoogleFonts.poppins(
-                fontSize: 10,
+                fontSize: 11,
                 fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
                 color: isActive
                     ? const Color(0xFF20603D)
