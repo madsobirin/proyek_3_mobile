@@ -69,39 +69,96 @@ class _ScanHistoryScreenState extends State<ScanHistoryScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'Hapus Riwayat?',
-          style: GoogleFonts.manrope(fontWeight: FontWeight.w800),
-        ),
-        content: Text(
-          'Apakah Anda yakin ingin menghapus "${item.namaMakanan}" dari riwayat scan makanan?',
-          style: GoogleFonts.inter(
-            fontSize: 14,
-            color: const Color(0xFF4B5563),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(
-              'Batal',
-              style: GoogleFonts.inter(color: const Color(0xFF6B7280)),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+        contentPadding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Color(0xFFFEE2E2),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.delete_outline_rounded,
+                  color: Color(0xFFDC2626),
+                  size: 28,
+                ),
               ),
             ),
-            child: const Text('Hapus'),
-          ),
-        ],
+            const SizedBox(height: 16),
+            Text(
+              'Hapus Riwayat?',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.manrope(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF1B231D),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Apakah Anda yakin ingin menghapus "${item.namaMakanan}" dari riwayat scan makanan?',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                color: const Color(0xFF607064),
+                height: 1.45,
+              ),
+            ),
+            const SizedBox(height: 22),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(ctx, false),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: const BorderSide(color: Color(0xFFE4E9E5)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      'Batal',
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF607064),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(ctx, true),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: const Color(0xFFDC2626),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      'Hapus',
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
 
