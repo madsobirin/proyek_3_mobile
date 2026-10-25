@@ -747,148 +747,156 @@ class _BmiPageState extends State<BmiPage> {
                         ),
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () => setState(() => _selectedMainTab = 0),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 220),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 10,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: _selectedMainTab == 0
-                                      ? colors.surface
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: _selectedMainTab == 0
-                                      ? [
-                                          BoxShadow(
-                                            color: Colors.black.withValues(
-                                              alpha: 0.05,
-                                            ),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                        ]
-                                      : null,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.calculate_outlined,
-                                      size: 18,
-                                      color: _selectedMainTab == 0
-                                          ? colors.primary
-                                          : colors.onSurfaceVariant,
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Flexible(
-                                      child: Text(
-                                        'Kalkulator BMI',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 13,
-                                          fontWeight: _selectedMainTab == 0
-                                              ? FontWeight.bold
-                                              : FontWeight.w500,
-                                          color: _selectedMainTab == 0
-                                              ? colors.primary
-                                              : colors.onSurfaceVariant,
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final tabWidth = constraints.maxWidth / 2;
+                          return Stack(
+                            children: [
+                              // Single sliding active pill indicator
+                              AnimatedPositioned(
+                                duration: const Duration(milliseconds: 250),
+                                curve: Curves.easeInOutCubic,
+                                left: _selectedMainTab * tabWidth,
+                                top: 0,
+                                bottom: 0,
+                                width: tabWidth,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: colors.surface,
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.06,
                                         ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () => setState(() => _selectedMainTab = 1),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 220),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 10,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: _selectedMainTab == 1
-                                      ? colors.surface
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: _selectedMainTab == 1
-                                      ? [
-                                          BoxShadow(
-                                            color: Colors.black.withValues(
-                                              alpha: 0.05,
-                                            ),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                        ]
-                                      : null,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.show_chart_rounded,
-                                      size: 18,
-                                      color: _selectedMainTab == 1
-                                          ? colors.primary
-                                          : colors.onSurfaceVariant,
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Flexible(
-                                      child: Text(
-                                        'Riwayat & Tren',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 13,
-                                          fontWeight: _selectedMainTab == 1
-                                              ? FontWeight.bold
-                                              : FontWeight.w500,
-                                          color: _selectedMainTab == 1
-                                              ? colors.primary
-                                              : colors.onSurfaceVariant,
-                                        ),
-                                      ),
-                                    ),
-                                    if (_displayHistoryList.isNotEmpty) ...[
-                                      const SizedBox(width: 6),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 6,
-                                          vertical: 1,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: _selectedMainTab == 1
-                                              ? _green
-                                              : Colors.grey[400],
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          '${_displayHistoryList.length}',
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ),
-                                        ),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
                                       ),
                                     ],
-                                  ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                        ],
+                              // Tab clickable items
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () =>
+                                          setState(() => _selectedMainTab = 0),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 10,
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.calculate_outlined,
+                                              size: 18,
+                                              color: _selectedMainTab == 0
+                                                  ? colors.primary
+                                                  : colors.onSurfaceVariant,
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Flexible(
+                                              child: Text(
+                                                'Kalkulator BMI',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: 13,
+                                                  fontWeight:
+                                                      _selectedMainTab == 0
+                                                          ? FontWeight.bold
+                                                          : FontWeight.w500,
+                                                  color: _selectedMainTab == 0
+                                                      ? colors.primary
+                                                      : colors.onSurfaceVariant,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () =>
+                                          setState(() => _selectedMainTab = 1),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 10,
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.show_chart_rounded,
+                                              size: 18,
+                                              color: _selectedMainTab == 1
+                                                  ? colors.primary
+                                                  : colors.onSurfaceVariant,
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Flexible(
+                                              child: Text(
+                                                'Riwayat & Tren',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: 13,
+                                                  fontWeight:
+                                                      _selectedMainTab == 1
+                                                          ? FontWeight.bold
+                                                          : FontWeight.w500,
+                                                  color: _selectedMainTab == 1
+                                                      ? colors.primary
+                                                      : colors.onSurfaceVariant,
+                                                ),
+                                              ),
+                                            ),
+                                            if (_displayHistoryList.isNotEmpty) ...[
+                                              const SizedBox(width: 6),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 6,
+                                                      vertical: 1,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color: _selectedMainTab == 1
+                                                      ? _green
+                                                      : Colors.grey[400],
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                child: Text(
+                                                  '${_displayHistoryList.length}',
+                                                  style: GoogleFonts.poppins(
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
 
@@ -2058,8 +2066,11 @@ class _BmiPageState extends State<BmiPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Export Buttons (PNG & PDF) - hanya tampil jika pengguna sudah log in
-        if (_isLoggedIn) ...[_buildExportButtons(), const SizedBox(height: 16)],
+        // Export Buttons (PNG & PDF) - hanya tampil jika pengguna sudah log in dan sudah ada riwayat perhitungan
+        if (_isLoggedIn && list.isNotEmpty) ...[
+          _buildExportButtons(),
+          const SizedBox(height: 16),
+        ],
 
         if (!_isLoggedIn) ...[
           _buildGuestHistoryCard(),
@@ -3095,7 +3106,7 @@ class _BmiPageState extends State<BmiPage> {
   // ── RIWAYAT & EKSPOR LAPORAN ──
   // ════════════════════════════════════════════════════════════════════
   Widget _buildExportButtons() {
-    if (!_isLoggedIn) return const SizedBox.shrink();
+    if (!_isLoggedIn || _displayHistoryList.isEmpty) return const SizedBox.shrink();
 
     final bool isExporting = _isExportingPng || _isExportingPdf;
 
@@ -3504,42 +3515,98 @@ class _BmiPageState extends State<BmiPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'Hapus Riwayat?',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        content: Text(
-          'Apakah Anda yakin ingin menghapus data perhitungan BMI ${item.bmiDisplay} (${item.status}) ini?',
-          style: GoogleFonts.poppins(
-            fontSize: 13,
-            color: const Color(0xFF4B5563),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(
-              'Batal',
-              style: GoogleFonts.poppins(color: const Color(0xFF6B7280)),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+        contentPadding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Color(0xFFFEE2E2),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.delete_outline_rounded,
+                  color: Color(0xFFDC2626),
+                  size: 28,
+                ),
               ),
             ),
-            child: Text(
-              'Hapus',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            const SizedBox(height: 16),
+            Text(
+              'Hapus Riwayat?',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF1B231D),
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              'Apakah Anda yakin ingin menghapus data perhitungan BMI ${item.bmiDisplay} (${item.status}) ini?',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 13,
+                color: const Color(0xFF607064),
+                height: 1.45,
+              ),
+            ),
+            const SizedBox(height: 22),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(ctx, false),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: const BorderSide(color: Color(0xFFE4E9E5)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      'Batal',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF607064),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(ctx, true),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: const Color(0xFFDC2626),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      'Hapus',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
 

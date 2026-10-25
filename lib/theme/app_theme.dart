@@ -244,6 +244,22 @@ class AppTheme {
           fontWeight: FontWeight.w500,
         ),
       ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: AppColors.surfaceContainerLight,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        titleTextStyle: GoogleFonts.plusJakartaSans(
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+          color: AppColors.onSurfaceLight,
+        ),
+        contentTextStyle: GoogleFonts.plusJakartaSans(
+          fontSize: 14,
+          color: AppColors.onSurfaceVariantLight,
+        ),
+      ),
     );
   }
 
