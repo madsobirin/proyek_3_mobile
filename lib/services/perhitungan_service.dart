@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../config/config.dart';
 import '../models/analisis_kesehatan_model.dart';
 import '../models/perhitungan_model.dart';
@@ -13,6 +14,50 @@ class PerhitunganService {
 
   final ApiService _apiService = ApiService();
   final AuthServices _authServices = AuthServices();
+  static const String _latestCacheKey = 'latest_perhitungan_cache';
+
+  /// Menyimpan perhitungan terbaru ke local storage
+  Future<void> saveLocalLatest(PerhitunganModel model) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_latestCacheKey, jsonEncode(model.toJson()));
+    } catch (e) {
+      debugPrint('Gagal menyimpan cache perhitungan lokal: $e');
+    }
+  }
+
+  /// Mengambil data perhitungan terbaru (dari cache lokal atau server)
+  Future<PerhitunganModel?> getLatestPerhitungan() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cachedJson = prefs.getString(_latestCacheKey);
+      if (cachedJson != null && cachedJson.isNotEmpty) {
+        final decoded = jsonDecode(cachedJson);
+        if (decoded is Map<String, dynamic>) {
+          return PerhitunganModel.fromJson(decoded);
+        }
+      }
+    } catch (e) {
+      debugPrint('Error membaca cache perhitungan lokal: $e');
+    }
+
+    // Fallback jika login: ambil dari riwayat server
+    final token = await _authServices.getToken();
+    if (token != null && token.isNotEmpty) {
+      try {
+        final history = await getHistory();
+        if (history.isNotEmpty) {
+          final latest = history.first;
+          await saveLocalLatest(latest);
+          return latest;
+        }
+      } catch (e) {
+        debugPrint('Error sinkronisasi riwayat terbaru dari server: $e');
+      }
+    }
+
+    return null;
+  }
 
   /// Menyimpan hasil kalkulasi kesehatan ke backend
   /// Hanya dijalankan jika pengguna sudah login.
