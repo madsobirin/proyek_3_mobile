@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../dashboard/bmi_page.dart';
 import '../dashboard/artikel_page.dart';
@@ -164,28 +165,18 @@ class _HomeState extends State<Home> {
             child: Row(
               children: [
                 Container(
-                  width: 38,
-                  height: 38,
+                  width: isSmall ? 34 : 38,
+                  height: isSmall ? 34 : 38,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF247447), Color(0xFF20603D)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF20603D).withValues(alpha: 0.25),
-                        blurRadius: 8,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.favorite_rounded,
-                      color: Colors.white,
-                      size: 19,
+                  child: Center(
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      width: isSmall ? 34 : 38,
+                      height: isSmall ? 34 : 38,
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ),
@@ -696,78 +687,87 @@ class _HomeState extends State<Home> {
   // ================= BUILD =================
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      body: Stack(
-        children: [
-          SafeArea(
-            child: IndexedStack(
-              index: _selectedIndex,
-              children: [
-                _buildHomeContent(), // 0 - Home
-                MenuPage(onBack: _goBack), // 1 - Menu (diakses dari Home)
-                ArtikelPage(onBack: _goBack), // 2 - Artikel (diakses dari Home)
-                _isLoggedIn
-                    ? const ProfilePage()
-                    : const GuestProfilePage(), // 3 - Profil
-                BmiPage(
-                  onBack: _goBack,
-                  onOpenMenu: () => _onItemTapped(1),
-                  onOpenMaps: _openLokasiFromBmi,
-                ), // 4 - Kalkulator BMI
-                LocationOlahragaPage(
-                  onBack: _goBack,
-                  initialCategory: _lokasiInitialCategory,
-                  bmiCategory: _lokasiBmiCategory,
-                  bmiRecommendationReason: _lokasiBmiRecommendationReason,
-                  preloadedLocations: _lokasiPreloadedLocations,
-                  navEpoch: _lokasiNavEpoch,
-                ), // 5 - Lokasi Olahraga
-              ],
-            ),
-          ),
-          if (_isChatOpen)
-            Positioned(
-              right: 12,
-              bottom: 76,
-              child: SizedBox(
-                width: MediaQuery.sizeOf(context).width >= 420
-                    ? 380
-                    : MediaQuery.sizeOf(context).width - 24,
-                height: (MediaQuery.sizeOf(context).height * 0.65).clamp(
-                  320.0,
-                  620.0,
-                ),
-                child: ChatPanel(
-                  onClose: () {
-                    setState(() {
-                      _isChatOpen = false;
-                    });
-                  },
-                ),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+        systemNavigationBarColor: Color(0xFFF8FAFC),
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF8FAFC),
+        body: Stack(
+          children: [
+            SafeArea(
+              child: IndexedStack(
+                index: _selectedIndex,
+                children: [
+                  _buildHomeContent(), // 0 - Home
+                  MenuPage(onBack: _goBack), // 1 - Menu (diakses dari Home)
+                  ArtikelPage(onBack: _goBack), // 2 - Artikel (diakses dari Home)
+                  _isLoggedIn
+                      ? const ProfilePage()
+                      : const GuestProfilePage(), // 3 - Profil
+                  BmiPage(
+                    onBack: _goBack,
+                    onOpenMenu: () => _onItemTapped(1),
+                    onOpenMaps: _openLokasiFromBmi,
+                  ), // 4 - Kalkulator BMI
+                  LocationOlahragaPage(
+                    onBack: _goBack,
+                    initialCategory: _lokasiInitialCategory,
+                    bmiCategory: _lokasiBmiCategory,
+                    bmiRecommendationReason: _lokasiBmiRecommendationReason,
+                    preloadedLocations: _lokasiPreloadedLocations,
+                    navEpoch: _lokasiNavEpoch,
+                  ), // 5 - Lokasi Olahraga
+                ],
               ),
             ),
-        ],
-      ),
-      bottomNavigationBar: _buildBottomNav(),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF247447),
-        onPressed: () {
-          setState(() {
-            _isChatOpen = !_isChatOpen;
-          });
-        },
-        child: _isChatOpen
-            ? const Icon(Icons.close_rounded, color: Colors.white)
-            : Image.asset(
-                'assets/maskot-ai/first.png',
-                width: 32,
-                height: 32,
-                errorBuilder: (_, __, ___) =>
-                    const Icon(Icons.chat_rounded, color: Colors.white),
+            if (_isChatOpen)
+              Positioned(
+                right: 12,
+                bottom: 76,
+                child: SizedBox(
+                  width: MediaQuery.sizeOf(context).width >= 420
+                      ? 380
+                      : MediaQuery.sizeOf(context).width - 24,
+                  height: (MediaQuery.sizeOf(context).height * 0.65).clamp(
+                    320.0,
+                    620.0,
+                  ),
+                  child: ChatPanel(
+                    onClose: () {
+                      setState(() {
+                        _isChatOpen = false;
+                      });
+                    },
+                  ),
+                ),
               ),
+          ],
+        ),
+        bottomNavigationBar: _buildBottomNav(),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: const Color(0xFF247447),
+          onPressed: () {
+            setState(() {
+              _isChatOpen = !_isChatOpen;
+            });
+          },
+          child: _isChatOpen
+              ? const Icon(Icons.close_rounded, color: Colors.white)
+              : Image.asset(
+                  'assets/maskot-ai/first.png',
+                  width: 32,
+                  height: 32,
+                  errorBuilder: (_, __, ___) =>
+                      const Icon(Icons.chat_rounded, color: Colors.white),
+                ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
