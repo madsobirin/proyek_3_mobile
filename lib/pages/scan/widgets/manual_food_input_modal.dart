@@ -148,7 +148,10 @@ class _ManualFoodInputModalState extends State<ManualFoodInputModal> {
                 ),
                 title: Text(
                   'Ambil Foto Kamera',
-                  style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
                 ),
                 onTap: () {
                   Navigator.pop(sheetCtx);
@@ -170,7 +173,10 @@ class _ManualFoodInputModalState extends State<ManualFoodInputModal> {
                 ),
                 title: Text(
                   'Pilih dari Galeri',
-                  style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
                 ),
                 onTap: () {
                   Navigator.pop(sheetCtx);
@@ -598,7 +604,10 @@ class _ManualFoodInputModalState extends State<ManualFoodInputModal> {
                         ),
                         TextFormField(
                           controller: _imageUrlController,
-                          style: GoogleFonts.inter(fontSize: 13),
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            color: const Color(0xFF111827),
+                          ),
                           decoration: _buildInputDecoration(
                             hint: 'Atau tempel link URL foto produk (opsional)',
                             icon: Icons.link_rounded,
@@ -675,7 +684,10 @@ class _ManualFoodInputModalState extends State<ManualFoodInputModal> {
                               required isFocused,
                               maxLength,
                             }) => null,
-                        style: GoogleFonts.inter(fontSize: 14),
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          color: const Color(0xFF111827),
+                        ),
                         decoration: _buildInputDecoration(
                           hint: 'Contoh: Ultra Milk',
                           icon: Icons.branding_watermark_rounded,
@@ -712,6 +724,11 @@ class _ManualFoodInputModalState extends State<ManualFoodInputModal> {
                         keyboardType: const TextInputType.numberWithOptions(
                           decimal: true,
                         ),
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF111827),
+                        ),
                         decoration: _buildInputDecoration(
                           hint: 'Kalori (kkal), misal: 150',
                           icon: Icons.local_fire_department_rounded,
@@ -731,6 +748,11 @@ class _ManualFoodInputModalState extends State<ManualFoodInputModal> {
                                   const TextInputType.numberWithOptions(
                                     decimal: true,
                                   ),
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF111827),
+                              ),
                               decoration: _buildInputDecoration(
                                 hint: 'Protein (g)',
                                 icon: Icons.fitness_center_rounded,
@@ -747,6 +769,11 @@ class _ManualFoodInputModalState extends State<ManualFoodInputModal> {
                                   const TextInputType.numberWithOptions(
                                     decimal: true,
                                   ),
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF111827),
+                              ),
                               decoration: _buildInputDecoration(
                                 hint: 'Lemak (g)',
                                 icon: Icons.water_drop_rounded,
@@ -769,6 +796,11 @@ class _ManualFoodInputModalState extends State<ManualFoodInputModal> {
                                   const TextInputType.numberWithOptions(
                                     decimal: true,
                                   ),
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF111827),
+                              ),
                               decoration: _buildInputDecoration(
                                 hint: 'Karbohidrat (g)',
                                 icon: Icons.grain_rounded,
@@ -785,6 +817,11 @@ class _ManualFoodInputModalState extends State<ManualFoodInputModal> {
                                   const TextInputType.numberWithOptions(
                                     decimal: true,
                                   ),
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF111827),
+                              ),
                               decoration: _buildInputDecoration(
                                 hint: 'Gula (g)',
                                 icon: Icons.cake_rounded,
