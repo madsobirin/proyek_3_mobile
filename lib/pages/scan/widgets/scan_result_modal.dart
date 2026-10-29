@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fitlife/models/food_compatibility_model.dart';
 import 'package:fitlife/models/scan_makanan_model.dart';
+import 'package:fitlife/services/food_compatibility_service.dart';
+import 'package:fitlife/services/perhitungan_service.dart';
 import 'package:fitlife/services/scan_service.dart';
 
 class ScanResultModal extends StatefulWidget {
@@ -34,7 +37,41 @@ class ScanResultModal extends StatefulWidget {
 
 class _ScanResultModalState extends State<ScanResultModal> {
   final ScanService _scanService = ScanService();
+  final PerhitunganService _perhitunganService = PerhitunganService();
   bool _isSaving = false;
+  FoodCompatibilityResult? _compatibility;
+  bool _isLoadingCompatibility = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCompatibility();
+  }
+
+  Future<void> _loadCompatibility() async {
+    try {
+      final userHealth = await _perhitunganService.getLatestPerhitungan();
+      if (!mounted) return;
+      final verdict = FoodCompatibilityService.evaluasi(
+        food: widget.result,
+        userHealth: userHealth,
+      );
+      setState(() {
+        _compatibility = verdict;
+        _isLoadingCompatibility = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      final fallbackVerdict = FoodCompatibilityService.evaluasi(
+        food: widget.result,
+        userHealth: null,
+      );
+      setState(() {
+        _compatibility = fallbackVerdict;
+        _isLoadingCompatibility = false;
+      });
+    }
+  }
 
   Future<bool> _checkIsLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
@@ -381,6 +418,9 @@ class _ScanResultModalState extends State<ScanResultModal> {
                     const Divider(height: 1, color: Color(0xFFF3F4F6)),
                     const SizedBox(height: 20),
 
+                    // Evaluasi Kecocokan Makanan dengan Profil Kesehatan
+                    _buildCompatibilitySection(),
+
                     // Header Nutrisi
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -680,6 +720,335 @@ class _ScanResultModalState extends State<ScanResultModal> {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompatibilitySection() {
+    if (_isLoadingCompatibility) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 20),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF9FAFB),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFFE5E7EB)),
+        ),
+        child: Row(
+          children: [
+            const SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Color(0xFF20603D),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Menganalisis kecocokan dengan profil tubuhmu...',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  color: const Color(0xFF6B7280),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final compat = _compatibility;
+    if (compat == null) return const SizedBox.shrink();
+
+    final Color badgeBg;
+    final Color badgeBorder;
+    final Color badgeColor;
+    final IconData badgeIcon;
+
+    switch (compat.level) {
+      case CompatibilityLevel.cocok:
+        badgeBg = const Color(0xFFECFDF5);
+        badgeBorder = const Color(0xFF10B981).withValues(alpha: 0.35);
+        badgeColor = const Color(0xFF047857);
+        badgeIcon = Icons.check_circle_rounded;
+        break;
+      case CompatibilityLevel.perluPerhatian:
+        badgeBg = const Color(0xFFFFFBEB);
+        badgeBorder = const Color(0xFFF59E0B).withValues(alpha: 0.35);
+        badgeColor = const Color(0xFFB45309);
+        badgeIcon = Icons.info_rounded;
+        break;
+      case CompatibilityLevel.kurangCocok:
+        badgeBg = const Color(0xFFFEF2F2);
+        badgeBorder = const Color(0xFFEF4444).withValues(alpha: 0.35);
+        badgeColor = const Color(0xFFB91C1C);
+        badgeIcon = Icons.warning_amber_rounded;
+        break;
+    }
+
+    final double kaloriPercent = compat.kaloriPercent ?? 0.0;
+    final double progressVal = (kaloriPercent / 100.0).clamp(0.0, 1.0);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: badgeBg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: badgeBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: badgeBorder),
+                ),
+                child: Icon(badgeIcon, color: badgeColor, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          compat.title,
+                          style: GoogleFonts.manrope(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: badgeColor,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.8),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: badgeBorder),
+                          ),
+                          child: Text(
+                            compat.userStatus != null
+                                ? 'BMI: ${compat.userStatus}'
+                                : 'Standar AKG',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: badgeColor,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      compat.summary,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFF374151),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Kontribusi Kuota Kalori Harian',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF4B5563),
+                      ),
+                    ),
+                    Text(
+                      compat.kaloriPercent != null
+                          ? '${compat.kaloriPercent!.toStringAsFixed(0)}% dari ${compat.userTargetKalori.round()} kkal'
+                          : 'Target: ${compat.userTargetKalori.round()} kkal',
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: badgeColor,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: LinearProgressIndicator(
+                    value: progressVal,
+                    minHeight: 8,
+                    backgroundColor: const Color(0xFFF3F4F6),
+                    valueColor: AlwaysStoppedAnimation<Color>(badgeColor),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (compat.warnings.isNotEmpty || compat.highlights.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            ...compat.warnings.map(
+              (w) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.priority_high_rounded,
+                      size: 14,
+                      color: Color(0xFFDC2626),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        w,
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: const Color(0xFF991B1B),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            ...compat.highlights.map(
+              (h) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.check_rounded,
+                      size: 14,
+                      color: Color(0xFF15803D),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        h,
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: const Color(0xFF166534),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.9),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: badgeBorder),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(
+                  Icons.lightbulb_outline_rounded,
+                  size: 16,
+                  color: Color(0xFF6B7280),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    compat.detailAdvice,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: const Color(0xFF4B5563),
+                      height: 1.45,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (compat.isGuestFallback) ...[
+            const SizedBox(height: 12),
+            InkWell(
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/bmi');
+              },
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF20603D).withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: const Color(0xFF20603D).withValues(alpha: 0.20),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.calculate_outlined,
+                      size: 16,
+                      color: Color(0xFF20603D),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Hitung BMI di Kalkulator untuk analisa personal',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF20603D),
+                        ),
+                      ),
+                    ),
+                    const Icon(
+                      Icons.chevron_right_rounded,
+                      size: 16,
+                      color: Color(0xFF20603D),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

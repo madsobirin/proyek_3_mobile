@@ -348,6 +348,9 @@ class _BmiPageState extends State<BmiPage> {
       _historyList.insert(0, newRecord);
     });
 
+    // Simpan perhitungan terbaru ke cache lokal agar langsung sinkron dengan fitur scan
+    _perhitunganService.saveLocalLatest(newRecord);
+
     // Ambil menu rekomendasi
     _fetchRecommendedMenus(hasil.status);
     _fetchSportsLocations();

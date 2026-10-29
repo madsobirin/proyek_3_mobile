@@ -1,5 +1,6 @@
 // import 'dart:convert';
 import 'package:fitlife/pages/dashboard/home.dart';
+import 'package:fitlife/pages/dashboard/bmi_page.dart';
 import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
 import 'pages/auth/login.dart';
@@ -39,6 +40,9 @@ class FitLifeApp extends StatelessWidget {
         '/scan-history': (context) => const ScanHistoryScreen(),
         '/lokasi': (context) =>
             LocationOlahragaPage(onBack: () => Navigator.pop(context)),
+        '/bmi': (context) => BmiPage(
+              onBack: () => Navigator.pop(context),
+            ),
       },
     );
   }
