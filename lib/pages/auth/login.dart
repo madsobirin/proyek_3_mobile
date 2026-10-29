@@ -264,26 +264,26 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildBadge() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: const Color(0xFFDCFCE7),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.bolt_rounded, size: 14, color: Color(0xFF15803D)),
-          const SizedBox(width: 4),
-          Text(
-            'NEXT GEN PERFORMANCE',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF15803D),
-              letterSpacing: 1.2,
-            ),
-          ),
-        ],
-      ),
+      // decoration: BoxDecoration(
+      //   color: const Color(0xFFDCFCE7),
+      //   borderRadius: BorderRadius.circular(20),
+      // ),
+      // child: Row(
+      //   mainAxisSize: MainAxisSize.min,
+      //   children: [
+      //     const Icon(Icons.bolt_rounded, size: 14, color: Color(0xFF15803D)),
+      //     const SizedBox(width: 4),
+      //     Text(
+      //       'NEXT GEN PERFORMANCE',
+      //       style: GoogleFonts.inter(
+      //         fontSize: 11,
+      //         fontWeight: FontWeight.w700,
+      //         color: const Color(0xFF15803D),
+      //         letterSpacing: 1.2,
+      //       ),
+      //     ),
+      //   ],
+      // ),
     );
   }
 
