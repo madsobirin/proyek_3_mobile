@@ -2,6 +2,7 @@
 import 'package:fitlife/pages/dashboard/home.dart';
 import 'package:fitlife/pages/dashboard/bmi_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'theme/app_theme.dart';
 import 'pages/auth/login.dart';
 import 'pages/auth/register.dart';
@@ -14,6 +15,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+      systemNavigationBarColor: Color(0xFFF8FAFC),
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ),
+  );
   runApp(const FitLifeApp());
 }
 
@@ -69,6 +79,7 @@ class _AuthCheckScreenState extends State<AuthCheckScreen> {
     if (!mounted) return;
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
     bool hasSeenOnboarding = prefs.getBool('hasSeenOnboarding') ?? false;
 
     if (!hasSeenOnboarding) {

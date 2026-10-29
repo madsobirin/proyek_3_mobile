@@ -101,7 +101,11 @@ class _ChatPageState extends State<ChatPage> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Text(
-                            message['content'] ?? '',
+                            isUser
+                                ? (message['content'] ?? '')
+                                : ChatService.formatPlainText(
+                                    message['content'] ?? '',
+                                  ),
                             style: TextStyle(
                               color: isUser ? Colors.white : Colors.black87,
                             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
@@ -150,6 +151,13 @@ class AppTheme {
       brightness: Brightness.light,
       colorScheme: lightColorScheme,
       scaffoldBackgroundColor: AppColors.surfaceLight,
+      appBarTheme: const AppBarTheme(
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarBrightness: Brightness.light,
+        ),
+      ),
       textTheme: textTheme,
       cardTheme: CardThemeData(
         elevation: 0,

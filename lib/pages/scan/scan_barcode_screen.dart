@@ -241,6 +241,11 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>
                 controller: textController,
                 keyboardType: TextInputType.number,
                 autofocus: true,
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF111827),
+                ),
                 decoration: InputDecoration(
                   hintText: 'Contoh: 8992761011111',
                   hintStyle: GoogleFonts.inter(
