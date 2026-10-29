@@ -88,6 +88,7 @@ class _BmiPageState extends State<BmiPage> {
   bool _isLoadingHistory = false;
   String? _historyError;
   List<PerhitunganModel> _historyList = [];
+  bool _historyCleared = false; // true bila semua item riwayat sudah dihapus oleh pengguna
   final GlobalKey _riwayatPngKey = GlobalKey();
   bool _isExportingPng = false;
   bool _isExportingPdf = false;
@@ -145,6 +146,8 @@ class _BmiPageState extends State<BmiPage> {
 
   List<PerhitunganModel> get _displayHistoryList {
     if (_historyList.isNotEmpty) return _historyList;
+    // Jangan tampilkan fallback dari sesi jika pengguna sudah hapus semua riwayat
+    if (_historyCleared) return [];
     if (_hasil != null) {
       return [
         PerhitunganModel(
@@ -344,6 +347,7 @@ class _BmiPageState extends State<BmiPage> {
       _selectedMealTab = 'semua';
       _isFormExpanded = false; // Ringkas form agar hasil langsung fokus
       _selectedResultTab = 0;
+      _historyCleared = false; // Reset flag agar hasil terbaru tampil di riwayat
       // Optimistic update: langsung masukkan ke _historyList agar segera tampil di tab Riwayat & Tren
       _historyList.insert(0, newRecord);
     });
@@ -3620,6 +3624,7 @@ class _BmiPageState extends State<BmiPage> {
       if (mounted) {
         setState(() {
           _historyList.removeWhere((element) => element.id == item.id);
+          if (_historyList.isEmpty) _historyCleared = true;
         });
         _loadHistory();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -4409,16 +4414,20 @@ class _BmiPageState extends State<BmiPage> {
                   ),
                 ),
                 if (item.id != null) ...[
-                  const SizedBox(width: 6),
-                  GestureDetector(
-                    onTap: () => _deleteHistoryItem(item),
-                    child: Padding(
-                      padding: const EdgeInsets.all(2),
-                      child: Icon(
-                        Icons.delete_outline_rounded,
-                        size: 18,
-                        color: Colors.grey[400],
-                      ),
+                  const SizedBox(width: 2),
+                  IconButton(
+                    onPressed: () => _deleteHistoryItem(item),
+                    icon: const Icon(Icons.delete_outline_rounded),
+                    iconSize: 20,
+                    color: Colors.red[300],
+                    tooltip: 'Hapus riwayat',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 36,
+                      minHeight: 36,
+                    ),
+                    style: IconButton.styleFrom(
+                      tapTargetSize: MaterialTapTargetSize.padded,
                     ),
                   ),
                 ],
