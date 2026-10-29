@@ -221,35 +221,6 @@ class _HomeState extends State<Home> {
             ),
           ),
           const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-            decoration: BoxDecoration(
-              color: const Color(0xFF20603D).withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: const Color(0xFF20603D).withValues(alpha: 0.25),
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  Icons.local_fire_department_rounded,
-                  size: 14,
-                  color: Color(0xFF20603D),
-                ),
-                const SizedBox(width: 3),
-                Text(
-                  "FitLife.id",
-                  style: GoogleFonts.poppins(
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF20603D),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
