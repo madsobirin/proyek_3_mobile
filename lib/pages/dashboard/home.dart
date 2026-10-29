@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../dashboard/bmi_page.dart';
@@ -20,6 +21,7 @@ class _HomeState extends State<Home> {
   int _selectedIndex = 0;
   final List<int> _history = [];
   bool _isLoggedIn = false;
+  String? _userName;
   bool _isChatOpen = false;
   String? _lokasiInitialCategory;
   String? _lokasiBmiCategory;
@@ -50,16 +52,33 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> _checkLoginStatus() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? userData = prefs.getString('user');
+    final prefs = await SharedPreferences.getInstance();
+    final userData = prefs.getString('user');
+    String? parsedName;
+    if (userData != null && userData.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(userData);
+        if (decoded is Map<String, dynamic>) {
+          final rawName =
+              decoded['name']?.toString() ?? decoded['username']?.toString();
+          if (rawName != null && rawName.trim().isNotEmpty) {
+            parsedName = rawName.trim();
+          }
+        }
+      } catch (_) {}
+    }
     if (mounted) {
       setState(() {
         _isLoggedIn = userData != null && userData.isNotEmpty;
+        _userName = parsedName;
       });
     }
   }
 
   void _onItemTapped(int index) {
+    if (index == 0) {
+      _checkLoginStatus();
+    }
     if (index != _selectedIndex) {
       _history.add(_selectedIndex);
       setState(() => _selectedIndex = index);
@@ -67,6 +86,7 @@ class _HomeState extends State<Home> {
   }
 
   void _goBack() {
+    _checkLoginStatus();
     if (_history.isNotEmpty) {
       setState(() {
         _selectedIndex = _history.removeLast();
@@ -75,6 +95,20 @@ class _HomeState extends State<Home> {
       setState(() {
         _selectedIndex = 0;
       });
+    }
+  }
+
+  String _getGreetingEn() {
+    final hour = DateTime.now().hour;
+
+    if (hour >= 4 && hour < 12) {
+      return 'Good Morning'; // Pukul 04.00 - 11.59
+    } else if (hour >= 12 && hour < 17) {
+      return 'Good Afternoon'; // Pukul 12.00 - 16.59
+    } else if (hour >= 17 && hour < 22) {
+      return 'Good Evening'; // Pukul 17.00 - 21.59 (Salam saat bertemu di malam hari)
+    } else {
+      return 'Good Night'; // Pukul 22.00 - 03.59 (Salam perpisahan/mau tidur)
     }
   }
 
@@ -117,63 +151,76 @@ class _HomeState extends State<Home> {
 
   // --- 1. Top Header with User Greeting & Brand Badge ---
   Widget _buildTopHeader(bool isSmall) {
+    final displayName = (_userName != null && _userName!.isNotEmpty)
+        ? _userName!
+        : 'Sahabat FitLife';
+
     return Padding(
       padding: EdgeInsets.fromLTRB(isSmall ? 16 : 20, 12, isSmall ? 16 : 20, 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF247447), Color(0xFF20603D)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF20603D).withValues(alpha: 0.25),
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
+          Expanded(
+            child: Row(
+              children: [
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF247447), Color(0xFF20603D)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                  ],
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF20603D).withValues(alpha: 0.25),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.favorite_rounded,
+                      color: Colors.white,
+                      size: 19,
+                    ),
+                  ),
                 ),
-                child: const Center(
-                  child: Icon(
-                    Icons.favorite_rounded,
-                    color: Colors.white,
-                    size: 19,
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "${_getGreetingEn()}, $displayName! 👋",
+                        style: GoogleFonts.poppins(
+                          fontSize: isSmall ? 13 : 15,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF111827),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        "Siap bugar & hidup sehat hari ini?",
+                        style: GoogleFonts.poppins(
+                          fontSize: isSmall ? 10.5 : 11.5,
+                          color: const Color(0xFF6B7280),
+                          fontWeight: FontWeight.w400,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Halo, Sahabat FitLife! 👋",
-                    style: GoogleFonts.poppins(
-                      fontSize: isSmall ? 13 : 15,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF111827),
-                    ),
-                  ),
-                  Text(
-                    "Siap bugar & hidup sehat hari ini?",
-                    style: GoogleFonts.poppins(
-                      fontSize: isSmall ? 10.5 : 11.5,
-                      color: const Color(0xFF6B7280),
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
+          const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
             decoration: BoxDecoration(
