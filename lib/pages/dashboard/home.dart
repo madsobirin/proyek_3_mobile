@@ -705,7 +705,9 @@ class _HomeState extends State<Home> {
                 children: [
                   _buildHomeContent(), // 0 - Home
                   MenuPage(onBack: _goBack), // 1 - Menu (diakses dari Home)
-                  ArtikelPage(onBack: _goBack), // 2 - Artikel (diakses dari Home)
+                  ArtikelPage(
+                    onBack: _goBack,
+                  ), // 2 - Artikel (diakses dari Home)
                   _isLoggedIn
                       ? const ProfilePage()
                       : const GuestProfilePage(), // 3 - Profil
@@ -793,24 +795,14 @@ class _HomeState extends State<Home> {
             bottom: 0,
             height: barHeight + bottomSafe + 13,
             child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0x10000000),
-                    blurRadius: 14,
-                    offset: Offset(0, -3),
-                  ),
-                ],
-              ),
+              decoration: const BoxDecoration(color: Colors.white),
             ),
           ),
 
           Positioned(
             left: 0,
             right: 0,
-            bottom: bottomSafe + 5,
+            bottom: bottomSafe + 10,
             height: barHeight + floatOverhang,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
