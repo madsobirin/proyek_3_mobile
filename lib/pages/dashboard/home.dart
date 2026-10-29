@@ -42,6 +42,7 @@ class _HomeState extends State<Home> {
     });
     _onItemTapped(5);
   }
+
   @override
   void initState() {
     super.initState();
@@ -753,49 +754,82 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildBottomNav() {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x12000000),
-            blurRadius: 20,
-            offset: Offset(0, -4),
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
+    final bottomSafe = bottomPadding > 0
+        ? (bottomPadding * 0.4).clamp(4.0, 12.0)
+        : 4.0;
+
+    const barHeight = 54.0;
+    const floatOverhang = 38.0;
+
+    return SizedBox(
+      height: barHeight + bottomSafe + floatOverhang,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.bottomCenter,
+        children: [
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: barHeight + bottomSafe + 13,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0x10000000),
+                    blurRadius: 14,
+                    offset: Offset(0, -3),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: bottomSafe + 5,
+            height: barHeight + floatOverhang,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: _buildNavItem(
+                    index: 0,
+                    icon: Icons.home_rounded,
+                    label: "Home",
+                  ),
+                ),
+                Expanded(
+                  child: _buildNavItem(
+                    index: 4,
+                    icon: Icons.monitor_weight_rounded,
+                    label: "Kalkulator",
+                  ),
+                ),
+                Expanded(child: _buildScanNavItem()),
+                Expanded(
+                  child: _buildNavItem(
+                    index: 5,
+                    icon: Icons.place_rounded,
+                    label: "Lokasi",
+                  ),
+                ),
+                Expanded(
+                  child: _buildNavItem(
+                    index: 3,
+                    icon: Icons.person_rounded,
+                    label: "Profil",
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              _buildNavItem(index: 0, icon: Icons.home_rounded, label: "Home"),
-              _buildNavItem(
-                index: 4,
-                icon: Icons.monitor_weight_rounded,
-                label: "Kalkulator",
-              ),
-              Transform.translate(
-                offset: const Offset(-10, 0),
-                child: _buildScanNavItem(),
-              ),
-              _buildNavItem(
-                index: 5,
-                icon: Icons.place_rounded,
-                label: "Lokasi",
-              ),
-              _buildNavItem(
-                index: 3,
-                icon: Icons.person_rounded,
-                label: "Profil",
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -808,47 +842,56 @@ class _HomeState extends State<Home> {
           MaterialPageRoute(builder: (_) => const ScanBarcodeScreen()),
         );
       },
-      child: Transform.translate(
-        offset: const Offset(0, -10),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 58,
-              height: 58,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF247447), Color(0xFF20603D)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF20603D).withValues(alpha: 0.35),
-                    blurRadius: 12,
-                    spreadRadius: 1,
-                    offset: const Offset(0, 4),
+      behavior: HitTestBehavior.opaque,
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Transform.translate(
+          offset: const Offset(0, -12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF247447), Color(0xFF20603D)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                ],
-                border: Border.all(color: Colors.white, width: 3),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF20603D).withValues(alpha: 0.30),
+                      blurRadius: 12,
+                      spreadRadius: 1,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                  border: Border.all(color: Colors.white, width: 3),
+                ),
+                child: const Icon(
+                  Icons.qr_code_scanner_rounded,
+                  color: Colors.white,
+                  size: 27,
+                ),
               ),
-              child: const Icon(
-                Icons.qr_code_scanner_rounded,
-                color: Colors.white,
-                size: 26,
+
+              const SizedBox(height: 5),
+
+              Text(
+                'Scan',
+                style: GoogleFonts.poppins(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF20603D),
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Scan',
-              style: GoogleFonts.poppins(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: const Color(0xFF20603D),
-              ),
-            ),
-          ],
+
+              const SizedBox(height: 2),
+            ],
+          ),
         ),
       ),
     );
@@ -860,40 +903,62 @@ class _HomeState extends State<Home> {
     required String label,
   }) {
     final isActive = _selectedIndex == index;
+
     return GestureDetector(
       onTap: () => _onItemTapped(index),
       behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 7),
-        decoration: BoxDecoration(
-          color: isActive
-              ? const Color(0xFF20603D).withValues(alpha: 0.10)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 24,
-              color: isActive
-                  ? const Color(0xFF20603D)
-                  : const Color(0xFF9CA3AF),
-            ),
-            const SizedBox(height: 3),
-            Text(
-              label,
-              style: GoogleFonts.poppins(
-                fontSize: 11,
-                fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                color: isActive
-                    ? const Color(0xFF20603D)
-                    : const Color(0xFF9CA3AF),
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: isActive
+                      ? const Color(0xFF20603D).withValues(alpha: 0.10)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      icon,
+                      size: 23,
+                      color: isActive
+                          ? const Color(0xFF20603D)
+                          : const Color(0xFF9CA3AF),
+                    ),
+
+                    const SizedBox(height: 3),
+
+                    Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        fontSize: 11,
+                        fontWeight: isActive
+                            ? FontWeight.w700
+                            : FontWeight.w500,
+                        color: isActive
+                            ? const Color(0xFF20603D)
+                            : const Color(0xFF9CA3AF),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
