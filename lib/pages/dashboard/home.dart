@@ -704,6 +704,7 @@ class _HomeState extends State<Home> {
         body: Stack(
           children: [
             SafeArea(
+              bottom: false,
               child: IndexedStack(
                 index: _selectedIndex,
                 children: [
@@ -1121,13 +1122,7 @@ class _HeroScanButtonState extends State<_HeroScanButton>
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF1B613A).withValues(alpha: 0.38),
-                blurRadius: 14,
-                spreadRadius: 1,
-                offset: const Offset(0, 5),
-              ),
-              BoxShadow(
-                color: const Color(0xFF2EB86F).withValues(alpha: 0.22),
+                color: const Color(0xFF1B613A).withValues(alpha: 0.20),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
