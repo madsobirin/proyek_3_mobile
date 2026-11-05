@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../dashboard/bmi_page.dart';
@@ -698,6 +699,7 @@ class _HomeState extends State<Home> {
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
+        extendBody: true,
         backgroundColor: const Color(0xFFF8FAFC),
         body: Stack(
           children: [
@@ -786,109 +788,112 @@ class _HomeState extends State<Home> {
 
     const barBg = Color(0xFFFFFFFF);
     const borderLine = Color(0xFFE5ECE7);
-    final shadowCol = const Color(0xFF1B3D2B).withValues(alpha: 0.08);
+    const shadowCol = Colors.transparent;
 
-    return SizedBox(
-      height: _navBarHeight + bottomSafe + _floatOverhang,
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.bottomCenter,
-        children: [
-          // 1. Background melengkung cradle notch
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: _navBarHeight + bottomSafe,
-            child: CustomPaint(
-              painter: _NotchedNavPainter(
-                color: barBg,
-                shadowColor: shadowCol,
-                borderColor: borderLine,
-                notchRadius: 46.0,
-                notchDepth: 38.0,
+    return _OverflowHitTest(
+      overflowTop: _floatOverhang,
+      child: SizedBox(
+        height: _navBarHeight + bottomSafe,
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.bottomCenter,
+          children: [
+            // 1. Background melengkung cradle notch
+            Positioned(
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              child: CustomPaint(
+                painter: const _NotchedNavPainter(
+                  color: barBg,
+                  shadowColor: shadowCol,
+                  borderColor: borderLine,
+                  notchRadius: 46.0,
+                  notchDepth: 38.0,
+                ),
               ),
             ),
-          ),
 
-          // 2. Navigation items
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: bottomSafe,
-            height: _navBarHeight,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: _InteractiveNavItem(
-                    index: 0,
-                    activeIcon: Icons.home_rounded,
-                    inactiveIcon: Icons.home_outlined,
-                    label: "Home",
-                    isActive: _selectedIndex == 0,
-                    isDark: false,
-                    onTap: () => _onItemTapped(0),
+            // 2. Navigation items
+            Positioned(
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: bottomSafe,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: _InteractiveNavItem(
+                      index: 0,
+                      activeIcon: Icons.home_rounded,
+                      inactiveIcon: Icons.home_outlined,
+                      label: "Home",
+                      isActive: _selectedIndex == 0,
+                      isDark: false,
+                      onTap: () => _onItemTapped(0),
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: _InteractiveNavItem(
-                    index: 4,
-                    activeIcon: Icons.calculate_rounded,
-                    inactiveIcon: Icons.calculate_outlined,
-                    label: "Kalkulator",
-                    isActive: _selectedIndex == 4,
-                    isDark: false,
-                    onTap: () => _onItemTapped(4),
+                  Expanded(
+                    child: _InteractiveNavItem(
+                      index: 4,
+                      activeIcon: Icons.calculate_rounded,
+                      inactiveIcon: Icons.calculate_outlined,
+                      label: "Kalkulator",
+                      isActive: _selectedIndex == 4,
+                      isDark: false,
+                      onTap: () => _onItemTapped(4),
+                    ),
                   ),
-                ),
-                // Spacer tengah untuk cekungan tombol scan
-                const Expanded(child: SizedBox()),
-                Expanded(
-                  child: _InteractiveNavItem(
-                    index: 5,
-                    activeIcon: Icons.location_on_rounded,
-                    inactiveIcon: Icons.location_on_outlined,
-                    label: "Lokasi",
-                    isActive: _selectedIndex == 5,
-                    isDark: false,
-                    onTap: () => _onItemTapped(5),
+                  // Spacer tengah untuk cekungan tombol scan
+                  const Expanded(child: SizedBox()),
+                  Expanded(
+                    child: _InteractiveNavItem(
+                      index: 5,
+                      activeIcon: Icons.location_on_rounded,
+                      inactiveIcon: Icons.location_on_outlined,
+                      label: "Lokasi",
+                      isActive: _selectedIndex == 5,
+                      isDark: false,
+                      onTap: () => _onItemTapped(5),
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: _InteractiveNavItem(
-                    index: 3,
-                    activeIcon: Icons.person_rounded,
-                    inactiveIcon: Icons.person_outline_rounded,
-                    label: "Profil",
-                    isActive: _selectedIndex == 3,
-                    isDark: false,
-                    onTap: () => _onItemTapped(3),
+                  Expanded(
+                    child: _InteractiveNavItem(
+                      index: 3,
+                      activeIcon: Icons.person_rounded,
+                      inactiveIcon: Icons.person_outline_rounded,
+                      label: "Profil",
+                      isActive: _selectedIndex == 3,
+                      isDark: false,
+                      onTap: () => _onItemTapped(3),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-
-          // 3. Tombol Scan Hero melayang di tengah cekungan
-          Positioned(
-            top: 4.0,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: _HeroScanButton(
-                isDark: false,
-                scanSize: _scanSize,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const ScanBarcodeScreen()),
-                  );
-                },
+                ],
               ),
             ),
-          ),
-        ],
+
+            // 3. Tombol Scan Hero melayang di tengah cekungan
+            Positioned(
+              top: -24.0,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: _HeroScanButton(
+                  isDark: false,
+                  scanSize: _scanSize,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ScanBarcodeScreen()),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1186,14 +1191,16 @@ class _NotchedNavPainter extends CustomPainter {
     path.lineTo(0, h);
     path.close();
 
-    // 1. Bayangan lembut di atas kurva
-    final shadowPaint = Paint()
-      ..color = shadowColor
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10.0);
-    canvas.save();
-    canvas.translate(0, -2);
-    canvas.drawPath(path, shadowPaint);
-    canvas.restore();
+    // 1. Bayangan lembut di atas kurva (hanya jika ada shadowColor)
+    if (shadowColor != Colors.transparent && shadowColor.a > 0) {
+      final shadowPaint = Paint()
+        ..color = shadowColor
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10.0);
+      canvas.save();
+      canvas.translate(0, -2);
+      canvas.drawPath(path, shadowPaint);
+      canvas.restore();
+    }
 
     // 2. Isi background bar
     final fillPaint = Paint()
@@ -1231,5 +1238,53 @@ class _NotchedNavPainter extends CustomPainter {
         oldDelegate.borderColor != borderColor ||
         oldDelegate.notchRadius != notchRadius ||
         oldDelegate.notchDepth != notchDepth;
+  }
+}
+
+/// Memperluas area hit-test ke atas agar tombol yang menonjol keluar dari bounding box tetap responsif diklik.
+class _OverflowHitTest extends SingleChildRenderObjectWidget {
+  const _OverflowHitTest({required super.child, required this.overflowTop});
+
+  final double overflowTop;
+
+  @override
+  RenderObject createRenderObject(BuildContext context) =>
+      _RenderOverflowHitTest(overflowTop: overflowTop);
+
+  @override
+  void updateRenderObject(
+      BuildContext context, covariant _RenderOverflowHitTest renderObject) {
+    renderObject.overflowTop = overflowTop;
+  }
+}
+
+class _RenderOverflowHitTest extends RenderProxyBox {
+  _RenderOverflowHitTest({required double overflowTop})
+      : _overflowTop = overflowTop;
+
+  double _overflowTop;
+
+  set overflowTop(double value) {
+    if (_overflowTop != value) {
+      _overflowTop = value;
+      markNeedsLayout();
+    }
+  }
+
+  @override
+  bool hitTest(BoxHitTestResult result, {required Offset position}) {
+    final Rect extendedBounds = Rect.fromLTRB(
+      0,
+      -_overflowTop,
+      size.width,
+      size.height,
+    );
+    if (extendedBounds.contains(position)) {
+      if (hitTestChildren(result, position: position) || hitTestSelf(position)) {
+        result.add(BoxHitTestEntry(this, position));
+        return true;
+      }
+    }
+    return false;
   }
 }
