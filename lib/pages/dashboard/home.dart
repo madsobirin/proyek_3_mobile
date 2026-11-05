@@ -687,12 +687,14 @@ class _HomeState extends State<Home> {
   // ================= BUILD =================
   @override
   Widget build(BuildContext context) {
+    const navBarBg = Color(0xFFFFFFFF);
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: Color(0xFFF8FAFC),
+        systemNavigationBarColor: navBarBg,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
@@ -773,204 +775,461 @@ class _HomeState extends State<Home> {
     );
   }
 
+  // ================= BOTTOM NAV (curved notch cradle) =================
+  static const double _navBarHeight = 64.0;
+  static const double _floatOverhang = 28.0;
+  static const double _scanSize = 58.0;
+
   Widget _buildBottomNav() {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final bottomSafe = bottomPadding > 0 ? bottomPadding : 6.0;
 
-    final bottomSafe = bottomPadding > 0
-        ? (bottomPadding * 0.4).clamp(4.0, 12.0)
-        : 4.0;
-
-    const barHeight = 54.0;
-    const floatOverhang = 38.0;
+    const barBg = Color(0xFFFFFFFF);
+    const borderLine = Color(0xFFE5ECE7);
+    final shadowCol = const Color(0xFF1B3D2B).withValues(alpha: 0.08);
 
     return SizedBox(
-      height: barHeight + bottomSafe + floatOverhang,
+      height: _navBarHeight + bottomSafe + _floatOverhang,
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.bottomCenter,
         children: [
+          // 1. Background melengkung cradle notch
           Positioned(
             left: 0,
             right: 0,
             bottom: 0,
-            height: barHeight + bottomSafe + 13,
-            child: Container(
-              decoration: const BoxDecoration(color: Colors.white),
+            height: _navBarHeight + bottomSafe,
+            child: CustomPaint(
+              painter: _NotchedNavPainter(
+                color: barBg,
+                shadowColor: shadowCol,
+                borderColor: borderLine,
+                notchRadius: 46.0,
+                notchDepth: 38.0,
+              ),
             ),
           ),
 
+          // 2. Navigation items
           Positioned(
             left: 0,
             right: 0,
-            bottom: bottomSafe + 10,
-            height: barHeight + floatOverhang,
+            bottom: bottomSafe,
+            height: _navBarHeight,
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
-                  child: _buildNavItem(
+                  child: _InteractiveNavItem(
                     index: 0,
-                    icon: Icons.home_rounded,
+                    activeIcon: Icons.home_rounded,
+                    inactiveIcon: Icons.home_outlined,
                     label: "Home",
+                    isActive: _selectedIndex == 0,
+                    isDark: false,
+                    onTap: () => _onItemTapped(0),
                   ),
                 ),
                 Expanded(
-                  child: _buildNavItem(
+                  child: _InteractiveNavItem(
                     index: 4,
-                    icon: Icons.monitor_weight_rounded,
+                    activeIcon: Icons.calculate_rounded,
+                    inactiveIcon: Icons.calculate_outlined,
                     label: "Kalkulator",
+                    isActive: _selectedIndex == 4,
+                    isDark: false,
+                    onTap: () => _onItemTapped(4),
                   ),
                 ),
-                Expanded(child: _buildScanNavItem()),
+                // Spacer tengah untuk cekungan tombol scan
+                const Expanded(child: SizedBox()),
                 Expanded(
-                  child: _buildNavItem(
+                  child: _InteractiveNavItem(
                     index: 5,
-                    icon: Icons.place_rounded,
+                    activeIcon: Icons.location_on_rounded,
+                    inactiveIcon: Icons.location_on_outlined,
                     label: "Lokasi",
+                    isActive: _selectedIndex == 5,
+                    isDark: false,
+                    onTap: () => _onItemTapped(5),
                   ),
                 ),
                 Expanded(
-                  child: _buildNavItem(
+                  child: _InteractiveNavItem(
                     index: 3,
-                    icon: Icons.person_rounded,
+                    activeIcon: Icons.person_rounded,
+                    inactiveIcon: Icons.person_outline_rounded,
                     label: "Profil",
+                    isActive: _selectedIndex == 3,
+                    isDark: false,
+                    onTap: () => _onItemTapped(3),
                   ),
                 ),
               ],
+            ),
+          ),
+
+          // 3. Tombol Scan Hero melayang di tengah cekungan
+          Positioned(
+            top: 4.0,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: _HeroScanButton(
+                isDark: false,
+                scanSize: _scanSize,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ScanBarcodeScreen()),
+                  );
+                },
+              ),
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildScanNavItem() {
+/// Item navigasi interaktif dengan animasi bounce spring, morphing icon, dan micro-indicator.
+class _InteractiveNavItem extends StatefulWidget {
+  const _InteractiveNavItem({
+    required this.index,
+    required this.activeIcon,
+    required this.inactiveIcon,
+    required this.label,
+    required this.isActive,
+    required this.isDark,
+    required this.onTap,
+  });
+
+  final int index;
+  final IconData activeIcon;
+  final IconData inactiveIcon;
+  final String label;
+  final bool isActive;
+  final bool isDark;
+  final VoidCallback onTap;
+
+  @override
+  State<_InteractiveNavItem> createState() => _InteractiveNavItemState();
+}
+
+class _InteractiveNavItemState extends State<_InteractiveNavItem>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 240),
+    );
+
+    _scaleAnimation = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.0, end: 0.88)
+            .chain(CurveTween(curve: Curves.easeOutQuad)),
+        weight: 35,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 0.88, end: 1.0)
+            .chain(CurveTween(curve: Curves.elasticOut)),
+        weight: 65,
+      ),
+    ]).animate(_controller);
+  }
+
+  @override
+  void didUpdateWidget(covariant _InteractiveNavItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive && !oldWidget.isActive) {
+      _controller.forward(from: 0.0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTap() {
+    HapticFeedback.lightImpact();
+    _controller.forward(from: 0.0);
+    widget.onTap();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final activeColor =
+        widget.isDark ? const Color(0xFF86EFAC) : const Color(0xFF20603D);
+    final inactiveColor =
+        widget.isDark ? const Color(0xFF8A9A90) : const Color(0xFF788C80);
+    final activeBg = widget.isDark
+        ? const Color(0xFF86EFAC).withValues(alpha: 0.14)
+        : const Color(0xFF20603D).withValues(alpha: 0.09);
+
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const ScanBarcodeScreen()),
-        );
-      },
+      onTap: _handleTap,
       behavior: HitTestBehavior.opaque,
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: Transform.translate(
-          offset: const Offset(0, -12),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF247447), Color(0xFF20603D)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+      child: Center(
+        child: AnimatedBuilder(
+          animation: _scaleAnimation,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _scaleAnimation.value,
+              child: child,
+            );
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutCubic,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: widget.isActive ? activeBg : Colors.transparent,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  widget.isActive ? widget.activeIcon : widget.inactiveIcon,
+                  size: 23,
+                  color: widget.isActive ? activeColor : inactiveColor,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  widget.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    fontSize: 10.5,
+                    fontWeight:
+                        widget.isActive ? FontWeight.w700 : FontWeight.w500,
+                    color: widget.isActive ? activeColor : inactiveColor,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF20603D).withValues(alpha: 0.30),
-                      blurRadius: 12,
-                      spreadRadius: 1,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                  border: Border.all(color: Colors.white, width: 3),
                 ),
-                child: const Icon(
-                  Icons.qr_code_scanner_rounded,
-                  color: Colors.white,
-                  size: 27,
+                const SizedBox(height: 3),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 240),
+                  curve: Curves.easeOutCubic,
+                  width: widget.isActive ? 12 : 0,
+                  height: 3,
+                  decoration: BoxDecoration(
+                    color: widget.isActive ? activeColor : Colors.transparent,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-              ),
-
-              const SizedBox(height: 5),
-
-              Text(
-                'Scan',
-                style: GoogleFonts.poppins(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF20603D),
-                ),
-              ),
-
-              const SizedBox(height: 2),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildNavItem({
-    required int index,
-    required IconData icon,
-    required String label,
-  }) {
-    final isActive = _selectedIndex == index;
+/// Tombol Scan Hero dengan feedback haptic, animasi tekan spring, dan glowing shadow.
+class _HeroScanButton extends StatefulWidget {
+  const _HeroScanButton({
+    required this.isDark,
+    required this.scanSize,
+    required this.onTap,
+  });
 
+  final bool isDark;
+  final double scanSize;
+  final VoidCallback onTap;
+
+  @override
+  State<_HeroScanButton> createState() => _HeroScanButtonState();
+}
+
+class _HeroScanButtonState extends State<_HeroScanButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _pressController;
+  late final Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _pressController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 140),
+      reverseDuration: const Duration(milliseconds: 220),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.90).animate(
+      CurvedAnimation(
+        parent: _pressController,
+        curve: Curves.easeInOutQuad,
+        reverseCurve: Curves.easeOutBack,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pressController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _onItemTapped(index),
+      onTapDown: (_) => _pressController.forward(),
+      onTapUp: (_) {
+        _pressController.reverse();
+        HapticFeedback.mediumImpact();
+        widget.onTap();
+      },
+      onTapCancel: () => _pressController.reverse(),
       behavior: HitTestBehavior.opaque,
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: isActive
-                      ? const Color(0xFF20603D).withValues(alpha: 0.10)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      icon,
-                      size: 23,
-                      color: isActive
-                          ? const Color(0xFF20603D)
-                          : const Color(0xFF9CA3AF),
-                    ),
-
-                    const SizedBox(height: 3),
-
-                    Text(
-                      label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
-                        fontSize: 11,
-                        fontWeight: isActive
-                            ? FontWeight.w700
-                            : FontWeight.w500,
-                        color: isActive
-                            ? const Color(0xFF20603D)
-                            : const Color(0xFF9CA3AF),
-                      ),
-                    ),
-                  ],
-                ),
+      child: AnimatedBuilder(
+        animation: _scaleAnimation,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _scaleAnimation.value,
+            child: child,
+          );
+        },
+        child: Container(
+          width: widget.scanSize,
+          height: widget.scanSize,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: const LinearGradient(
+              colors: [Color(0xFF2EB86F), Color(0xFF1B613A)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            border: Border.all(
+              color: widget.isDark ? const Color(0xFF141F18) : Colors.white,
+              width: 3.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF1B613A).withValues(alpha: 0.38),
+                blurRadius: 14,
+                spreadRadius: 1,
+                offset: const Offset(0, 5),
+              ),
+              BoxShadow(
+                color: const Color(0xFF2EB86F).withValues(alpha: 0.22),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
               ),
             ],
+          ),
+          child: const Icon(
+            Icons.qr_code_scanner_rounded,
+            color: Colors.white,
+            size: 27,
           ),
         ),
       ),
     );
+  }
+}
+
+/// Menggambar latar belakang bottom bar dengan cekungan lengkung halus (cradle notch).
+class _NotchedNavPainter extends CustomPainter {
+  const _NotchedNavPainter({
+    required this.color,
+    required this.shadowColor,
+    required this.borderColor,
+    this.notchRadius = 46.0,
+    this.notchDepth = 38.0,
+  });
+
+  final Color color;
+  final Color shadowColor;
+  final Color borderColor;
+  final double notchRadius;
+  final double notchDepth;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    final cx = w / 2;
+    final s = notchRadius * 1.25;
+    final d = notchDepth;
+
+    final path = Path();
+    path.moveTo(0, 0);
+    path.lineTo(cx - s, 0);
+
+    // Lengkungan kubik halus turun ke dasar cekungan
+    path.cubicTo(
+      cx - s + (s * 0.42), 0,
+      cx - (s * 0.45), d,
+      cx, d,
+    );
+
+    // Lengkungan kubik halus naik ke bahu kanan
+    path.cubicTo(
+      cx + (s * 0.45), d,
+      cx + s - (s * 0.42), 0,
+      cx + s, 0,
+    );
+
+    path.lineTo(w, 0);
+    path.lineTo(w, h);
+    path.lineTo(0, h);
+    path.close();
+
+    // 1. Bayangan lembut di atas kurva
+    final shadowPaint = Paint()
+      ..color = shadowColor
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10.0);
+    canvas.save();
+    canvas.translate(0, -2);
+    canvas.drawPath(path, shadowPaint);
+    canvas.restore();
+
+    // 2. Isi background bar
+    final fillPaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+    canvas.drawPath(path, fillPaint);
+
+    // 3. Garis tepi atas mengikuti kontur kurva
+    final borderPath = Path();
+    borderPath.moveTo(0, 0);
+    borderPath.lineTo(cx - s, 0);
+    borderPath.cubicTo(
+      cx - s + (s * 0.42), 0,
+      cx - (s * 0.45), d,
+      cx, d,
+    );
+    borderPath.cubicTo(
+      cx + (s * 0.45), d,
+      cx + s - (s * 0.42), 0,
+      cx + s, 0,
+    );
+    borderPath.lineTo(w, 0);
+
+    final borderPaint = Paint()
+      ..color = borderColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0;
+    canvas.drawPath(borderPath, borderPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _NotchedNavPainter oldDelegate) {
+    return oldDelegate.color != color ||
+        oldDelegate.shadowColor != shadowColor ||
+        oldDelegate.borderColor != borderColor ||
+        oldDelegate.notchRadius != notchRadius ||
+        oldDelegate.notchDepth != notchDepth;
   }
 }
