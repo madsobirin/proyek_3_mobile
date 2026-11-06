@@ -172,6 +172,86 @@ class AuthServices {
     }
   }
 
+  // ── Forgot Password: kirim link reset ke email ──
+  Future<Map<String, dynamic>> forgotPassword(String email) async {
+    try {
+      final response = await _api.post('/auth/forgot-password', {
+        'email': email,
+      });
+
+      if (response.statusCode == 200) {
+        return {'success': true};
+      } else if (response.statusCode == 400) {
+        // Validasi zod: { "errors": { "email": ["Format email tidak valid."] } }
+        try {
+          final data = jsonDecode(response.body);
+          if (data['errors'] != null) {
+            return {'success': false, 'fieldErrors': data['errors']};
+          }
+          return {
+            'success': false,
+            'message': data['message'] ?? 'Validasi gagal.',
+          };
+        } catch (_) {
+          return {'success': false, 'message': 'Validasi gagal.'};
+        }
+      } else {
+        return {
+          'success': false,
+          'message': 'Terjadi kesalahan pada server. Silakan coba beberapa saat lagi.',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': e.toString().replaceFirst('Exception: ', ''),
+      };
+    }
+  }
+
+  // ── Reset Password: update password pakai token ──
+  Future<Map<String, dynamic>> resetPassword({
+    required String token,
+    required String password,
+  }) async {
+    try {
+      final response = await _api.post('/auth/reset-password', {
+        'token': token,
+        'password': password,
+      });
+
+      if (response.statusCode == 200) {
+        return {'success': true};
+      } else if (response.statusCode == 400) {
+        final data = jsonDecode(response.body);
+        // Dua format 400: { errors: {...} } atau { message: "..." }
+        if (data['errors'] != null) {
+          return {'success': false, 'fieldErrors': data['errors']};
+        }
+        return {
+          'success': false,
+          'message': data['message'] ?? 'Permintaan tidak valid.',
+        };
+      } else if (response.statusCode == 404) {
+        final data = jsonDecode(response.body);
+        return {
+          'success': false,
+          'message': data['message'] ?? 'Akun pengguna tidak ditemukan.',
+        };
+      } else {
+        return {
+          'success': false,
+          'message': 'Terjadi kesalahan pada server. Silakan coba beberapa saat lagi.',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': e.toString().replaceFirst('Exception: ', ''),
+      };
+    }
+  }
+
   // ── Get token ──
   Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();

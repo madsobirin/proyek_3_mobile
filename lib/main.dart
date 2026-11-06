@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'theme/app_theme.dart';
 import 'pages/auth/login.dart';
 import 'pages/auth/register.dart';
+import 'pages/auth/forgot_password_screen.dart';
+import 'pages/auth/reset_password_screen.dart';
 import 'pages/dashboard/profile_page.dart';
 import 'pages/splash/onboarding.dart';
 import 'pages/scan/scan_barcode_screen.dart';
@@ -76,6 +78,12 @@ class FitLifeApp extends StatelessWidget {
         '/splash': (context) => const OnboardingScreen(),
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
+        '/forgot-password': (context) => const ForgotPasswordScreen(),
+        '/reset-password': (context) {
+          final args = ModalRoute.of(context)?.settings.arguments;
+          final token = args is Map ? args['token'] as String? : null;
+          return ResetPasswordScreen(initialToken: token);
+        },
         '/home': (context) => Home(),
         '/profile': (context) => const ProfilePage(),
         '/scan': (context) => const ScanBarcodeScreen(),

@@ -360,7 +360,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   _buildTitle(),
                   const SizedBox(height: 8),
                   Text(
-                    'Create your profile to access elite tracking and coaching.',
+                    'Discover a healthier lifestyle with the right tools and insights to support your well-being.',
                     style: GoogleFonts.inter(
                       fontSize: 15,
                       color: const Color(0xFF6B7280),
@@ -442,7 +442,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _buildTitle() {
     return Text(
-      'Unlock Your\nPotential',
+      'Know Your Body\nLive Healthier.',
       style: GoogleFonts.manrope(
         fontSize: 32,
         fontWeight: FontWeight.w800,
