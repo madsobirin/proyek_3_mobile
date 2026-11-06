@@ -81,10 +81,32 @@ class _ProfilePageState extends State<ProfilePage>
     super.dispose();
   }
 
-  // ── Fetch profile dari API /api/profile ──
-  Future<void> _fetchProfile() async {
-    setState(() => _loading = true);
+  void _populateUserData(UserModel user) {
+    _user = user;
+    _usernameController.text = user.username ?? '';
+    _phoneController.text = user.phone ?? '';
+    _heightController.text = user.height?.toString() ?? '';
+    _weightController.text = user.weight?.toString() ?? '';
+    if (user.birthdate != null) {
+      _birthDate = DateTime.tryParse(user.birthdate!);
+    }
+  }
 
+  // ── Fetch profile dari API /api/profile (cache-first + network sync) ──
+  Future<void> _fetchProfile() async {
+    // 1. Load dari local cache terlebih dahulu agar UI langsung muncul instan
+    final cachedUser = await _authServices.getCurrentUser();
+    if (cachedUser != null && mounted) {
+      setState(() {
+        _populateUserData(cachedUser);
+        _loading = false;
+      });
+      _fadeController.forward();
+    } else if (mounted) {
+      setState(() => _loading = true);
+    }
+
+    // 2. Sync data terbaru dari API
     try {
       final response = await _apiService.get('/profile');
       final data = _apiService.handleResponse(response);
@@ -97,20 +119,18 @@ class _ProfilePageState extends State<ProfilePage>
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user', jsonEncode(user.toJson()));
 
+      if (!mounted) return;
       setState(() {
-        _user = user;
-        _usernameController.text = user.username ?? '';
-        _phoneController.text = user.phone ?? '';
-        _heightController.text = user.height?.toString() ?? '';
-        _weightController.text = user.weight?.toString() ?? '';
-        if (user.birthdate != null) {
-          _birthDate = DateTime.tryParse(user.birthdate!);
-        }
+        _populateUserData(user);
         _loading = false;
       });
       _fadeController.forward();
     } catch (e) {
-      setState(() => _loading = false);
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+      });
+      _fadeController.forward();
     }
   }
 
@@ -415,151 +435,229 @@ class _ProfilePageState extends State<ProfilePage>
       backgroundColor: _bg,
       body: _loading
           ? const Center(child: CircularProgressIndicator(color: _primary))
-          : FadeTransition(
-              opacity: _fadeAnim,
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: -80,
-                    right: -80,
-                    child: Container(
-                      width: 260,
-                      height: 260,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Color(0x1A00FF66),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 160,
-                    left: -80,
-                    child: Container(
-                      width: 200,
-                      height: 200,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Color(0x0D3B82F6),
-                      ),
-                    ),
-                  ),
-                  SafeArea(
-                    child: CustomScrollView(
-                      slivers: [
-                        SliverPadding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 24,
-                          ),
-                          sliver: SliverList(
-                            delegate: SliverChildListDelegate([
-                              _buildHeader(),
-                              const SizedBox(height: 24),
-                              _buildAvatarCard(),
-                              const SizedBox(height: 20),
-                              _buildFieldCard(
-                                icon: Icons.person_outline_rounded,
-                                label: 'NAMA LENGKAP',
-                                value: _user?.name ?? '-',
-                              ),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _buildEditableCard(
-                                      fieldKey: 'username',
-                                      icon: Icons.alternate_email_rounded,
-                                      label: 'USERNAME',
-                                      controller: _usernameController,
-                                      hint: 'Klik untuk mengisi',
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: _buildFieldCard(
-                                      icon: Icons.email_outlined,
-                                      label: 'EMAIL',
-                                      value: _user?.email ?? '-',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _buildEditableCard(
-                                      fieldKey: 'phone',
-                                      icon: Icons.phone_outlined,
-                                      label: 'NOMOR TELEPON',
-                                      controller: _phoneController,
-                                      hint: 'Klik untuk mengisi',
-                                      keyboardType: TextInputType.phone,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(child: _buildDateCard()),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _buildEditableCard(
-                                      fieldKey: 'weight',
-                                      icon: Icons.monitor_weight_outlined,
-                                      label: 'BERAT (KG)',
-                                      controller: _weightController,
-                                      hint: 'Klik untuk mengisi',
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly,
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: _buildEditableCard(
-                                      fieldKey: 'height',
-                                      icon: Icons.height_rounded,
-                                      label: 'TINGGI (CM)',
-                                      controller: _heightController,
-                                      hint: 'Klik untuk mengisi',
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly,
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              _buildScanHistoryCard(),
-                              const SizedBox(height: 12),
-                              _buildPasswordCard(),
-                              const SizedBox(height: 20),
-                              _buildLogoutButton(),
-                              const SizedBox(height: 12),
-                              Center(
-                                child: Text(
-                                  'Klik pada field untuk mengedit • Email tidak dapat diubah',
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 11,
-                                    color: _textMuted,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 40),
-                            ]),
+          : _user == null
+              ? _buildErrorState()
+              : FadeTransition(
+                  opacity: _fadeAnim,
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: -80,
+                        right: -80,
+                        child: Container(
+                          width: 260,
+                          height: 260,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(0x1A00FF66),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      Positioned(
+                        top: 160,
+                        left: -80,
+                        child: Container(
+                          width: 200,
+                          height: 200,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(0x0D3B82F6),
+                          ),
+                        ),
+                      ),
+                      SafeArea(
+                        child: RefreshIndicator(
+                          onRefresh: _fetchProfile,
+                          color: _primary,
+                          child: CustomScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics(),
+                            ),
+                            slivers: [
+                              SliverPadding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 24,
+                                ),
+                                sliver: SliverList(
+                                  delegate: SliverChildListDelegate([
+                                    _buildHeader(),
+                                    const SizedBox(height: 24),
+                                    _buildAvatarCard(),
+                                    const SizedBox(height: 20),
+                                    _buildFieldCard(
+                                      icon: Icons.person_outline_rounded,
+                                      label: 'NAMA LENGKAP',
+                                      value: _user?.name ?? '-',
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: _buildEditableCard(
+                                            fieldKey: 'username',
+                                            icon: Icons.alternate_email_rounded,
+                                            label: 'USERNAME',
+                                            controller: _usernameController,
+                                            hint: 'Klik untuk mengisi',
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: _buildFieldCard(
+                                            icon: Icons.email_outlined,
+                                            label: 'EMAIL',
+                                            value: _user?.email ?? '-',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: _buildEditableCard(
+                                            fieldKey: 'phone',
+                                            icon: Icons.phone_outlined,
+                                            label: 'NOMOR TELEPON',
+                                            controller: _phoneController,
+                                            hint: 'Klik untuk mengisi',
+                                            keyboardType: TextInputType.phone,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(child: _buildDateCard()),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: _buildEditableCard(
+                                            fieldKey: 'weight',
+                                            icon: Icons.monitor_weight_outlined,
+                                            label: 'BERAT (KG)',
+                                            controller: _weightController,
+                                            hint: 'Klik untuk mengisi',
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter.digitsOnly,
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: _buildEditableCard(
+                                            fieldKey: 'height',
+                                            icon: Icons.height_rounded,
+                                            label: 'TINGGI (CM)',
+                                            controller: _heightController,
+                                            hint: 'Klik untuk mengisi',
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter.digitsOnly,
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 12),
+                                    _buildScanHistoryCard(),
+                                    const SizedBox(height: 12),
+                                    _buildPasswordCard(),
+                                    const SizedBox(height: 20),
+                                    _buildLogoutButton(),
+                                    const SizedBox(height: 12),
+                                    Center(
+                                      child: Text(
+                                        'Klik pada field untuk mengedit • Email tidak dapat diubah',
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.inter(
+                                          fontSize: 11,
+                                          color: _textMuted,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 40),
+                                  ]),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
+    );
+  }
+
+  Widget _buildErrorState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: Colors.red.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.person_off_rounded,
+                size: 44,
+                color: Colors.redAccent,
               ),
             ),
+            const SizedBox(height: 16),
+            Text(
+              'Gagal Memuat Profil',
+              style: GoogleFonts.manrope(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: _textDark,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Tidak dapat terhubung ke server atau sesi Anda telah berakhir.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                color: _textMuted,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: _fetchProfile,
+              icon: const Icon(Icons.refresh_rounded, size: 18),
+              label: const Text('Coba Lagi'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextButton.icon(
+              onPressed: _handleLogout,
+              icon: const Icon(Icons.logout_rounded, size: 16),
+              label: const Text('Keluar Akun'),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.redAccent,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

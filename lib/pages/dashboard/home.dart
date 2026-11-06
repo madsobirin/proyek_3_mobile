@@ -779,7 +779,7 @@ class _HomeState extends State<Home> {
   }
 
   // ================= BOTTOM NAV (curved notch cradle) =================
-  static const double _navBarHeight = 64.0;
+  static const double _navBarHeight = 68.0;
   static const double _floatOverhang = 28.0;
   static const double _scanSize = 58.0;
 
@@ -816,12 +816,12 @@ class _HomeState extends State<Home> {
               ),
             ),
 
-            // 2. Navigation items
+            // 2. Navigation items (tinggi terisolasi _navBarHeight, aman overflow)
             Positioned(
               left: 0,
               right: 0,
               top: 0,
-              bottom: bottomSafe,
+              height: _navBarHeight,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -900,7 +900,7 @@ class _HomeState extends State<Home> {
   }
 }
 
-/// Item navigasi interaktif dengan animasi bounce spring, morphing icon, dan micro-indicator.
+/// Item navigasi interaktif dengan micro-animasi khusus tiap ikon, morphing icon, dan pill glow.
 class _InteractiveNavItem extends StatefulWidget {
   const _InteractiveNavItem({
     required this.index,
@@ -928,25 +928,71 @@ class _InteractiveNavItemState extends State<_InteractiveNavItem>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _scaleAnimation;
+  late final Animation<double> _offsetYAnimation;
+  late final Animation<double> _rotationAnimation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 240),
+      duration: const Duration(milliseconds: 320),
     );
 
+    // Animasi scale bounce spring
     _scaleAnimation = TweenSequence<double>([
       TweenSequenceItem(
-        tween: Tween<double>(begin: 1.0, end: 0.88)
+        tween: Tween<double>(begin: 1.0, end: 0.86)
+            .chain(CurveTween(curve: Curves.easeOutCubic)),
+        weight: 30,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 0.86, end: 1.15)
+            .chain(CurveTween(curve: Curves.easeOutBack)),
+        weight: 40,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.15, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeOutCubic)),
+        weight: 30,
+      ),
+    ]).animate(_controller);
+
+    // Animasi lompat / pin-drop (sumbu Y) untuk Home dan Lokasi
+    _offsetYAnimation = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 0.0, end: -4.5)
             .chain(CurveTween(curve: Curves.easeOutQuad)),
         weight: 35,
       ),
       TweenSequenceItem(
-        tween: Tween<double>(begin: 0.88, end: 1.0)
-            .chain(CurveTween(curve: Curves.elasticOut)),
-        weight: 65,
+        tween: Tween<double>(begin: -4.5, end: 1.2)
+            .chain(CurveTween(curve: Curves.easeInQuad)),
+        weight: 35,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.2, end: 0.0)
+            .chain(CurveTween(curve: Curves.easeOutBack)),
+        weight: 30,
+      ),
+    ]).animate(_controller);
+
+    // Animasi wiggle / tilt miring untuk Kalkulator
+    _rotationAnimation = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 0.0, end: -0.10)
+            .chain(CurveTween(curve: Curves.easeOutQuad)),
+        weight: 25,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: -0.10, end: 0.08)
+            .chain(CurveTween(curve: Curves.easeInOutQuad)),
+        weight: 35,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 0.08, end: 0.0)
+            .chain(CurveTween(curve: Curves.easeOutBack)),
+        weight: 40,
       ),
     ]).animate(_controller);
   }
@@ -971,6 +1017,47 @@ class _InteractiveNavItemState extends State<_InteractiveNavItem>
     widget.onTap();
   }
 
+  Widget _buildAnimatedIcon(Color color) {
+    Widget iconWidget = AnimatedSwitcher(
+      duration: const Duration(milliseconds: 220),
+      transitionBuilder: (child, anim) {
+        return ScaleTransition(
+          scale: anim,
+          child: FadeTransition(opacity: anim, child: child),
+        );
+      },
+      child: Icon(
+        widget.isActive ? widget.activeIcon : widget.inactiveIcon,
+        key: ValueKey<bool>(widget.isActive),
+        size: 23,
+        color: color,
+      ),
+    );
+
+    // Micro-motion spesifik tiap tab:
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        if (widget.index == 4) {
+          // Kalkulator: wiggle tilt
+          return Transform.rotate(
+            angle: _rotationAnimation.value,
+            child: child,
+          );
+        } else if (widget.index == 0 || widget.index == 5) {
+          // Home & Lokasi: pin drop / jump float Y
+          return Transform.translate(
+            offset: Offset(0, _offsetYAnimation.value),
+            child: child,
+          );
+        }
+        // Profil: scale pop
+        return child!;
+      },
+      child: iconWidget,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final activeColor =
@@ -980,60 +1067,81 @@ class _InteractiveNavItemState extends State<_InteractiveNavItem>
     final activeBg = widget.isDark
         ? const Color(0xFF86EFAC).withValues(alpha: 0.14)
         : const Color(0xFF20603D).withValues(alpha: 0.09);
+    final activeBorder = widget.isDark
+        ? const Color(0xFF86EFAC).withValues(alpha: 0.25)
+        : const Color(0xFF20603D).withValues(alpha: 0.15);
 
     return GestureDetector(
       onTap: _handleTap,
       behavior: HitTestBehavior.opaque,
       child: Center(
-        child: AnimatedBuilder(
-          animation: _scaleAnimation,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: _scaleAnimation.value,
-              child: child,
-            );
-          },
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 220),
-            curve: Curves.easeOutCubic,
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: widget.isActive ? activeBg : Colors.transparent,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  widget.isActive ? widget.activeIcon : widget.inactiveIcon,
-                  size: 23,
-                  color: widget.isActive ? activeColor : inactiveColor,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: AnimatedBuilder(
+            animation: _scaleAnimation,
+            builder: (context, child) {
+              return Transform.scale(
+                scale: _scaleAnimation.value,
+                child: child,
+              );
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 240),
+              curve: Curves.easeOutCubic,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+              decoration: BoxDecoration(
+                color: widget.isActive ? activeBg : Colors.transparent,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: widget.isActive ? activeBorder : Colors.transparent,
+                  width: 1.0,
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  widget.label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.poppins(
-                    fontSize: 10.5,
-                    fontWeight:
-                        widget.isActive ? FontWeight.w700 : FontWeight.w500,
-                    color: widget.isActive ? activeColor : inactiveColor,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildAnimatedIcon(widget.isActive ? activeColor : inactiveColor),
+                  const SizedBox(height: 1.5),
+                  AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOut,
+                    style: GoogleFonts.poppins(
+                      fontSize: 10.5,
+                      height: 1.2,
+                      fontWeight:
+                          widget.isActive ? FontWeight.w700 : FontWeight.w500,
+                      color: widget.isActive ? activeColor : inactiveColor,
+                      letterSpacing: widget.isActive ? 0.1 : 0.0,
+                    ),
+                    child: Text(
+                      widget.label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 3),
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 240),
-                  curve: Curves.easeOutCubic,
-                  width: widget.isActive ? 12 : 0,
-                  height: 3,
-                  decoration: BoxDecoration(
-                    color: widget.isActive ? activeColor : Colors.transparent,
-                    borderRadius: BorderRadius.circular(2),
+                  const SizedBox(height: 2),
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 260),
+                    curve: Curves.easeOutBack,
+                    width: widget.isActive ? 12 : 0,
+                    height: 2.5,
+                    decoration: BoxDecoration(
+                      color: widget.isActive ? activeColor : Colors.transparent,
+                      borderRadius: BorderRadius.circular(2),
+                      boxShadow: widget.isActive
+                          ? [
+                              BoxShadow(
+                                color: activeColor.withValues(alpha: 0.35),
+                                blurRadius: 4,
+                                offset: const Offset(0, 1),
+                              ),
+                            ]
+                          : null,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -1069,14 +1177,14 @@ class _HeroScanButtonState extends State<_HeroScanButton>
     _pressController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 140),
-      reverseDuration: const Duration(milliseconds: 220),
+      reverseDuration: const Duration(milliseconds: 260),
     );
 
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.90).animate(
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.88).animate(
       CurvedAnimation(
         parent: _pressController,
         curve: Curves.easeInOutQuad,
-        reverseCurve: Curves.easeOutBack,
+        reverseCurve: Curves.elasticOut,
       ),
     );
   }
@@ -1122,7 +1230,13 @@ class _HeroScanButtonState extends State<_HeroScanButton>
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF1B613A).withValues(alpha: 0.20),
+                color: const Color(0xFF1B613A).withValues(alpha: 0.38),
+                blurRadius: 14,
+                spreadRadius: 1,
+                offset: const Offset(0, 5),
+              ),
+              BoxShadow(
+                color: const Color(0xFF2EB86F).withValues(alpha: 0.22),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
