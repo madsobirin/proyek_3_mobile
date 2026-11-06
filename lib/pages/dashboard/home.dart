@@ -1123,7 +1123,7 @@ class _InteractiveNavItemState extends State<_InteractiveNavItem>
                   const SizedBox(height: 2),
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 260),
-                    curve: Curves.easeOutBack,
+                    curve: widget.isActive ? Curves.easeOutBack : Curves.easeOutCubic,
                     width: widget.isActive ? 12 : 0,
                     height: 2.5,
                     decoration: BoxDecoration(
