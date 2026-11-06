@@ -181,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   _buildTitle(),
                   const SizedBox(height: 8),
                   Text(
-                    'Enter your credentials to access your elite tracking dashboard.',
+                    'Sign in to continue your journey toward a healthier lifestyle.',
                     style: GoogleFonts.inter(
                       fontSize: 15,
                       color: const Color(0xFF6B7280),
@@ -200,7 +200,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: GestureDetector(
-                      onTap: () {},
+                      onTap: () =>
+                          Navigator.pushNamed(context, '/forgot-password'),
                       child: Text(
                         'Forgot Password?',
                         style: GoogleFonts.inter(
@@ -297,9 +298,9 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 1.2,
         ),
         children: [
-          const TextSpan(text: 'Welcome Back,\n'),
+          const TextSpan(text: 'Your Health Journey Continues.'),
           TextSpan(
-            text: 'Athlete.',
+            // text: 'Athlete.',
             style: GoogleFonts.manrope(
               fontSize: 32,
               fontWeight: FontWeight.w800,
