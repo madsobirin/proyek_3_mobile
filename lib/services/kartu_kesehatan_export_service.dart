@@ -31,17 +31,67 @@ class KartuKesehatanExportService {
   static Future<Uint8List?> captureWidgetToPng(GlobalKey boundaryKey) async {
     try {
       await Future.delayed(const Duration(milliseconds: 60));
+
       final boundary =
           boundaryKey.currentContext?.findRenderObject()
               as RenderRepaintBoundary?;
+
       if (boundary == null) {
         debugPrint('RenderRepaintBoundary tidak ditemukan');
         return null;
       }
-      final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-      final ByteData? byteData = await image.toByteData(
+
+      // Ukuran A4 Portrait pada resolusi 150 DPI
+      const int a4Width = 1240;
+      const int a4Height = 1754;
+
+      final ui.Image originalImage = await boundary.toImage(pixelRatio: 3.0);
+
+      final recorder = ui.PictureRecorder();
+      final canvas = ui.Canvas(recorder);
+
+      final sourceWidth = originalImage.width.toDouble();
+      final sourceHeight = originalImage.height.toDouble();
+
+      // Menyesuaikan ukuran konten dengan area A4 Portrait
+      const double margin = 50;
+
+      final availableWidth = a4Width - (margin * 2);
+      final availableHeight = a4Height - (margin * 2);
+
+      final scaleX = availableWidth / sourceWidth;
+      final scaleY = availableHeight / sourceHeight;
+
+      // Mengikuti ukuran yang paling sesuai tanpa memotong konten
+      final scale = scaleX < scaleY ? scaleX : scaleY;
+
+      final scaledWidth = sourceWidth * scale;
+      final scaledHeight = sourceHeight * scale;
+
+      // Posisi konten
+      final offsetX = (a4Width - scaledWidth) / 2;
+      const double offsetY = margin;
+
+      canvas.drawColor(const ui.Color(0xFFFFFFFF), ui.BlendMode.src);
+
+      canvas.drawImageRect(
+        originalImage,
+        ui.Rect.fromLTWH(0, 0, sourceWidth, sourceHeight),
+        ui.Rect.fromLTWH(offsetX, offsetY, scaledWidth, scaledHeight),
+        ui.Paint()..filterQuality = ui.FilterQuality.high,
+      );
+
+      final picture = recorder.endRecording();
+
+      final ui.Image finalImage = await picture.toImage(a4Width, a4Height);
+
+      final byteData = await finalImage.toByteData(
         format: ui.ImageByteFormat.png,
       );
+
+      originalImage.dispose();
+      finalImage.dispose();
+
       return byteData?.buffer.asUint8List();
     } catch (e) {
       debugPrint('Gagal capture PNG: $e');
