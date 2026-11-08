@@ -1,19 +1,63 @@
-// import 'dart:convert';
+import 'dart:io';
 import 'package:fitlife/pages/dashboard/home.dart';
 import 'package:fitlife/pages/dashboard/bmi_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'theme/app_theme.dart';
 import 'pages/auth/login.dart';
 import 'pages/auth/register.dart';
+import 'pages/auth/forgot_password_screen.dart';
+import 'pages/auth/reset_password_screen.dart';
 import 'pages/dashboard/profile_page.dart';
 import 'pages/splash/onboarding.dart';
 import 'pages/scan/scan_barcode_screen.dart';
 import 'pages/scan/scan_history_screen.dart';
 import 'pages/lokasi/lokasi_olahraga_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:window_manager/window_manager.dart';
 
-void main() {
+// void main() {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   SystemChrome.setSystemUIOverlayStyle(
+//     const SystemUiOverlayStyle(
+//       statusBarColor: Colors.transparent,
+//       statusBarIconBrightness: Brightness.dark,
+//       statusBarBrightness: Brightness.light,
+//       systemNavigationBarColor: Color(0xFFF8FAFC),
+//       systemNavigationBarIconBrightness: Brightness.dark,
+//     ),
+//   );
+//   runApp(const FitLifeApp());
+// }
+//
+//
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // --- SISIPKAN BLOK INI ---
+  if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+    await windowManager.ensureInitialized();
+    WindowOptions windowOptions = const WindowOptions(
+      size: Size(390, 844), // Rasio layar HP
+      center: true,
+      title: 'FitLife Mobile Preview',
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
+  // -------------------------
+
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+      systemNavigationBarColor: Color(0xFFF8FAFC),
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ),
+  );
   runApp(const FitLifeApp());
 }
 
@@ -34,15 +78,19 @@ class FitLifeApp extends StatelessWidget {
         '/splash': (context) => const OnboardingScreen(),
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
+        '/forgot-password': (context) => const ForgotPasswordScreen(),
+        '/reset-password': (context) {
+          final args = ModalRoute.of(context)?.settings.arguments;
+          final token = args is Map ? args['token'] as String? : null;
+          return ResetPasswordScreen(initialToken: token);
+        },
         '/home': (context) => Home(),
         '/profile': (context) => const ProfilePage(),
         '/scan': (context) => const ScanBarcodeScreen(),
         '/scan-history': (context) => const ScanHistoryScreen(),
         '/lokasi': (context) =>
             LocationOlahragaPage(onBack: () => Navigator.pop(context)),
-        '/bmi': (context) => BmiPage(
-              onBack: () => Navigator.pop(context),
-            ),
+        '/bmi': (context) => BmiPage(onBack: () => Navigator.pop(context)),
       },
     );
   }
@@ -69,6 +117,7 @@ class _AuthCheckScreenState extends State<AuthCheckScreen> {
     if (!mounted) return;
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
     bool hasSeenOnboarding = prefs.getBool('hasSeenOnboarding') ?? false;
 
     if (!hasSeenOnboarding) {

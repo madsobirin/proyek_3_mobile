@@ -1222,7 +1222,7 @@ class _ChatBubble extends StatelessWidget {
           border: isUser ? null : Border.all(color: colorScheme.outlineVariant),
         ),
         child: Text(
-          text,
+          isUser ? text : ChatService.formatPlainText(text),
           style: textTheme.bodySmall?.copyWith(
             color: isUser ? Colors.white : colorScheme.onSurface,
             height: 1.45,

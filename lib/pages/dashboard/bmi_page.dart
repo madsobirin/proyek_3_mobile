@@ -692,13 +692,17 @@ class _BmiPageState extends State<BmiPage> {
                         color: colors.onPrimaryContainer,
                       ),
                       const SizedBox(width: 5),
-                      Text(
-                        'Analisis Tubuh, Energi & Nutrisi',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0,
-                          color: colors.onPrimaryContainer,
+                      Flexible(
+                        child: Text(
+                          'Analisis Tubuh, Energi & Nutrisi',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0,
+                            color: colors.onPrimaryContainer,
+                          ),
                         ),
                       ),
                     ],

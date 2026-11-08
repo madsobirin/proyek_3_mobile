@@ -181,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   _buildTitle(),
                   const SizedBox(height: 8),
                   Text(
-                    'Enter your credentials to access your elite tracking dashboard.',
+                    'Sign in to continue your journey toward a healthier lifestyle.',
                     style: GoogleFonts.inter(
                       fontSize: 15,
                       color: const Color(0xFF6B7280),
@@ -200,7 +200,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: GestureDetector(
-                      onTap: () {},
+                      onTap: () =>
+                          Navigator.pushNamed(context, '/forgot-password'),
                       child: Text(
                         'Forgot Password?',
                         style: GoogleFonts.inter(
@@ -264,26 +265,26 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildBadge() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: const Color(0xFFDCFCE7),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.bolt_rounded, size: 14, color: Color(0xFF15803D)),
-          const SizedBox(width: 4),
-          Text(
-            'NEXT GEN PERFORMANCE',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF15803D),
-              letterSpacing: 1.2,
-            ),
-          ),
-        ],
-      ),
+      // decoration: BoxDecoration(
+      //   color: const Color(0xFFDCFCE7),
+      //   borderRadius: BorderRadius.circular(20),
+      // ),
+      // child: Row(
+      //   mainAxisSize: MainAxisSize.min,
+      //   children: [
+      //     const Icon(Icons.bolt_rounded, size: 14, color: Color(0xFF15803D)),
+      //     const SizedBox(width: 4),
+      //     Text(
+      //       'NEXT GEN PERFORMANCE',
+      //       style: GoogleFonts.inter(
+      //         fontSize: 11,
+      //         fontWeight: FontWeight.w700,
+      //         color: const Color(0xFF15803D),
+      //         letterSpacing: 1.2,
+      //       ),
+      //     ),
+      //   ],
+      // ),
     );
   }
 
@@ -297,9 +298,9 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 1.2,
         ),
         children: [
-          const TextSpan(text: 'Welcome Back,\n'),
+          const TextSpan(text: 'Your Health Journey Continues.'),
           TextSpan(
-            text: 'Athlete.',
+            // text: 'Athlete.',
             style: GoogleFonts.manrope(
               fontSize: 32,
               fontWeight: FontWeight.w800,
