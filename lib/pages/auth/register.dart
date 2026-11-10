@@ -2,6 +2,8 @@ import 'package:fitlife/services/auth_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'widgets/captcha_dialog.dart';
+import 'widgets/captcha_verification_button.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -19,6 +21,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _agreedToTerms = false;
+  String? _captchaToken;
+  bool _isCaptchaLoading = false;
+
+  Future<void> _openCaptchaModal() async {
+    setState(() => _isCaptchaLoading = true);
+    final token = await CaptchaDialog.show(context);
+    if (!mounted) return;
+    setState(() {
+      _isCaptchaLoading = false;
+      if (token != null && token.isNotEmpty) {
+        _captchaToken = token;
+      }
+    });
+  }
 
   int get _passwordStrength {
     final password = _passwordController.text;
@@ -85,15 +101,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
+    if (_captchaToken == null) {
+      _showErrorDialog('Verifikasi reCAPTCHA wajib dicentang.');
+      await _openCaptchaModal();
+      if (_captchaToken == null) return;
+    }
+
     setState(() => _isLoading = true);
+    final currentCaptcha = _captchaToken;
     final result = await _authServices.register(
       _nameController.text.trim(),
       _emailController.text.trim(),
       _passwordController.text,
+      captchaToken: currentCaptcha,
     );
 
     if (!mounted) return;
-    setState(() => _isLoading = false);
+    setState(() {
+      _isLoading = false;
+      // Reset captcha token setelah dipakai (one-time use)
+      _captchaToken = null;
+    });
 
     if (result['success'] == true) {
       _showSuccessDialog();
@@ -392,6 +420,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   _buildPasswordStrength(),
                   const SizedBox(height: 20),
                   _buildTermsCheckbox(),
+                  const SizedBox(height: 20),
+                  CaptchaVerificationButton(
+                    isVerified: _captchaToken != null,
+                    isLoading: _isCaptchaLoading,
+                    onTap: _openCaptchaModal,
+                  ),
                   const SizedBox(height: 24),
                   _buildRegisterButton(),
                   const SizedBox(height: 32),
