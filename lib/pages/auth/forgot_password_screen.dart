@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../services/auth_services.dart';
+import 'widgets/captcha_dialog.dart';
+import 'widgets/captcha_verification_button.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -16,6 +18,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   bool _isLoading = false;
   bool _submitted = false; // State sukses — tampilkan info panel
   String? _emailError;
+  String? _captchaToken;
+  bool _isCaptchaLoading = false;
+
+  Future<void> _openCaptchaModal() async {
+    setState(() => _isCaptchaLoading = true);
+    final token = await CaptchaDialog.show(context);
+    if (!mounted) return;
+    setState(() {
+      _isCaptchaLoading = false;
+      if (token != null && token.isNotEmpty) {
+        _captchaToken = token;
+      }
+    });
+  }
 
   static const _primary = Color(0xFF20603D);
   static const _bg = Color(0xFFF8FFFA);
@@ -43,14 +59,27 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   Future<void> _handleSubmit() async {
     if (!_validateEmail()) return;
+
+    if (_captchaToken == null) {
+      _showErrorSnackBar("Verifikasi reCAPTCHA wajib dicentang.");
+      await _openCaptchaModal();
+      if (_captchaToken == null) return;
+    }
+
     setState(() => _isLoading = true);
 
+    final currentCaptcha = _captchaToken;
     final result = await _authServices.forgotPassword(
       _emailController.text.trim(),
+      captchaToken: currentCaptcha,
     );
 
     if (!mounted) return;
-    setState(() => _isLoading = false);
+    setState(() {
+      _isLoading = false;
+      // Reset captcha token setelah dipakai (one-time use)
+      _captchaToken = null;
+    });
 
     if (result['success'] == true) {
       setState(() => _submitted = true);
@@ -290,6 +319,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
             ),
           ),
+        ),
+        const SizedBox(height: 20),
+        CaptchaVerificationButton(
+          isVerified: _captchaToken != null,
+          isLoading: _isCaptchaLoading,
+          onTap: _openCaptchaModal,
         ),
         const SizedBox(height: 28),
 

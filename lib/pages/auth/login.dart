@@ -3,6 +3,8 @@ import 'package:fitlife/services/scan_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'widgets/captcha_dialog.dart';
+import 'widgets/captcha_verification_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,6 +20,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _isLoading = false;
   bool _obscurePassword = true;
+  String? _captchaToken;
+  bool _isCaptchaLoading = false;
+
+  Future<void> _openCaptchaModal() async {
+    setState(() => _isCaptchaLoading = true);
+    final token = await CaptchaDialog.show(context);
+    if (!mounted) return;
+    setState(() {
+      _isCaptchaLoading = false;
+      if (token != null && token.isNotEmpty) {
+        _captchaToken = token;
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -66,15 +82,27 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    if (_captchaToken == null) {
+      _showErrorSnackBar("Verifikasi reCAPTCHA wajib dicentang.");
+      await _openCaptchaModal();
+      if (_captchaToken == null) return;
+    }
+
     setState(() => _isLoading = true);
 
+    final currentCaptchaToken = _captchaToken;
     final result = await _authServices.login(
       _emailController.text.trim(),
       _passwordController.text,
+      captchaToken: currentCaptchaToken,
     );
 
     if (!mounted) return;
-    setState(() => _isLoading = false);
+    setState(() {
+      _isLoading = false;
+      // Reset captcha token setelah dipakai (one-time use)
+      _captchaToken = null;
+    });
 
     if (result['success'] == true) {
       await _handlePostLoginSuccess();
@@ -211,6 +239,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
+                  ),
+                  const SizedBox(height: 20),
+                  CaptchaVerificationButton(
+                    isVerified: _captchaToken != null,
+                    isLoading: _isCaptchaLoading,
+                    onTap: _openCaptchaModal,
                   ),
                   const SizedBox(height: 24),
                   _buildLoginButton(),

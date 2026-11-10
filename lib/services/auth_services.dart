@@ -10,11 +10,16 @@ class AuthServices {
   final ApiService _api = ApiService();
 
   // ── Login Manual ──
-  Future<Map<String, dynamic>> login(String email, String password) async {
+  Future<Map<String, dynamic>> login(
+    String email,
+    String password, {
+    String? captchaToken,
+  }) async {
     try {
       final response = await _api.post('/auth/login', {
         'email': email,
         'password': password,
+        if (captchaToken != null) 'captchaToken': captchaToken,
       });
 
       final data = _api.handleResponse(response);
@@ -40,13 +45,15 @@ class AuthServices {
   Future<Map<String, dynamic>> register(
     String name,
     String email,
-    String password,
-  ) async {
+    String password, {
+    String? captchaToken,
+  }) async {
     try {
       final response = await _api.post('/auth/register', {
         'name': name,
         'email': email,
         'password': password,
+        if (captchaToken != null) 'captchaToken': captchaToken,
       });
 
       final data = _api.handleResponse(response);
@@ -173,10 +180,14 @@ class AuthServices {
   }
 
   // ── Forgot Password: kirim link reset ke email ──
-  Future<Map<String, dynamic>> forgotPassword(String email) async {
+  Future<Map<String, dynamic>> forgotPassword(
+    String email, {
+    String? captchaToken,
+  }) async {
     try {
       final response = await _api.post('/auth/forgot-password', {
         'email': email,
+        if (captchaToken != null) 'captchaToken': captchaToken,
       });
 
       if (response.statusCode == 200) {
